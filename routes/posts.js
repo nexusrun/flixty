@@ -54,10 +54,11 @@ router.post('/publish', upload.single('media'), async (req, res) => {
       }
       if (platform === 'youtube') {
         if (!req.file) { errors.youtube = 'YouTube requires a video file — attach one before publishing'; return }
+        if (!req.file.mimetype.startsWith('video/')) { errors.youtube = `YouTube only supports video files — got ${req.file.mimetype}`; return }
         const { access_token, refreshed, newTok } = await youtube.ensureFreshToken(tok)
         if (refreshed) saveToken('youtube', newTok)
         const title    = (req.body.campaignName || text.split('\n')[0] || 'Untitled').slice(0, 100)
-        const mimeType = req.file.mimetype || 'video/mp4'
+        const mimeType = req.file.mimetype
         results.youtube = await youtube.uploadVideo(access_token, req.file.path, { title, description: text, mimeType })
       }
     } catch (e) {
@@ -76,8 +77,9 @@ router.post('/schedule', upload.single('media'), async (req, res) => {
   const { text, scheduledAt, imageUrl, campaignName } = req.body
   const platforms = JSON.parse(req.body.platforms || '[]')
   if (!scheduledAt) return res.status(400).json({ error: 'scheduledAt required (ISO 8601)' })
-  const videoPath = req.file ? req.file.path : null
-  const item = saveScheduled({ text, platforms, scheduledAt, imageUrl, campaignName, videoPath })
+  const videoPath  = req.file ? req.file.path     : null
+  const mimeType   = req.file ? req.file.mimetype  : null
+  const item = saveScheduled({ text, platforms, scheduledAt, imageUrl, campaignName, videoPath, mimeType })
   res.json({ ok: true, scheduled: item })
 })
 
