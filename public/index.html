@@ -1,0 +1,2215 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>LFITX | Marketing Studio</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        colors: {
+          "surface":                  "var(--surface)",
+          "surface-bright":           "var(--surface-bright)",
+          "surface-container-low":    "var(--surface-container-low)",
+          "surface-container":        "var(--surface-container)",
+          "surface-container-high":   "var(--surface-container-high)",
+          "surface-container-highest":"var(--surface-container-highest)",
+          "surface-container-lowest": "var(--surface-container-lowest)",
+          "on-surface":               "var(--on-surface)",
+          "on-surface-variant":       "var(--on-surface-variant)",
+          "secondary":                "var(--secondary)",
+          "secondary-dim":            "var(--secondary-dim)",
+          "secondary-container":      "var(--secondary-container)",
+          "on-secondary":             "var(--on-secondary)",
+          "on-secondary-container":   "var(--on-secondary-container)",
+          "outline-variant":          "var(--outline-variant)",
+          "outline":                  "var(--outline)",
+          "error":                    "var(--error)",
+          "background":               "var(--background)",
+          "on-background":            "var(--on-background)",
+        },
+        borderRadius: {
+          DEFAULT: "0.25rem",
+          lg: "0.5rem",
+          xl: "0.75rem",
+          "2xl": "1rem",
+          full: "9999px",
+        },
+        fontFamily: {
+          headline: ["Inter"],
+          body: ["Inter"],
+          label: ["Inter"],
+        },
+      },
+    },
+  };
+</script>
+<style>
+  :root {
+    --surface: #f6f6fb;
+    --surface-bright: #f6f6fb;
+    --surface-container-low: #f0f0f6;
+    --surface-container: #e7e8ee;
+    --surface-container-high: #e1e2e8;
+    --surface-container-highest: #dbdde3;
+    --surface-container-lowest: #ffffff;
+    --on-surface: #2d2f33;
+    --on-surface-variant: #5a5b60;
+    --secondary: #4c49c9;
+    --secondary-dim: #3f3bbd;
+    --secondary-container: #cfcdff;
+    --on-secondary: #f4f1ff;
+    --on-secondary-container: #3631b5;
+    --outline-variant: #acadb1;
+    --outline: #75777b;
+    --error: #b31b25;
+    --background: #f6f6fb;
+    --on-background: #2d2f33;
+  }
+  .dark {
+    --surface: #0c0e12;
+    --surface-bright: #37393e;
+    --surface-container-low: #1a1c22;
+    --surface-container: #1e2025;
+    --surface-container-high: #282a2f;
+    --surface-container-highest: #33353a;
+    --surface-container-lowest: #0c0e12;
+    --on-surface: #e2e2e6;
+    --on-surface-variant: #c4c6cf;
+    --secondary: #bfbeff;
+    --secondary-dim: #bfbeff;
+    --secondary-container: #3631b5;
+    --on-secondary: #2014a2;
+    --on-secondary-container: #cfcdff;
+    --outline-variant: #44474e;
+    --outline: #8e9199;
+    --error: #fb5151;
+    --background: #0c0e12;
+    --on-background: #e2e2e6;
+  }
+
+  body { font-family: 'Inter', sans-serif; }
+  .material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    user-select: none;
+  }
+  .ms-fill { font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--outline-variant); border-radius: 3px; }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #4c49c9, #3f3bbd);
+    color: #f4f1ff;
+  }
+  .dark .btn-primary {
+    background: linear-gradient(135deg, #bfbeff, #a8a7f5);
+    color: #2014a2;
+  }
+
+  .ig-gradient {
+    background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+  }
+
+  #toast {
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease;
+  }
+  #toast.toast-hidden {
+    transform: translateY(100px);
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .platform-chip.active-x        { background: #000; color: #fff; }
+  .dark .platform-chip.active-x  { background: #fff; color: #000; }
+  .platform-chip.active-linkedin  { background: #0a66c2; color: #fff; }
+  .platform-chip.active-facebook  { background: #1877f2; color: #fff; }
+  .platform-chip.active-instagram { background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); color: #fff; }
+  .platform-chip.active-tiktok    { background: #010101; color: #fff; }
+  .dark .platform-chip.active-tiktok { background: #fff; color: #010101; }
+
+  .htag-chip.added {
+    background: var(--secondary);
+    color: var(--on-secondary);
+  }
+
+  .cal-day { cursor: pointer; }
+  .cal-day:hover .cal-day-num { background: var(--secondary-container); color: var(--on-secondary-container); border-radius: 50%; }
+
+  .score-bar-track {
+    background: var(--surface-container-high);
+    border-radius: 9999px;
+    overflow: hidden;
+    height: 6px;
+  }
+  .score-bar-fill {
+    height: 6px;
+    border-radius: 9999px;
+    background: linear-gradient(90deg, var(--secondary), var(--secondary-dim));
+    transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  #schedule-modal { transition: opacity 0.2s ease; }
+
+  #hashtag-panel {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+  }
+  #hashtag-panel.open {
+    max-height: 200px;
+  }
+
+  .sidebar-link.active {
+    background: var(--secondary-container);
+    color: var(--on-secondary-container);
+  }
+  .sidebar-link:not(.active):hover {
+    background: var(--surface-container);
+    color: var(--on-surface);
+  }
+
+  .header-tab.active {
+    background: rgba(79, 70, 201, 0.15);
+    color: var(--secondary);
+  }
+  .dark .header-tab.active {
+    background: rgba(191, 190, 255, 0.15);
+    color: var(--secondary);
+  }
+
+  .preview-tab.active {
+    background: var(--secondary-container);
+    color: var(--on-secondary-container);
+  }
+
+  .range-chip.active {
+    background: var(--secondary-container);
+    color: var(--on-secondary-container);
+  }
+
+  input:focus, textarea:focus, select:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(76, 73, 201, 0.25);
+  }
+  .dark input:focus, .dark textarea:focus, .dark select:focus {
+    box-shadow: 0 0 0 2px rgba(191, 190, 255, 0.25);
+  }
+
+  .analytics-bar {
+    height: 8px;
+    border-radius: 9999px;
+    transition: width 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .notif-dot {
+    width: 8px;
+    height: 8px;
+    background: var(--error);
+    border-radius: 50%;
+    position: absolute;
+    top: 0;
+    right: 0;
+    border: 1.5px solid var(--surface);
+  }
+
+  #upload-zone.drag-over {
+    border-color: var(--secondary);
+    background: rgba(76, 73, 201, 0.05);
+  }
+
+  @media (min-width: 1024px) {
+    .compose-grid { grid-template-columns: 1fr 380px; }
+  }
+</style>
+</head>
+<body class="bg-background text-on-background selection:bg-secondary-container selection:text-on-secondary-container transition-colors duration-300">
+
+<!-- FIXED HEADER -->
+<header class="fixed top-0 w-full z-50 bg-white/80 dark:bg-[#0c0e12]/80 backdrop-blur-xl border-b border-outline-variant/20">
+  <div class="flex items-center h-16 px-4 lg:px-6 gap-4 max-w-screen-2xl mx-auto">
+
+    <div class="flex items-center gap-3 shrink-0">
+      <img src="/LFITX.png" alt="LFITX" class="h-8 w-auto object-contain"/>
+      <span class="hidden sm:inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold tracking-wide bg-secondary-container text-on-secondary-container">Marketing Studio</span>
+    </div>
+
+    <nav class="hidden md:flex items-center gap-1 ml-4">
+      <button onclick="switchView('dashboard')" data-view="dashboard" class="header-tab active px-3 py-1.5 rounded-xl text-sm font-medium transition-all duration-200">Dashboard</button>
+      <button onclick="switchView('compose')" data-view="compose" class="header-tab px-3 py-1.5 rounded-xl text-sm font-medium text-on-surface-variant hover:text-on-surface transition-all duration-200">Compose</button>
+      <button onclick="switchView('calendar')" data-view="calendar" class="header-tab px-3 py-1.5 rounded-xl text-sm font-medium text-on-surface-variant hover:text-on-surface transition-all duration-200">Calendar</button>
+      <button onclick="switchView('analytics')" data-view="analytics" class="header-tab px-3 py-1.5 rounded-xl text-sm font-medium text-on-surface-variant hover:text-on-surface transition-all duration-200">Analytics</button>
+    </nav>
+
+    <div class="ml-auto flex items-center gap-2 lg:gap-3">
+      <div class="hidden lg:flex items-center bg-surface-container-low rounded-full px-3 py-1.5 gap-2">
+        <span class="material-symbols-outlined text-on-surface-variant" style="font-size:18px">search</span>
+        <input type="text" placeholder="Search posts..." class="bg-transparent border-none focus:ring-0 text-sm w-40 text-on-surface placeholder:text-on-surface-variant/60 p-0"/>
+      </div>
+      <button class="relative w-8 h-8 flex items-center justify-center rounded-xl hover:bg-surface-container-low transition-colors">
+        <span class="material-symbols-outlined text-on-surface-variant" style="font-size:20px">notifications</span>
+        <span class="notif-dot"></span>
+      </button>
+      <button onclick="toggleDark()" class="w-8 h-8 flex items-center justify-center rounded-xl hover:bg-surface-container-low transition-colors" title="Toggle dark mode">
+        <span id="dark-icon" class="material-symbols-outlined text-on-surface-variant" style="font-size:20px">dark_mode</span>
+      </button>
+      <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-secondary to-secondary-dim flex items-center justify-center text-on-secondary text-xs font-bold shrink-0">JM</div>
+    </div>
+  </div>
+</header>
+
+<!-- LAYOUT WRAPPER -->
+<div class="flex pt-16 min-h-screen">
+
+  <!-- LEFT SIDEBAR -->
+  <aside class="hidden lg:flex flex-col h-screen w-60 fixed left-0 top-0 pt-16 bg-surface-container-low z-40">
+    <div class="flex flex-col flex-1 p-4 gap-1 overflow-y-auto">
+
+      <div class="px-2 py-4 mb-2">
+        <div class="flex items-center gap-3">
+          <img src="/LFITX.png" alt="LFITX" class="h-8 w-auto object-contain"/>
+          <p class="text-xs text-on-surface-variant">Marketing Studio</p>
+        </div>
+      </div>
+
+      <nav class="flex flex-col gap-0.5">
+        <button onclick="switchView('dashboard')" data-sidebar="dashboard" class="sidebar-link active flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 w-full text-left">
+          <span class="material-symbols-outlined" style="font-size:20px">grid_view</span>
+          <span>Dashboard</span>
+        </button>
+        <button onclick="switchView('compose')" data-sidebar="compose" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-on-surface-variant transition-all duration-200 w-full text-left">
+          <span class="material-symbols-outlined" style="font-size:20px">edit_note</span>
+          <span>Compose</span>
+        </button>
+        <button onclick="switchView('calendar')" data-sidebar="calendar" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-on-surface-variant transition-all duration-200 w-full text-left">
+          <span class="material-symbols-outlined" style="font-size:20px">calendar_month</span>
+          <span>Calendar</span>
+        </button>
+        <button onclick="switchView('analytics')" data-sidebar="analytics" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-on-surface-variant transition-all duration-200 w-full text-left">
+          <span class="material-symbols-outlined" style="font-size:20px">analytics</span>
+          <span>Analytics</span>
+        </button>
+      </nav>
+
+      <div class="mt-6 px-2">
+        <p class="text-[10px] font-semibold tracking-widest uppercase text-on-surface-variant/60 mb-3">Connected Platforms</p>
+        <div class="flex flex-col gap-2">
+          <div class="flex items-center gap-3 cursor-pointer rounded-xl px-1 py-1 hover:bg-surface-container transition-colors" onclick="connectPlatform('x')" title="Click to connect X / Twitter">
+            <div class="w-6 h-6 rounded-lg bg-black dark:bg-white flex items-center justify-center shrink-0">
+              <svg class="w-3.5 h-3.5 text-white dark:text-black fill-current" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.748l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+            </div>
+            <span class="text-xs text-on-surface flex-1">X / Twitter</span>
+            <span class="w-2 h-2 rounded-full bg-surface-container-highest shrink-0" id="status-dot-x"></span>
+          </div>
+          <div class="flex items-center gap-3 cursor-pointer rounded-xl px-1 py-1 hover:bg-surface-container transition-colors" onclick="connectPlatform('linkedin')" title="Click to connect LinkedIn">
+            <div class="w-6 h-6 rounded-lg flex items-center justify-center shrink-0" style="background:#0a66c2">
+              <svg class="w-3.5 h-3.5 fill-white" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+            </div>
+            <span class="text-xs text-on-surface flex-1">LinkedIn</span>
+            <span class="w-2 h-2 rounded-full bg-surface-container-highest shrink-0" id="status-dot-linkedin"></span>
+          </div>
+          <div class="flex items-center gap-3 cursor-pointer rounded-xl px-1 py-1 hover:bg-surface-container transition-colors" onclick="connectPlatform('facebook')" title="Click to connect Facebook">
+            <div class="w-6 h-6 rounded-lg flex items-center justify-center shrink-0" style="background:#1877f2">
+              <svg class="w-3.5 h-3.5 fill-white" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+            </div>
+            <span class="text-xs text-on-surface flex-1">Facebook</span>
+            <span class="w-2 h-2 rounded-full bg-surface-container-highest shrink-0" id="status-dot-facebook"></span>
+          </div>
+          <div class="flex items-center gap-3 cursor-pointer rounded-xl px-1 py-1 hover:bg-surface-container transition-colors" onclick="connectPlatform('instagram')" title="Click to connect Instagram">
+            <div class="w-6 h-6 rounded-lg ig-gradient flex items-center justify-center shrink-0">
+              <svg class="w-3.5 h-3.5 fill-white" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+            </div>
+            <span class="text-xs text-on-surface flex-1">Instagram</span>
+            <span class="w-2 h-2 rounded-full bg-surface-container-highest shrink-0" id="status-dot-instagram"></span>
+          </div>
+          <div class="flex items-center gap-3 cursor-pointer rounded-xl px-1 py-1 hover:bg-surface-container transition-colors" onclick="connectPlatform('tiktok')" title="Click to connect TikTok">
+            <div class="w-6 h-6 rounded-lg bg-[#010101] flex items-center justify-center shrink-0">
+              <svg class="w-3.5 h-3.5 fill-white" viewBox="0 0 24 24"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/></svg>
+            </div>
+            <span class="text-xs text-on-surface flex-1">TikTok</span>
+            <span class="w-2 h-2 rounded-full bg-surface-container-highest shrink-0" id="status-dot-tiktok"></span>
+          </div>
+          <div class="flex items-center gap-3 cursor-pointer rounded-xl px-1 py-1 hover:bg-surface-container transition-colors" onclick="connectPlatform('youtube')" title="Click to connect YouTube">
+            <div class="w-6 h-6 rounded-lg flex items-center justify-center shrink-0" style="background:#ff0000">
+              <svg class="w-3.5 h-3.5 fill-white" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+            </div>
+            <span class="text-xs text-on-surface flex-1">YouTube</span>
+            <span class="w-2 h-2 rounded-full bg-surface-container-highest shrink-0" id="status-dot-youtube"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="p-4">
+      <button onclick="switchView('compose')" class="btn-primary w-full py-2.5 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 shadow-lg transition-all active:scale-95">
+        <span class="material-symbols-outlined" style="font-size:18px">add</span>
+        New Post
+      </button>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="flex-1 lg:ml-60 min-h-screen">
+
+    <!-- DASHBOARD VIEW -->
+    <div id="view-dashboard" class="p-5 lg:p-8 max-w-7xl mx-auto">
+
+      <div class="mb-8">
+        <h1 class="text-2xl font-black text-on-surface tracking-tight">Good morning, Jamie 👋</h1>
+        <p class="text-on-surface-variant text-sm mt-1">Saturday, April 4, 2026 — Here's your content overview</p>
+      </div>
+
+      <!-- Stats grid -->
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <div class="bg-surface-container-lowest rounded-xl p-5 shadow-sm shadow-on-surface/5">
+          <div class="flex items-start justify-between mb-3">
+            <div class="w-9 h-9 rounded-xl bg-secondary-container flex items-center justify-center">
+              <span class="material-symbols-outlined text-on-secondary-container" style="font-size:18px">bar_chart</span>
+            </div>
+            <span class="text-xs font-semibold text-green-600 dark:text-green-400 bg-green-100 dark:bg-green-900/30 px-2 py-0.5 rounded-full">+18.2%</span>
+          </div>
+          <p class="text-2xl font-black text-on-surface tracking-tight">124.5k</p>
+          <p class="text-xs text-on-surface-variant mt-0.5">Total Reach</p>
+        </div>
+        <div class="bg-surface-container-lowest rounded-xl p-5 shadow-sm shadow-on-surface/5">
+          <div class="flex items-start justify-between mb-3">
+            <div class="w-9 h-9 rounded-xl bg-secondary-container flex items-center justify-center">
+              <span class="material-symbols-outlined text-on-secondary-container" style="font-size:18px">favorite</span>
+            </div>
+            <span class="text-xs font-semibold text-green-600 dark:text-green-400 bg-green-100 dark:bg-green-900/30 px-2 py-0.5 rounded-full">+2.1%</span>
+          </div>
+          <p class="text-2xl font-black text-on-surface tracking-tight">8.7%</p>
+          <p class="text-xs text-on-surface-variant mt-0.5">Engagement Rate</p>
+        </div>
+        <div class="bg-surface-container-lowest rounded-xl p-5 shadow-sm shadow-on-surface/5">
+          <div class="flex items-start justify-between mb-3">
+            <div class="w-9 h-9 rounded-xl bg-secondary-container flex items-center justify-center">
+              <span class="material-symbols-outlined text-on-secondary-container" style="font-size:18px">schedule</span>
+            </div>
+            <span class="text-xs font-semibold text-on-surface-variant bg-surface-container px-2 py-0.5 rounded-full">Queued</span>
+          </div>
+          <p class="text-2xl font-black text-on-surface tracking-tight">12</p>
+          <p class="text-xs text-on-surface-variant mt-0.5">Scheduled Posts</p>
+        </div>
+        <div class="bg-surface-container-lowest rounded-xl p-5 shadow-sm shadow-on-surface/5">
+          <div class="flex items-start justify-between mb-3">
+            <div class="w-9 h-9 rounded-xl bg-secondary-container flex items-center justify-center">
+              <span class="material-symbols-outlined text-on-secondary-container" style="font-size:18px">conversion_path</span>
+            </div>
+            <span class="text-xs font-semibold text-error bg-red-100 dark:bg-red-900/30 px-2 py-0.5 rounded-full">-0.8%</span>
+          </div>
+          <p class="text-2xl font-black text-on-surface tracking-tight">3.2k</p>
+          <p class="text-xs text-on-surface-variant mt-0.5">Conversions</p>
+        </div>
+      </div>
+
+      <!-- Two-column layout -->
+      <div class="grid grid-cols-1 xl:grid-cols-[1fr_340px] gap-6">
+
+        <!-- Left: Recent Posts -->
+        <div>
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="font-bold text-on-surface">Recent Posts</h2>
+            <button class="text-xs text-secondary font-medium hover:underline">View all</button>
+          </div>
+          <div class="flex flex-col gap-3">
+
+            <div class="bg-surface-container-lowest rounded-xl p-4 shadow-sm shadow-on-surface/5">
+              <div class="flex items-start gap-3">
+                <div class="w-8 h-8 ig-gradient rounded-xl flex items-center justify-center shrink-0">
+                  <svg class="w-4 h-4 fill-white" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center justify-between gap-2 mb-1">
+                    <p class="font-semibold text-sm text-on-surface truncate">Behind the scenes: Our team at work</p>
+                    <span class="text-xs text-on-surface-variant shrink-0">2h ago</span>
+                  </div>
+                  <p class="text-xs text-on-surface-variant line-clamp-2 mb-2">Sharing a glimpse into our creative process. The magic happens when great minds collaborate... ✨ #teamwork #creativity</p>
+                  <div class="flex items-center gap-4 text-xs text-on-surface-variant">
+                    <span class="flex items-center gap-1"><span class="material-symbols-outlined" style="font-size:14px">favorite</span> 2.4k</span>
+                    <span class="flex items-center gap-1"><span class="material-symbols-outlined" style="font-size:14px">chat_bubble</span> 187</span>
+                    <span class="flex items-center gap-1"><span class="material-symbols-outlined" style="font-size:14px">share</span> 342</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="bg-surface-container-lowest rounded-xl p-4 shadow-sm shadow-on-surface/5">
+              <div class="flex items-start gap-3">
+                <div class="w-8 h-8 rounded-xl flex items-center justify-center shrink-0" style="background:#0a66c2">
+                  <svg class="w-4 h-4 fill-white" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center justify-between gap-2 mb-1">
+                    <p class="font-semibold text-sm text-on-surface truncate">5 Lessons from Scaling to 100k Users</p>
+                    <span class="text-xs text-on-surface-variant shrink-0">1d ago</span>
+                  </div>
+                  <p class="text-xs text-on-surface-variant line-clamp-2 mb-2">What nobody tells you about growth: the real challenge isn't acquiring users, it's retaining them. Here's what we learned...</p>
+                  <div class="flex items-center gap-4 text-xs text-on-surface-variant">
+                    <span class="flex items-center gap-1"><span class="material-symbols-outlined" style="font-size:14px">thumb_up</span> 1.8k</span>
+                    <span class="flex items-center gap-1"><span class="material-symbols-outlined" style="font-size:14px">chat_bubble</span> 94</span>
+                    <span class="flex items-center gap-1"><span class="material-symbols-outlined" style="font-size:14px">share</span> 276</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="bg-surface-container-lowest rounded-xl p-4 shadow-sm shadow-on-surface/5">
+              <div class="flex items-start gap-3">
+                <div class="w-8 h-8 rounded-xl bg-black dark:bg-white flex items-center justify-center shrink-0">
+                  <svg class="w-4 h-4 fill-white dark:fill-black" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.748l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center justify-between gap-2 mb-1">
+                    <p class="font-semibold text-sm text-on-surface truncate">Hot take: Dark mode isn't about eyes</p>
+                    <span class="text-xs text-on-surface-variant shrink-0">2d ago</span>
+                  </div>
+                  <p class="text-xs text-on-surface-variant line-clamp-2 mb-2">Hot take: dark mode isn't just about eye strain. It's a UX signal that says "we care about the details." Your users notice. 🌙</p>
+                  <div class="flex items-center gap-4 text-xs text-on-surface-variant">
+                    <span class="flex items-center gap-1"><span class="material-symbols-outlined" style="font-size:14px">favorite</span> 847</span>
+                    <span class="flex items-center gap-1"><span class="material-symbols-outlined" style="font-size:14px">chat_bubble</span> 63</span>
+                    <span class="flex items-center gap-1"><span class="material-symbols-outlined" style="font-size:14px">repeat</span> 412</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="bg-surface-container-lowest rounded-xl p-4 shadow-sm shadow-on-surface/5">
+              <div class="flex items-start gap-3">
+                <div class="w-8 h-8 rounded-xl bg-[#010101] flex items-center justify-center shrink-0">
+                  <svg class="w-4 h-4 fill-white" viewBox="0 0 24 24"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/></svg>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center justify-between gap-2 mb-1">
+                    <p class="font-semibold text-sm text-on-surface truncate">Day in the life: design process POV</p>
+                    <span class="text-xs text-on-surface-variant shrink-0">3d ago</span>
+                  </div>
+                  <p class="text-xs text-on-surface-variant line-clamp-2 mb-2">A full day of designing captured in 60 seconds. From wireframes to launch — this is how it really happens 🎬 #designtok #uxdesign</p>
+                  <div class="flex items-center gap-4 text-xs text-on-surface-variant">
+                    <span class="flex items-center gap-1"><span class="material-symbols-outlined" style="font-size:14px">favorite</span> 14.2k</span>
+                    <span class="flex items-center gap-1"><span class="material-symbols-outlined" style="font-size:14px">chat_bubble</span> 328</span>
+                    <span class="flex items-center gap-1"><span class="material-symbols-outlined" style="font-size:14px">share</span> 2.1k</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Right column -->
+        <div class="flex flex-col gap-4">
+
+          <!-- Upcoming -->
+          <div class="bg-surface-container-lowest rounded-xl p-5 shadow-sm shadow-on-surface/5">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="font-bold text-on-surface text-sm">Upcoming</h3>
+              <span class="material-symbols-outlined text-on-surface-variant" style="font-size:18px">calendar_month</span>
+            </div>
+            <div class="flex flex-col gap-3">
+              <div class="flex items-center gap-3">
+                <div class="w-2 h-2 rounded-full shrink-0" style="background:#0a66c2"></div>
+                <div class="flex-1 min-w-0">
+                  <p class="text-xs font-semibold text-on-surface truncate">LinkedIn Article — Growth Hacks</p>
+                  <p class="text-[11px] text-on-surface-variant">Today • 3:00 PM</p>
+                </div>
+              </div>
+              <div class="flex items-center gap-3">
+                <div class="w-2 h-2 rounded-full shrink-0" style="background:linear-gradient(45deg,#f09433,#bc1888)"></div>
+                <div class="flex-1 min-w-0">
+                  <p class="text-xs font-semibold text-on-surface truncate">Instagram Reel — Product Demo</p>
+                  <p class="text-[11px] text-on-surface-variant">Tomorrow • 10:00 AM</p>
+                </div>
+              </div>
+              <div class="flex items-center gap-3">
+                <div class="w-2 h-2 rounded-full shrink-0 bg-black dark:bg-white"></div>
+                <div class="flex-1 min-w-0">
+                  <p class="text-xs font-semibold text-on-surface truncate">X Thread — Industry Insights</p>
+                  <p class="text-[11px] text-on-surface-variant">Apr 6 • 9:00 AM</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Best Performer -->
+          <div class="rounded-xl p-5 relative overflow-hidden" style="background:linear-gradient(135deg, #4c49c9, #3f3bbd);">
+            <div class="absolute top-0 right-0 w-24 h-24 rounded-full opacity-20" style="background:rgba(255,255,255,0.3);transform:translate(30%,-30%)"></div>
+            <div class="absolute bottom-0 left-0 w-16 h-16 rounded-full opacity-15" style="background:rgba(255,255,255,0.2);transform:translate(-30%,30%)"></div>
+            <p class="text-xs font-semibold text-white/70 uppercase tracking-widest mb-1 relative">Best Performer</p>
+            <p class="text-sm font-bold text-white relative mb-1">Day in the life: design process POV</p>
+            <p class="text-xs text-white/70 relative mb-3">TikTok • 14.2k likes • 3d ago</p>
+            <button class="relative text-xs font-semibold bg-white/20 hover:bg-white/30 text-white px-3 py-1.5 rounded-xl transition-all flex items-center gap-1.5">
+              <span class="material-symbols-outlined" style="font-size:14px">recycling</span>
+              Repurpose
+            </button>
+          </div>
+
+          <!-- Top Hashtags (glassmorphism) -->
+          <div class="bg-surface-container-low/50 backdrop-blur-md rounded-xl p-5 shadow-sm shadow-on-surface/5">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="font-bold text-on-surface text-sm">Top Hashtags</h3>
+              <span class="text-xs text-on-surface-variant">This week</span>
+            </div>
+            <div class="flex flex-col gap-3">
+              <div>
+                <div class="flex justify-between text-xs mb-1">
+                  <span class="text-on-surface font-medium">#marketing</span>
+                  <span class="text-on-surface-variant">82%</span>
+                </div>
+                <div class="score-bar-track"><div class="score-bar-fill" style="width:82%"></div></div>
+              </div>
+              <div>
+                <div class="flex justify-between text-xs mb-1">
+                  <span class="text-on-surface font-medium">#branding</span>
+                  <span class="text-on-surface-variant">74%</span>
+                </div>
+                <div class="score-bar-track"><div class="score-bar-fill" style="width:74%"></div></div>
+              </div>
+              <div>
+                <div class="flex justify-between text-xs mb-1">
+                  <span class="text-on-surface font-medium">#contentcreator</span>
+                  <span class="text-on-surface-variant">61%</span>
+                </div>
+                <div class="score-bar-track"><div class="score-bar-fill" style="width:61%"></div></div>
+              </div>
+              <div>
+                <div class="flex justify-between text-xs mb-1">
+                  <span class="text-on-surface font-medium">#socialmedia</span>
+                  <span class="text-on-surface-variant">48%</span>
+                </div>
+                <div class="score-bar-track"><div class="score-bar-fill" style="width:48%"></div></div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- COMPOSE VIEW -->
+    <div id="view-compose" class="hidden p-5 lg:p-8 max-w-7xl mx-auto">
+
+      <div class="mb-6 flex items-start justify-between gap-4">
+        <div>
+          <h1 class="text-2xl font-black text-on-surface tracking-tight">Compose</h1>
+          <p class="text-on-surface-variant text-sm mt-1">Create and schedule your next post</p>
+        </div>
+        <button onclick="openAiPanel()" class="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold btn-primary shadow-lg transition-all active:scale-95 shrink-0">
+          <span class="material-symbols-outlined" style="font-size:16px">auto_awesome</span>
+          AI Assist
+        </button>
+      </div>
+
+      <div class="grid compose-grid gap-6">
+
+        <!-- Left: Editor -->
+        <div class="flex flex-col gap-4">
+
+          <!-- Campaign name -->
+          <div class="bg-surface-container-lowest rounded-xl p-5 shadow-sm shadow-on-surface/5">
+            <label class="text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-2 block">Campaign Name</label>
+            <input type="text" id="campaign-name" placeholder="Spring Product Launch 2026..." class="w-full bg-surface-container-low rounded-xl px-4 py-2.5 text-sm text-on-surface placeholder:text-on-surface-variant/60 border-none transition-all"/>
+          </div>
+
+          <!-- Platform selector -->
+          <div class="bg-surface-container-lowest rounded-xl p-5 shadow-sm shadow-on-surface/5">
+            <label class="text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-3 block">Platforms</label>
+            <div class="flex flex-wrap gap-2">
+              <button onclick="togglePlatform(this,'x')" data-platform="x" class="platform-chip flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold bg-surface-container text-on-surface-variant transition-all hover:bg-surface-container-high">
+                <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.748l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                X
+              </button>
+              <button onclick="togglePlatform(this,'linkedin')" data-platform="linkedin" class="platform-chip flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold bg-surface-container text-on-surface-variant transition-all hover:bg-surface-container-high">
+                <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+                LinkedIn
+              </button>
+              <button onclick="togglePlatform(this,'facebook')" data-platform="facebook" class="platform-chip flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold bg-surface-container text-on-surface-variant transition-all hover:bg-surface-container-high">
+                <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                Facebook
+              </button>
+              <button onclick="togglePlatform(this,'instagram')" data-platform="instagram" class="platform-chip flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold bg-surface-container text-on-surface-variant transition-all hover:bg-surface-container-high">
+                <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+                Instagram
+              </button>
+              <button onclick="togglePlatform(this,'tiktok')" data-platform="tiktok" class="platform-chip flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold bg-surface-container text-on-surface-variant transition-all hover:bg-surface-container-high">
+                <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/></svg>
+                TikTok
+              </button>
+              <button onclick="togglePlatform(this,'youtube')" data-platform="youtube" class="platform-chip flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold bg-surface-container text-on-surface-variant transition-all hover:bg-surface-container-high" title="Requires a video file">
+                <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                YouTube
+              </button>
+            </div>
+          </div>
+
+          <!-- Text editor -->
+          <div class="bg-surface-container-lowest rounded-xl p-5 shadow-sm shadow-on-surface/5">
+            <div class="flex items-center gap-1 mb-3 pb-3 border-b border-outline-variant/20">
+              <button onclick="formatText('bold')" class="w-7 h-7 flex items-center justify-center rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" title="Bold">
+                <span class="material-symbols-outlined" style="font-size:16px">format_bold</span>
+              </button>
+              <button onclick="formatText('italic')" class="w-7 h-7 flex items-center justify-center rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" title="Italic">
+                <span class="material-symbols-outlined" style="font-size:16px">format_italic</span>
+              </button>
+              <button onclick="formatText('list')" class="w-7 h-7 flex items-center justify-center rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" title="List">
+                <span class="material-symbols-outlined" style="font-size:16px">format_list_bulleted</span>
+              </button>
+              <button onclick="formatText('link')" class="w-7 h-7 flex items-center justify-center rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" title="Link">
+                <span class="material-symbols-outlined" style="font-size:16px">link</span>
+              </button>
+              <button onclick="formatText('emoji')" class="w-7 h-7 flex items-center justify-center rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" title="Emoji">
+                <span class="material-symbols-outlined" style="font-size:16px">emoji_emotions</span>
+              </button>
+              <div class="h-4 w-px bg-outline-variant/40 mx-1"></div>
+              <button onclick="openHashtagSuggestions()" class="flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors">
+                <span class="material-symbols-outlined" style="font-size:16px">tag</span>
+                Hashtags
+              </button>
+            </div>
+
+            <textarea id="post-textarea" oninput="updateCharCount(this)" rows="6" placeholder="What's on your mind? Start typing your post..." class="w-full bg-surface-container-low rounded-xl px-4 py-3 text-sm text-on-surface placeholder:text-on-surface-variant/60 border-none resize-none min-h-[160px] focus:bg-surface-container-lowest transition-all"></textarea>
+
+            <div class="flex justify-end mt-2">
+              <span id="char-count" class="text-xs text-on-surface-variant">0 / 280</span>
+            </div>
+
+            <!-- Hashtag panel -->
+            <div id="hashtag-panel">
+              <div class="pt-3 pb-1">
+                <div class="flex items-center justify-between mb-2">
+                  <p class="text-xs font-semibold text-on-surface-variant">Suggested Hashtags</p>
+                  <button onclick="closeHashtagSuggestions()" class="text-on-surface-variant hover:text-on-surface transition-colors">
+                    <span class="material-symbols-outlined" style="font-size:16px">close</span>
+                  </button>
+                </div>
+                <div class="flex flex-wrap gap-2">
+                  <button class="htag-chip text-xs px-2.5 py-1 rounded-full bg-surface-container text-on-surface-variant hover:bg-surface-container-high transition-all" onclick="addHashtag(this)">#marketing</button>
+                  <button class="htag-chip text-xs px-2.5 py-1 rounded-full bg-surface-container text-on-surface-variant hover:bg-surface-container-high transition-all" onclick="addHashtag(this)">#socialmedia</button>
+                  <button class="htag-chip text-xs px-2.5 py-1 rounded-full bg-surface-container text-on-surface-variant hover:bg-surface-container-high transition-all" onclick="addHashtag(this)">#contentcreator</button>
+                  <button class="htag-chip text-xs px-2.5 py-1 rounded-full bg-surface-container text-on-surface-variant hover:bg-surface-container-high transition-all" onclick="addHashtag(this)">#branding</button>
+                  <button class="htag-chip text-xs px-2.5 py-1 rounded-full bg-surface-container text-on-surface-variant hover:bg-surface-container-high transition-all" onclick="addHashtag(this)">#growth</button>
+                  <button class="htag-chip text-xs px-2.5 py-1 rounded-full bg-surface-container text-on-surface-variant hover:bg-surface-container-high transition-all" onclick="addHashtag(this)">#digitalmarketing</button>
+                  <button class="htag-chip text-xs px-2.5 py-1 rounded-full bg-surface-container text-on-surface-variant hover:bg-surface-container-high transition-all" onclick="addHashtag(this)">#entrepreneur</button>
+                  <button class="htag-chip text-xs px-2.5 py-1 rounded-full bg-surface-container text-on-surface-variant hover:bg-surface-container-high transition-all" onclick="addHashtag(this)">#startup</button>
+                  <button class="htag-chip text-xs px-2.5 py-1 rounded-full bg-surface-container text-on-surface-variant hover:bg-surface-container-high transition-all" onclick="addHashtag(this)">#innovation</button>
+                  <button class="htag-chip text-xs px-2.5 py-1 rounded-full bg-surface-container text-on-surface-variant hover:bg-surface-container-high transition-all" onclick="addHashtag(this)">#ux</button>
+                  <button class="htag-chip text-xs px-2.5 py-1 rounded-full bg-surface-container text-on-surface-variant hover:bg-surface-container-high transition-all" onclick="addHashtag(this)">#design</button>
+                  <button class="htag-chip text-xs px-2.5 py-1 rounded-full bg-surface-container text-on-surface-variant hover:bg-surface-container-high transition-all" onclick="addHashtag(this)">#tech</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Media upload -->
+          <div class="bg-surface-container-lowest rounded-xl p-5 shadow-sm shadow-on-surface/5">
+            <label class="text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-3 block">Media</label>
+            <div id="upload-zone" onclick="document.getElementById('file-input').click()" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="handleDrop(event)" class="border-2 border-dashed border-outline-variant/40 rounded-xl p-6 text-center cursor-pointer transition-all hover:border-secondary/40 hover:bg-surface-container-low/30">
+              <span class="material-symbols-outlined text-on-surface-variant text-3xl block mb-2">cloud_upload</span>
+              <p class="text-sm text-on-surface-variant">Drag &amp; drop or <span class="text-secondary font-semibold">browse</span></p>
+              <p class="text-xs text-on-surface-variant/60 mt-1">PNG, JPG, GIF, MP4 up to 50MB</p>
+            </div>
+            <input type="file" id="file-input" class="hidden" accept="image/*,video/*" multiple onchange="handleFileUpload(this)"/>
+            <div id="media-previews" class="flex flex-wrap gap-3 mt-3"></div>
+          </div>
+
+          <!-- Audience & Targeting -->
+          <div class="bg-surface-container-lowest rounded-xl p-5 shadow-sm shadow-on-surface/5">
+            <label class="text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-3 block">Audience &amp; Targeting</label>
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="text-xs text-on-surface-variant mb-1 block">Age Range</label>
+                <select class="w-full bg-surface-container-low rounded-xl px-3 py-2 text-sm text-on-surface border-none appearance-none">
+                  <option>18 – 24</option>
+                  <option selected>25 – 34</option>
+                  <option>35 – 44</option>
+                  <option>45+</option>
+                </select>
+              </div>
+              <div>
+                <label class="text-xs text-on-surface-variant mb-1 block">Location</label>
+                <select class="w-full bg-surface-container-low rounded-xl px-3 py-2 text-sm text-on-surface border-none appearance-none">
+                  <option>Global</option>
+                  <option selected>United States</option>
+                  <option>Europe</option>
+                  <option>Asia Pacific</option>
+                </select>
+              </div>
+              <div>
+                <label class="text-xs text-on-surface-variant mb-1 block">Interest</label>
+                <select class="w-full bg-surface-container-low rounded-xl px-3 py-2 text-sm text-on-surface border-none appearance-none">
+                  <option selected>Technology</option>
+                  <option>Design</option>
+                  <option>Business</option>
+                  <option>Marketing</option>
+                </select>
+              </div>
+              <div>
+                <label class="text-xs text-on-surface-variant mb-1 block">Industry</label>
+                <select class="w-full bg-surface-container-low rounded-xl px-3 py-2 text-sm text-on-surface border-none appearance-none">
+                  <option selected>SaaS / Software</option>
+                  <option>E-commerce</option>
+                  <option>Media</option>
+                  <option>Finance</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Actions -->
+          <div class="flex items-center gap-3">
+            <button onclick="saveDraft()" class="flex-1 py-2.5 rounded-xl text-sm font-semibold bg-surface-container text-on-surface hover:bg-surface-container-high transition-all active:scale-95">Save Draft</button>
+            <button onclick="showScheduleModal()" class="flex-1 py-2.5 rounded-xl text-sm font-semibold bg-surface-container text-on-surface hover:bg-surface-container-high transition-all active:scale-95 flex items-center justify-center gap-1.5">
+              <span class="material-symbols-outlined" style="font-size:16px">schedule</span>
+              Schedule
+            </button>
+            <button onclick="publishNow()" class="flex-1 py-2.5 rounded-xl text-sm font-semibold btn-primary shadow-lg transition-all active:scale-95 flex items-center justify-center gap-1.5">
+              <span class="material-symbols-outlined" style="font-size:16px">send</span>
+              Publish Now
+            </button>
+          </div>
+        </div>
+
+        <!-- Right: Preview & Insights -->
+        <div class="flex flex-col gap-4">
+
+          <!-- Live Preview -->
+          <div class="bg-surface-container-lowest rounded-xl p-5 shadow-sm shadow-on-surface/5">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="font-bold text-on-surface text-sm">Live Preview</h3>
+              <div class="flex gap-1">
+                <button onclick="setPreview('x')" data-preview="x" class="preview-tab active text-xs px-2.5 py-1 rounded-lg font-medium transition-all text-on-surface-variant">X</button>
+                <button onclick="setPreview('linkedin')" data-preview="linkedin" class="preview-tab text-xs px-2.5 py-1 rounded-lg font-medium transition-all text-on-surface-variant">LinkedIn</button>
+                <button onclick="setPreview('instagram')" data-preview="instagram" class="preview-tab text-xs px-2.5 py-1 rounded-lg font-medium transition-all text-on-surface-variant">Instagram</button>
+              </div>
+            </div>
+
+            <!-- X Preview -->
+            <div id="preview-x" class="preview-content">
+              <div class="bg-surface-container-low rounded-xl p-4">
+                <div class="flex items-start gap-2.5">
+                  <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-secondary to-secondary-dim flex items-center justify-center text-on-secondary text-xs font-bold shrink-0">JM</div>
+                  <div class="flex-1">
+                    <div class="flex items-center gap-1.5 mb-1">
+                      <span class="text-sm font-bold text-on-surface">Jamie Mitchell</span>
+                      <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="#1d9bf0"><path d="M22.25 12c0-1.43-.88-2.67-2.19-3.34.46-1.39.2-2.9-.81-3.91-1.01-1.01-2.52-1.27-3.91-.81-.67-1.31-1.91-2.19-3.34-2.19-1.43 0-2.67.88-3.34 2.19-1.39-.46-2.9-.2-3.91.81-1.01 1.01-1.27 2.52-.81 3.91C2.63 9.33 1.75 10.57 1.75 12c0 1.43.88 2.67 2.19 3.34-.46 1.39-.2 2.9.81 3.91 1.01 1.01 2.52 1.27 3.91.81.67 1.31 1.91 2.19 3.34 2.19 1.43 0 2.67-.88 3.34-2.19 1.39.46 2.9.2 3.91-.81 1.01-1.01 1.27-2.52.81-3.91 1.31-.67 2.19-1.91 2.19-3.34zm-11.71 4.2L6.8 12.46l1.41-1.42 2.26 2.26 4.8-5.23 1.47 1.36-6.2 6.77z"/></svg>
+                      <span class="text-xs text-on-surface-variant">@jamie_m · now</span>
+                    </div>
+                    <p id="preview-x-text" class="text-sm text-on-surface leading-relaxed mb-3 whitespace-pre-wrap">Your post will appear here as you type...</p>
+                    <div id="preview-x-img" class="hidden mb-3">
+                      <img id="preview-x-img-src" class="w-full rounded-xl object-cover max-h-48" src="" alt="Media preview"/>
+                    </div>
+                    <div class="flex items-center gap-5 text-on-surface-variant">
+                      <button class="flex items-center gap-1 hover:text-secondary transition-colors text-xs"><span class="material-symbols-outlined" style="font-size:16px">chat_bubble</span> 0</button>
+                      <button class="flex items-center gap-1 hover:text-green-500 transition-colors text-xs"><span class="material-symbols-outlined" style="font-size:16px">repeat</span> 0</button>
+                      <button class="flex items-center gap-1 hover:text-error transition-colors text-xs"><span class="material-symbols-outlined" style="font-size:16px">favorite</span> 0</button>
+                      <button class="ml-auto hover:text-secondary transition-colors"><span class="material-symbols-outlined" style="font-size:16px">share</span></button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- LinkedIn Preview -->
+            <div id="preview-linkedin" class="preview-content hidden">
+              <div class="bg-surface-container-low rounded-xl p-4">
+                <div class="flex items-start gap-2.5 mb-3">
+                  <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-secondary to-secondary-dim flex items-center justify-center text-on-secondary text-xs font-bold shrink-0">JM</div>
+                  <div>
+                    <p class="text-sm font-bold text-on-surface">Jamie Mitchell</p>
+                    <p class="text-xs text-on-surface-variant">Marketing Director • 1st</p>
+                    <p class="text-xs text-on-surface-variant">now</p>
+                  </div>
+                </div>
+                <p id="preview-linkedin-text" class="text-sm text-on-surface leading-relaxed mb-3 whitespace-pre-wrap">Your post will appear here as you type...</p>
+                <div id="preview-linkedin-img" class="hidden mb-3">
+                  <img id="preview-linkedin-img-src" class="w-full rounded-xl object-cover max-h-48" src="" alt="Media preview"/>
+                </div>
+                <div class="border-t border-outline-variant/20 pt-3 flex items-center gap-4 text-xs text-on-surface-variant">
+                  <button class="flex items-center gap-1 hover:text-secondary transition-colors">
+                    <span class="material-symbols-outlined" style="font-size:16px">thumb_up</span> Like
+                  </button>
+                  <button class="flex items-center gap-1 hover:text-secondary transition-colors">
+                    <span class="material-symbols-outlined" style="font-size:16px">chat_bubble</span> Comment
+                  </button>
+                  <button class="flex items-center gap-1 hover:text-secondary transition-colors">
+                    <span class="material-symbols-outlined" style="font-size:16px">share</span> Share
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Instagram Preview -->
+            <div id="preview-instagram" class="preview-content hidden">
+              <div class="bg-surface-container-low rounded-xl overflow-hidden">
+                <div class="flex items-center gap-2.5 p-3">
+                  <div class="w-8 h-8 rounded-xl ig-gradient p-0.5">
+                    <div class="w-full h-full rounded-lg bg-gradient-to-br from-secondary to-secondary-dim flex items-center justify-center text-on-secondary text-xs font-bold">JM</div>
+                  </div>
+                  <div class="flex-1">
+                    <p class="text-xs font-bold text-on-surface">jamie_marketing</p>
+                  </div>
+                  <span class="material-symbols-outlined text-on-surface-variant" style="font-size:18px">more_horiz</span>
+                </div>
+                <div id="preview-ig-img" class="hidden">
+                  <img id="preview-ig-img-src" class="w-full object-cover max-h-64" src="" alt="Media preview"/>
+                </div>
+                <div id="preview-ig-placeholder" class="w-full h-40 bg-surface-container flex items-center justify-center">
+                  <span class="material-symbols-outlined text-on-surface-variant/40" style="font-size:40px">image</span>
+                </div>
+                <div class="p-3">
+                  <div class="flex items-center gap-3 mb-2 text-on-surface-variant">
+                    <button><span class="material-symbols-outlined" style="font-size:20px">favorite_border</span></button>
+                    <button><span class="material-symbols-outlined" style="font-size:20px">chat_bubble_outline</span></button>
+                    <button><span class="material-symbols-outlined" style="font-size:20px">send</span></button>
+                    <button class="ml-auto"><span class="material-symbols-outlined" style="font-size:20px">bookmark_border</span></button>
+                  </div>
+                  <p class="text-xs text-on-surface leading-relaxed"><span class="font-bold">jamie_marketing</span> <span id="preview-ig-text">Your post will appear here as you type...</span></p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Post Score -->
+          <div class="bg-surface-container-lowest rounded-xl p-5 shadow-sm shadow-on-surface/5">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="font-bold text-on-surface text-sm">Post Score</h3>
+              <div class="flex items-center gap-1.5">
+                <span id="score-badge" class="text-lg font-black text-secondary">0</span>
+                <span class="text-xs text-on-surface-variant font-medium">/ 100</span>
+              </div>
+            </div>
+            <div class="flex flex-col gap-3">
+              <div>
+                <div class="flex justify-between text-xs mb-1">
+                  <span class="text-on-surface-variant">Clarity</span>
+                  <span id="score-clarity-val" class="text-on-surface font-medium">0</span>
+                </div>
+                <div class="score-bar-track"><div id="score-clarity" class="score-bar-fill" style="width:0%"></div></div>
+              </div>
+              <div>
+                <div class="flex justify-between text-xs mb-1">
+                  <span class="text-on-surface-variant">Engagement</span>
+                  <span id="score-engagement-val" class="text-on-surface font-medium">0</span>
+                </div>
+                <div class="score-bar-track"><div id="score-engagement" class="score-bar-fill" style="width:0%"></div></div>
+              </div>
+              <div>
+                <div class="flex justify-between text-xs mb-1">
+                  <span class="text-on-surface-variant">Reach Potential</span>
+                  <span id="score-reach-val" class="text-on-surface font-medium">0</span>
+                </div>
+                <div class="score-bar-track"><div id="score-reach" class="score-bar-fill" style="width:0%"></div></div>
+              </div>
+              <div>
+                <div class="flex justify-between text-xs mb-1">
+                  <span class="text-on-surface-variant">Hashtags</span>
+                  <span id="score-hashtags-val" class="text-on-surface font-medium">0</span>
+                </div>
+                <div class="score-bar-track"><div id="score-hashtags" class="score-bar-fill" style="width:0%"></div></div>
+              </div>
+            </div>
+            <div id="score-tip" class="mt-4 p-3 bg-surface-container-low rounded-xl text-xs text-on-surface-variant leading-relaxed">
+              Start typing your post to receive optimization tips.
+            </div>
+          </div>
+
+          <!-- Best Time to Post (glassmorphism) -->
+          <div class="bg-surface-container-low/50 backdrop-blur-md rounded-xl p-5 shadow-sm shadow-on-surface/5">
+            <div class="flex items-center gap-2 mb-4">
+              <span class="material-symbols-outlined text-secondary" style="font-size:18px">schedule</span>
+              <h3 class="font-bold text-on-surface text-sm">Best Time to Post</h3>
+            </div>
+            <div class="flex flex-col gap-2">
+              <div class="flex items-center justify-between bg-surface-container-lowest rounded-xl px-3 py-2.5">
+                <div>
+                  <p class="text-xs font-semibold text-on-surface">Today 3:00 PM</p>
+                  <p class="text-[11px] text-on-surface-variant">Sat, Apr 4</p>
+                </div>
+                <span class="text-xs font-semibold text-green-600 dark:text-green-400 bg-green-100 dark:bg-green-900/30 px-2 py-0.5 rounded-full">High</span>
+              </div>
+              <div class="flex items-center justify-between bg-surface-container-lowest rounded-xl px-3 py-2.5">
+                <div>
+                  <p class="text-xs font-semibold text-on-surface">Tomorrow 9:00 AM</p>
+                  <p class="text-[11px] text-on-surface-variant">Sun, Apr 5</p>
+                </div>
+                <span class="text-xs font-semibold text-yellow-600 dark:text-yellow-400 bg-yellow-100 dark:bg-yellow-900/30 px-2 py-0.5 rounded-full">Medium</span>
+              </div>
+              <div class="flex items-center justify-between bg-surface-container-lowest rounded-xl px-3 py-2.5">
+                <div>
+                  <p class="text-xs font-semibold text-on-surface">Apr 6, 11:00 AM</p>
+                  <p class="text-[11px] text-on-surface-variant">Mon, Apr 6</p>
+                </div>
+                <span class="text-xs font-semibold text-yellow-600 dark:text-yellow-400 bg-yellow-100 dark:bg-yellow-900/30 px-2 py-0.5 rounded-full">Medium</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- CALENDAR VIEW -->
+    <div id="view-calendar" class="hidden p-5 lg:p-8 max-w-5xl mx-auto">
+
+      <div class="flex items-center justify-between mb-6">
+        <div>
+          <h1 class="text-2xl font-black text-on-surface tracking-tight">Calendar</h1>
+          <p class="text-on-surface-variant text-sm mt-1">Plan and visualize your content schedule</p>
+        </div>
+        <button onclick="switchView('compose')" class="btn-primary px-4 py-2 rounded-xl text-sm font-semibold flex items-center gap-2 shadow-lg transition-all active:scale-95">
+          <span class="material-symbols-outlined" style="font-size:16px">add</span>
+          New Post
+        </button>
+      </div>
+
+      <div class="bg-surface-container-lowest rounded-xl p-5 shadow-sm shadow-on-surface/5">
+        <div class="flex items-center justify-between mb-6">
+          <button class="w-8 h-8 flex items-center justify-center rounded-xl hover:bg-surface-container transition-colors">
+            <span class="material-symbols-outlined text-on-surface-variant" style="font-size:20px">chevron_left</span>
+          </button>
+          <h2 class="font-black text-on-surface text-lg tracking-tight">April 2026</h2>
+          <button class="w-8 h-8 flex items-center justify-center rounded-xl hover:bg-surface-container transition-colors">
+            <span class="material-symbols-outlined text-on-surface-variant" style="font-size:20px">chevron_right</span>
+          </button>
+        </div>
+
+        <div class="grid grid-cols-7 mb-2">
+          <div class="text-center text-xs font-semibold text-on-surface-variant py-2">Sun</div>
+          <div class="text-center text-xs font-semibold text-on-surface-variant py-2">Mon</div>
+          <div class="text-center text-xs font-semibold text-on-surface-variant py-2">Tue</div>
+          <div class="text-center text-xs font-semibold text-on-surface-variant py-2">Wed</div>
+          <div class="text-center text-xs font-semibold text-on-surface-variant py-2">Thu</div>
+          <div class="text-center text-xs font-semibold text-on-surface-variant py-2">Fri</div>
+          <div class="text-center text-xs font-semibold text-on-surface-variant py-2">Sat</div>
+        </div>
+
+        <div class="grid grid-cols-7">
+          <!-- Prev month days -->
+          <div class="cal-day p-1.5 min-h-[80px]"><div class="cal-day-num w-7 h-7 flex items-center justify-center text-xs font-medium text-on-surface-variant/50 rounded-full mx-auto mb-1">29</div></div>
+          <div class="cal-day p-1.5 min-h-[80px]"><div class="cal-day-num w-7 h-7 flex items-center justify-center text-xs font-medium text-on-surface-variant/50 rounded-full mx-auto mb-1">30</div></div>
+          <div class="cal-day p-1.5 min-h-[80px]"><div class="cal-day-num w-7 h-7 flex items-center justify-center text-xs font-medium text-on-surface-variant/50 rounded-full mx-auto mb-1">31</div></div>
+          <!-- Apr 1 -->
+          <div class="cal-day p-1.5 min-h-[80px]">
+            <div class="cal-day-num w-7 h-7 flex items-center justify-center text-xs font-medium text-on-surface rounded-full mx-auto mb-1">1</div>
+            <div class="text-[10px] font-medium px-1.5 py-0.5 rounded-lg mb-0.5 truncate" style="background:#0a66c2;color:#fff">LinkedIn • 9AM</div>
+          </div>
+          <!-- Apr 2 -->
+          <div class="cal-day p-1.5 min-h-[80px]">
+            <div class="cal-day-num w-7 h-7 flex items-center justify-center text-xs font-medium text-on-surface rounded-full mx-auto mb-1">2</div>
+            <div class="text-[10px] font-medium px-1.5 py-0.5 rounded-lg mb-0.5 truncate" style="background:#010101;color:#fff">TikTok • 6PM</div>
+          </div>
+          <!-- Apr 3 -->
+          <div class="cal-day p-1.5 min-h-[80px]">
+            <div class="cal-day-num w-7 h-7 flex items-center justify-center text-xs font-medium text-on-surface rounded-full mx-auto mb-1">3</div>
+            <div class="text-[10px] font-medium px-1.5 py-0.5 rounded-lg mb-0.5 truncate" style="background:#1877f2;color:#fff">Facebook • 11AM</div>
+          </div>
+          <!-- Apr 4 (today) -->
+          <div class="cal-day p-1.5 min-h-[80px] bg-secondary-container/20 rounded-xl">
+            <div class="cal-day-num w-7 h-7 flex items-center justify-center text-xs font-bold text-on-secondary bg-secondary rounded-full mx-auto mb-1">4</div>
+            <div class="text-[10px] font-medium px-1.5 py-0.5 rounded-lg mb-0.5 truncate" style="background:linear-gradient(90deg,#f09433,#dc2743,#bc1888);color:#fff">Instagram • 3PM</div>
+          </div>
+          <!-- Week 2 -->
+          <div class="cal-day p-1.5 min-h-[80px]"><div class="cal-day-num w-7 h-7 flex items-center justify-center text-xs font-medium text-on-surface rounded-full mx-auto mb-1">5</div></div>
+          <div class="cal-day p-1.5 min-h-[80px]">
+            <div class="cal-day-num w-7 h-7 flex items-center justify-center text-xs font-medium text-on-surface rounded-full mx-auto mb-1">6</div>
+            <div class="text-[10px] font-medium px-1.5 py-0.5 rounded-lg mb-0.5 truncate" style="background:#000;color:#fff">X Thread • 9AM</div>
+            <div class="text-[10px] font-medium px-1.5 py-0.5 rounded-lg mb-0.5 truncate" style="background:#0a66c2;color:#fff">LinkedIn • 2PM</div>
+          </div>
+          <div class="cal-day p-1.5 min-h-[80px]"><div class="cal-day-num w-7 h-7 flex items-center justify-center text-xs font-medium text-on-surface rounded-full mx-auto mb-1">7</div></div>
+          <div class="cal-day p-1.5 min-h-[80px]">
+            <div class="cal-day-num w-7 h-7 flex items-center justify-center text-xs font-medium text-on-surface rounded-full mx-auto mb-1">8</div>
+            <div class="text-[10px] font-medium px-1.5 py-0.5 rounded-lg mb-0.5 truncate" style="background:linear-gradient(90deg,#f09433,#dc2743,#bc1888);color:#fff">IG Reel • 5PM</div>
+          </div>
+          <div class="cal-day p-1.5 min-h-[80px]">
+            <div class="cal-day-num w-7 h-7 flex items-center justify-center text-xs font-medium text-on-surface rounded-full mx-auto mb-1">9</div>
+            <div class="text-[10px] font-medium px-1.5 py-0.5 rounded-lg mb-0.5 truncate" style="background:#010101;color:#fff">TikTok • 7PM</div>
+          </div>
+          <div class="cal-day p-1.5 min-h-[80px]"><div class="cal-day-num w-7 h-7 flex items-center justify-center text-xs font-medium text-on-surface rounded-full mx-auto mb-1">10</div></div>
+          <div class="cal-day p-1.5 min-h-[80px]">
+            <div class="cal-day-num w-7 h-7 flex items-center justify-center text-xs font-medium text-on-surface rounded-full mx-auto mb-1">11</div>
+            <div class="text-[10px] font-medium px-1.5 py-0.5 rounded-lg mb-0.5 truncate" style="background:#1877f2;color:#fff">FB Ad • 10AM</div>
+          </div>
+          <!-- Week 3 -->
+          <div class="cal-day p-1.5 min-h-[80px]"><div class="cal-day-num w-7 h-7 flex items-center justify-center text-xs font-medium text-on-surface rounded-full mx-auto mb-1">12</div></div>
+          <div class="cal-day p-1.5 min-h-[80px]">
+            <div class="cal-day-num w-7 h-7 flex items-center justify-center text-xs font-medium text-on-surface rounded-full mx-auto mb-1">13</div>
+            <div class="text-[10px] font-medium px-1.5 py-0.5 rounded-lg mb-0.5 truncate" style="background:#0a66c2;color:#fff">LinkedIn • 8AM</div>
+          </div>
+          <div class="cal-day p-1.5 min-h-[80px]">
+            <div class="cal-day-num w-7 h-7 flex items-center justify-center text-xs font-medium text-on-surface rounded-full mx-auto mb-1">14</div>
+            <div class="text-[10px] font-medium px-1.5 py-0.5 rounded-lg mb-0.5 truncate" style="background:#000;color:#fff">X Poll • 12PM</div>
+          </div>
+          <div class="cal-day p-1.5 min-h-[80px]"><div class="cal-day-num w-7 h-7 flex items-center justify-center text-xs font-medium text-on-surface rounded-full mx-auto mb-1">15</div></div>
+          <div class="cal-day p-1.5 min-h-[80px]">
+            <div class="cal-day-num w-7 h-7 flex items-center justify-center text-xs font-medium text-on-surface rounded-full mx-auto mb-1">16</div>
+            <div class="text-[10px] font-medium px-1.5 py-0.5 rounded-lg mb-0.5 truncate" style="background:linear-gradient(90deg,#f09433,#dc2743,#bc1888);color:#fff">IG Story • 3PM</div>
+            <div class="text-[10px] font-medium px-1.5 py-0.5 rounded-lg mb-0.5 truncate" style="background:#010101;color:#fff">TikTok • 6PM</div>
+          </div>
+          <div class="cal-day p-1.5 min-h-[80px]"><div class="cal-day-num w-7 h-7 flex items-center justify-center text-xs font-medium text-on-surface rounded-full mx-auto mb-1">17</div></div>
+          <div class="cal-day p-1.5 min-h-[80px]"><div class="cal-day-num w-7 h-7 flex items-center justify-center text-xs font-medium text-on-surface rounded-full mx-auto mb-1">18</div></div>
+          <!-- Week 4 -->
+          <div class="cal-day p-1.5 min-h-[80px]"><div class="cal-day-num w-7 h-7 flex items-center justify-center text-xs font-medium text-on-surface rounded-full mx-auto mb-1">19</div></div>
+          <div class="cal-day p-1.5 min-h-[80px]">
+            <div class="cal-day-num w-7 h-7 flex items-center justify-center text-xs font-medium text-on-surface rounded-full mx-auto mb-1">20</div>
+            <div class="text-[10px] font-medium px-1.5 py-0.5 rounded-lg mb-0.5 truncate" style="background:#0a66c2;color:#fff">LinkedIn • 9AM</div>
+          </div>
+          <div class="cal-day p-1.5 min-h-[80px]">
+            <div class="cal-day-num w-7 h-7 flex items-center justify-center text-xs font-medium text-on-surface rounded-full mx-auto mb-1">21</div>
+            <div class="text-[10px] font-medium px-1.5 py-0.5 rounded-lg mb-0.5 truncate" style="background:#1877f2;color:#fff">Facebook • 1PM</div>
+          </div>
+          <div class="cal-day p-1.5 min-h-[80px]"><div class="cal-day-num w-7 h-7 flex items-center justify-center text-xs font-medium text-on-surface rounded-full mx-auto mb-1">22</div></div>
+          <div class="cal-day p-1.5 min-h-[80px]">
+            <div class="cal-day-num w-7 h-7 flex items-center justify-center text-xs font-medium text-on-surface rounded-full mx-auto mb-1">23</div>
+            <div class="text-[10px] font-medium px-1.5 py-0.5 rounded-lg mb-0.5 truncate" style="background:#000;color:#fff">X Thread • 4PM</div>
+          </div>
+          <div class="cal-day p-1.5 min-h-[80px]">
+            <div class="cal-day-num w-7 h-7 flex items-center justify-center text-xs font-medium text-on-surface rounded-full mx-auto mb-1">24</div>
+            <div class="text-[10px] font-medium px-1.5 py-0.5 rounded-lg mb-0.5 truncate" style="background:linear-gradient(90deg,#f09433,#dc2743,#bc1888);color:#fff">IG Carousel • 2PM</div>
+          </div>
+          <div class="cal-day p-1.5 min-h-[80px]">
+            <div class="cal-day-num w-7 h-7 flex items-center justify-center text-xs font-medium text-on-surface rounded-full mx-auto mb-1">25</div>
+            <div class="text-[10px] font-medium px-1.5 py-0.5 rounded-lg mb-0.5 truncate" style="background:#010101;color:#fff">TikTok • 7PM</div>
+          </div>
+          <!-- Week 5 -->
+          <div class="cal-day p-1.5 min-h-[80px]"><div class="cal-day-num w-7 h-7 flex items-center justify-center text-xs font-medium text-on-surface rounded-full mx-auto mb-1">26</div></div>
+          <div class="cal-day p-1.5 min-h-[80px]">
+            <div class="cal-day-num w-7 h-7 flex items-center justify-center text-xs font-medium text-on-surface rounded-full mx-auto mb-1">27</div>
+            <div class="text-[10px] font-medium px-1.5 py-0.5 rounded-lg mb-0.5 truncate" style="background:#0a66c2;color:#fff">LinkedIn • 8AM</div>
+          </div>
+          <div class="cal-day p-1.5 min-h-[80px]"><div class="cal-day-num w-7 h-7 flex items-center justify-center text-xs font-medium text-on-surface rounded-full mx-auto mb-1">28</div></div>
+          <div class="cal-day p-1.5 min-h-[80px]"><div class="cal-day-num w-7 h-7 flex items-center justify-center text-xs font-medium text-on-surface rounded-full mx-auto mb-1">29</div></div>
+          <div class="cal-day p-1.5 min-h-[80px]">
+            <div class="cal-day-num w-7 h-7 flex items-center justify-center text-xs font-medium text-on-surface rounded-full mx-auto mb-1">30</div>
+            <div class="text-[10px] font-medium px-1.5 py-0.5 rounded-lg mb-0.5 truncate" style="background:#1877f2;color:#fff">FB Campaign • 12PM</div>
+          </div>
+          <!-- Next month days -->
+          <div class="cal-day p-1.5 min-h-[80px]"><div class="cal-day-num w-7 h-7 flex items-center justify-center text-xs font-medium text-on-surface-variant/50 rounded-full mx-auto mb-1">1</div></div>
+          <div class="cal-day p-1.5 min-h-[80px]"><div class="cal-day-num w-7 h-7 flex items-center justify-center text-xs font-medium text-on-surface-variant/50 rounded-full mx-auto mb-1">2</div></div>
+        </div>
+      </div>
+
+      <div class="mt-4 flex flex-wrap gap-3">
+        <div class="flex items-center gap-2 text-xs text-on-surface-variant">
+          <div class="w-3 h-3 rounded-sm bg-black dark:bg-white"></div> X
+        </div>
+        <div class="flex items-center gap-2 text-xs text-on-surface-variant">
+          <div class="w-3 h-3 rounded-sm" style="background:#0a66c2"></div> LinkedIn
+        </div>
+        <div class="flex items-center gap-2 text-xs text-on-surface-variant">
+          <div class="w-3 h-3 rounded-sm" style="background:#1877f2"></div> Facebook
+        </div>
+        <div class="flex items-center gap-2 text-xs text-on-surface-variant">
+          <div class="w-3 h-3 rounded-sm ig-gradient"></div> Instagram
+        </div>
+        <div class="flex items-center gap-2 text-xs text-on-surface-variant">
+          <div class="w-3 h-3 rounded-sm" style="background:#010101"></div> TikTok
+        </div>
+      </div>
+    </div>
+
+    <!-- ANALYTICS VIEW -->
+    <div id="view-analytics" class="hidden p-5 lg:p-8 max-w-7xl mx-auto">
+
+      <div class="flex items-center justify-between mb-6 flex-wrap gap-3">
+        <div>
+          <h1 class="text-2xl font-black text-on-surface tracking-tight">Analytics</h1>
+          <p class="text-on-surface-variant text-sm mt-1">Performance insights across all platforms</p>
+        </div>
+        <div class="flex gap-2 flex-wrap">
+          <button onclick="setDateRange(this)" class="range-chip active text-xs px-3 py-1.5 rounded-full font-medium transition-all">Last 7 days</button>
+          <button onclick="setDateRange(this)" class="range-chip text-xs px-3 py-1.5 rounded-full font-medium bg-surface-container text-on-surface-variant transition-all hover:bg-surface-container-high">Last 30 days</button>
+          <button onclick="setDateRange(this)" class="range-chip hidden sm:block text-xs px-3 py-1.5 rounded-full font-medium bg-surface-container text-on-surface-variant transition-all hover:bg-surface-container-high">Last 90 days</button>
+          <button onclick="setDateRange(this)" class="range-chip hidden sm:block text-xs px-3 py-1.5 rounded-full font-medium bg-surface-container text-on-surface-variant transition-all hover:bg-surface-container-high">Custom</button>
+        </div>
+      </div>
+
+      <!-- Overview stats -->
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <div class="bg-surface-container-lowest rounded-xl p-5 shadow-sm shadow-on-surface/5">
+          <div class="flex items-start justify-between mb-3">
+            <span class="material-symbols-outlined text-on-surface-variant" style="font-size:20px">visibility</span>
+            <span class="text-xs font-semibold text-green-600 dark:text-green-400 bg-green-100 dark:bg-green-900/30 px-2 py-0.5 rounded-full">+24%</span>
+          </div>
+          <p class="text-2xl font-black text-on-surface tracking-tight">2.4M</p>
+          <p class="text-xs text-on-surface-variant mt-0.5">Impressions</p>
+        </div>
+        <div class="bg-surface-container-lowest rounded-xl p-5 shadow-sm shadow-on-surface/5">
+          <div class="flex items-start justify-between mb-3">
+            <span class="material-symbols-outlined text-on-surface-variant" style="font-size:20px">link</span>
+            <span class="text-xs font-semibold text-green-600 dark:text-green-400 bg-green-100 dark:bg-green-900/30 px-2 py-0.5 rounded-full">+11%</span>
+          </div>
+          <p class="text-2xl font-black text-on-surface tracking-tight">18.6k</p>
+          <p class="text-xs text-on-surface-variant mt-0.5">Link Clicks</p>
+        </div>
+        <div class="bg-surface-container-lowest rounded-xl p-5 shadow-sm shadow-on-surface/5">
+          <div class="flex items-start justify-between mb-3">
+            <span class="material-symbols-outlined text-on-surface-variant" style="font-size:20px">person_add</span>
+            <span class="text-xs font-semibold text-green-600 dark:text-green-400 bg-green-100 dark:bg-green-900/30 px-2 py-0.5 rounded-full">+8%</span>
+          </div>
+          <p class="text-2xl font-black text-on-surface tracking-tight">+1,247</p>
+          <p class="text-xs text-on-surface-variant mt-0.5">New Followers</p>
+        </div>
+        <div class="bg-surface-container-lowest rounded-xl p-5 shadow-sm shadow-on-surface/5">
+          <div class="flex items-start justify-between mb-3">
+            <span class="material-symbols-outlined text-on-surface-variant" style="font-size:20px">ads_click</span>
+            <span class="text-xs font-semibold text-error bg-red-100 dark:bg-red-900/30 px-2 py-0.5 rounded-full">-0.3%</span>
+          </div>
+          <p class="text-2xl font-black text-on-surface tracking-tight">3.8%</p>
+          <p class="text-xs text-on-surface-variant mt-0.5">Avg CTR</p>
+        </div>
+      </div>
+
+      <!-- Two-column -->
+      <div class="grid grid-cols-1 xl:grid-cols-2 gap-6 mb-6">
+
+        <!-- Platform Breakdown -->
+        <div class="bg-surface-container-lowest rounded-xl p-5 shadow-sm shadow-on-surface/5">
+          <h3 class="font-bold text-on-surface mb-5">Platform Breakdown</h3>
+          <div class="flex flex-col gap-4">
+            <div>
+              <div class="flex items-center justify-between text-xs mb-1.5">
+                <div class="flex items-center gap-2">
+                  <div class="w-5 h-5 rounded bg-[#010101] flex items-center justify-center">
+                    <svg class="w-3 h-3 fill-white" viewBox="0 0 24 24"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/></svg>
+                  </div>
+                  <span class="font-medium text-on-surface">TikTok</span>
+                </div>
+                <span class="text-on-surface-variant">48.2k reach</span>
+              </div>
+              <div class="h-2 bg-surface-container-high rounded-full overflow-hidden">
+                <div class="analytics-bar" style="background:#010101;width:88%"></div>
+              </div>
+            </div>
+            <div>
+              <div class="flex items-center justify-between text-xs mb-1.5">
+                <div class="flex items-center gap-2">
+                  <div class="w-5 h-5 rounded ig-gradient flex items-center justify-center">
+                    <svg class="w-3 h-3 fill-white" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+                  </div>
+                  <span class="font-medium text-on-surface">Instagram</span>
+                </div>
+                <span class="text-on-surface-variant">34.1k reach</span>
+              </div>
+              <div class="h-2 bg-surface-container-high rounded-full overflow-hidden">
+                <div class="analytics-bar" style="background:linear-gradient(90deg,#f09433,#dc2743,#bc1888);width:70%"></div>
+              </div>
+            </div>
+            <div>
+              <div class="flex items-center justify-between text-xs mb-1.5">
+                <div class="flex items-center gap-2">
+                  <div class="w-5 h-5 rounded flex items-center justify-center" style="background:#0a66c2">
+                    <svg class="w-3 h-3 fill-white" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+                  </div>
+                  <span class="font-medium text-on-surface">LinkedIn</span>
+                </div>
+                <span class="text-on-surface-variant">24.7k reach</span>
+              </div>
+              <div class="h-2 bg-surface-container-high rounded-full overflow-hidden">
+                <div class="analytics-bar" style="background:#0a66c2;width:52%"></div>
+              </div>
+            </div>
+            <div>
+              <div class="flex items-center justify-between text-xs mb-1.5">
+                <div class="flex items-center gap-2">
+                  <div class="w-5 h-5 rounded bg-black dark:bg-white flex items-center justify-center">
+                    <svg class="w-3 h-3 fill-white dark:fill-black" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.748l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                  </div>
+                  <span class="font-medium text-on-surface">X</span>
+                </div>
+                <span class="text-on-surface-variant">10.8k reach</span>
+              </div>
+              <div class="h-2 bg-surface-container-high rounded-full overflow-hidden">
+                <div class="analytics-bar" style="background:#000;width:28%"></div>
+              </div>
+            </div>
+            <div>
+              <div class="flex items-center justify-between text-xs mb-1.5">
+                <div class="flex items-center gap-2">
+                  <div class="w-5 h-5 rounded flex items-center justify-center" style="background:#1877f2">
+                    <svg class="w-3 h-3 fill-white" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                  </div>
+                  <span class="font-medium text-on-surface">Facebook</span>
+                </div>
+                <span class="text-on-surface-variant">6.7k reach</span>
+              </div>
+              <div class="h-2 bg-surface-container-high rounded-full overflow-hidden">
+                <div class="analytics-bar" style="background:#1877f2;width:18%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Top Posts This Week -->
+        <div class="bg-surface-container-lowest rounded-xl p-5 shadow-sm shadow-on-surface/5">
+          <h3 class="font-bold text-on-surface mb-5">Top Posts This Week</h3>
+          <div class="flex flex-col gap-4">
+            <div class="flex items-start gap-3">
+              <div class="w-7 h-7 rounded-xl bg-secondary-container flex items-center justify-center text-on-secondary-container text-xs font-black shrink-0">1</div>
+              <div class="flex-1">
+                <div class="flex items-center gap-1.5 mb-0.5">
+                  <div class="w-4 h-4 rounded bg-[#010101] flex items-center justify-center shrink-0">
+                    <svg class="w-2.5 h-2.5 fill-white" viewBox="0 0 24 24"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/></svg>
+                  </div>
+                  <p class="text-sm font-semibold text-on-surface">Day in the life: design process POV</p>
+                </div>
+                <div class="flex items-center gap-3 text-xs text-on-surface-variant mt-1">
+                  <span>14.2k likes</span>
+                  <span>328 comments</span>
+                  <span class="ml-auto font-semibold text-secondary">88% reach</span>
+                </div>
+              </div>
+            </div>
+            <div class="flex items-start gap-3">
+              <div class="w-7 h-7 rounded-xl bg-surface-container flex items-center justify-center text-on-surface-variant text-xs font-black shrink-0">2</div>
+              <div class="flex-1">
+                <div class="flex items-center gap-1.5 mb-0.5">
+                  <div class="w-4 h-4 rounded ig-gradient flex items-center justify-center shrink-0">
+                    <svg class="w-2.5 h-2.5 fill-white" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+                  </div>
+                  <p class="text-sm font-semibold text-on-surface">Behind the scenes: Our team at work</p>
+                </div>
+                <div class="flex items-center gap-3 text-xs text-on-surface-variant mt-1">
+                  <span>2.4k likes</span>
+                  <span>187 comments</span>
+                  <span class="ml-auto font-semibold text-secondary">62% reach</span>
+                </div>
+              </div>
+            </div>
+            <div class="flex items-start gap-3">
+              <div class="w-7 h-7 rounded-xl bg-surface-container flex items-center justify-center text-on-surface-variant text-xs font-black shrink-0">3</div>
+              <div class="flex-1">
+                <div class="flex items-center gap-1.5 mb-0.5">
+                  <div class="w-4 h-4 rounded flex items-center justify-center shrink-0" style="background:#0a66c2">
+                    <svg class="w-2.5 h-2.5 fill-white" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+                  </div>
+                  <p class="text-sm font-semibold text-on-surface">5 Lessons from Scaling to 100k Users</p>
+                </div>
+                <div class="flex items-center gap-3 text-xs text-on-surface-variant mt-1">
+                  <span>1.8k likes</span>
+                  <span>94 comments</span>
+                  <span class="ml-auto font-semibold text-secondary">45% reach</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Engagement Over Time -->
+      <div class="bg-surface-container-lowest rounded-xl p-5 shadow-sm shadow-on-surface/5">
+        <div class="flex items-center justify-between mb-6">
+          <h3 class="font-bold text-on-surface">Engagement Over Time</h3>
+          <div class="flex items-center gap-4 text-xs text-on-surface-variant">
+            <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-sm inline-block" style="background:var(--secondary)"></span>Likes</span>
+            <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-sm bg-surface-container-highest inline-block"></span>Shares</span>
+            <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-sm bg-surface-container-high inline-block"></span>Comments</span>
+          </div>
+        </div>
+        <div class="flex items-end gap-3 h-40">
+          <div class="flex-1 flex flex-col items-center gap-1">
+            <div class="w-full flex flex-col items-center justify-end gap-px" style="height:120px">
+              <div class="w-full rounded-t-sm" style="height:18px;background:var(--surface-container-high)"></div>
+              <div class="w-full" style="height:24px;background:var(--surface-container-highest)"></div>
+              <div class="w-full rounded-sm" style="height:58px;background:var(--secondary)"></div>
+            </div>
+            <span class="text-[10px] text-on-surface-variant">Sat</span>
+          </div>
+          <div class="flex-1 flex flex-col items-center gap-1">
+            <div class="w-full flex flex-col items-center justify-end gap-px" style="height:120px">
+              <div class="w-full rounded-t-sm" style="height:12px;background:var(--surface-container-high)"></div>
+              <div class="w-full" style="height:16px;background:var(--surface-container-highest)"></div>
+              <div class="w-full rounded-sm" style="height:36px;background:var(--secondary)"></div>
+            </div>
+            <span class="text-[10px] text-on-surface-variant">Sun</span>
+          </div>
+          <div class="flex-1 flex flex-col items-center gap-1">
+            <div class="w-full flex flex-col items-center justify-end gap-px" style="height:120px">
+              <div class="w-full rounded-t-sm" style="height:22px;background:var(--surface-container-high)"></div>
+              <div class="w-full" style="height:28px;background:var(--surface-container-highest)"></div>
+              <div class="w-full rounded-sm" style="height:68px;background:var(--secondary)"></div>
+            </div>
+            <span class="text-[10px] text-on-surface-variant">Mon</span>
+          </div>
+          <div class="flex-1 flex flex-col items-center gap-1">
+            <div class="w-full flex flex-col items-center justify-end gap-px" style="height:120px">
+              <div class="w-full rounded-t-sm" style="height:16px;background:var(--surface-container-high)"></div>
+              <div class="w-full" style="height:22px;background:var(--surface-container-highest)"></div>
+              <div class="w-full rounded-sm" style="height:52px;background:var(--secondary)"></div>
+            </div>
+            <span class="text-[10px] text-on-surface-variant">Tue</span>
+          </div>
+          <div class="flex-1 flex flex-col items-center gap-1">
+            <div class="w-full flex flex-col items-center justify-end gap-px" style="height:120px">
+              <div class="w-full rounded-t-sm" style="height:26px;background:var(--surface-container-high)"></div>
+              <div class="w-full" style="height:34px;background:var(--surface-container-highest)"></div>
+              <div class="w-full rounded-sm" style="height:80px;background:var(--secondary)"></div>
+            </div>
+            <span class="text-[10px] text-on-surface-variant">Wed</span>
+          </div>
+          <div class="flex-1 flex flex-col items-center gap-1">
+            <div class="w-full flex flex-col items-center justify-end gap-px" style="height:120px">
+              <div class="w-full rounded-t-sm" style="height:20px;background:var(--surface-container-high)"></div>
+              <div class="w-full" style="height:28px;background:var(--surface-container-highest)"></div>
+              <div class="w-full rounded-sm" style="height:62px;background:var(--secondary)"></div>
+            </div>
+            <span class="text-[10px] text-on-surface-variant">Thu</span>
+          </div>
+          <div class="flex-1 flex flex-col items-center gap-1">
+            <div class="w-full flex flex-col items-center justify-end gap-px" style="height:120px">
+              <div class="w-full rounded-t-sm" style="height:14px;background:var(--surface-container-high)"></div>
+              <div class="w-full" style="height:20px;background:var(--surface-container-highest)"></div>
+              <div class="w-full rounded-sm" style="height:44px;background:var(--secondary)"></div>
+            </div>
+            <span class="text-[10px] text-on-surface-variant">Fri</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- SCHEDULE MODAL -->
+<div id="schedule-modal" class="hidden fixed inset-0 z-[100] flex items-center justify-center">
+  <div class="absolute inset-0 bg-on-surface/30 backdrop-blur-sm" onclick="closeScheduleModal()"></div>
+  <div class="relative bg-surface-container-lowest rounded-2xl p-6 shadow-2xl w-full max-w-sm mx-4 z-10">
+    <div class="flex items-center justify-between mb-5">
+      <h2 class="font-black text-on-surface text-lg tracking-tight">Schedule Post</h2>
+      <button onclick="closeScheduleModal()" class="w-7 h-7 flex items-center justify-center rounded-xl hover:bg-surface-container transition-colors text-on-surface-variant">
+        <span class="material-symbols-outlined" style="font-size:18px">close</span>
+      </button>
+    </div>
+    <div class="flex flex-col gap-4">
+      <div>
+        <label class="text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-1.5 block">Date</label>
+        <input type="date" value="2026-04-06" class="w-full bg-surface-container-low rounded-xl px-4 py-2.5 text-sm text-on-surface border-none"/>
+      </div>
+      <div>
+        <label class="text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-1.5 block">Time</label>
+        <input type="time" value="09:00" class="w-full bg-surface-container-low rounded-xl px-4 py-2.5 text-sm text-on-surface border-none"/>
+      </div>
+      <div>
+        <label class="text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-1.5 block">Timezone</label>
+        <select class="w-full bg-surface-container-low rounded-xl px-4 py-2.5 text-sm text-on-surface border-none appearance-none">
+          <option>Eastern Time (ET)</option>
+          <option>Pacific Time (PT)</option>
+          <option>Central Time (CT)</option>
+          <option>UTC</option>
+        </select>
+      </div>
+    </div>
+    <div class="flex gap-3 mt-6">
+      <button onclick="closeScheduleModal()" class="flex-1 py-2.5 rounded-xl text-sm font-semibold bg-surface-container text-on-surface hover:bg-surface-container-high transition-all active:scale-95">Cancel</button>
+      <button onclick="confirmSchedule()" class="flex-1 py-2.5 rounded-xl text-sm font-semibold btn-primary shadow-lg transition-all active:scale-95">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast" class="toast-hidden fixed bottom-6 right-6 z-[200] flex items-center gap-3 bg-on-surface text-surface-container-lowest px-4 py-3 rounded-xl shadow-xl">
+  <span class="material-symbols-outlined ms-fill text-green-400" style="font-size:20px">check_circle</span>
+  <span id="toast-msg" class="text-sm font-medium">Action completed</span>
+</div>
+
+<!-- MOBILE BOTTOM NAV -->
+<nav class="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-surface-container-lowest/90 backdrop-blur-xl border-t border-outline-variant/20">
+  <div class="flex items-center justify-around h-16 px-2">
+    <button onclick="switchView('dashboard')" data-mobile="dashboard" class="flex flex-col items-center gap-0.5 flex-1 h-full justify-center text-secondary">
+      <span class="material-symbols-outlined ms-fill" style="font-size:22px">grid_view</span>
+      <span class="text-[10px] font-medium">Dashboard</span>
+    </button>
+    <button onclick="switchView('compose')" data-mobile="compose" class="flex flex-col items-center gap-0.5 flex-1 h-full justify-center text-on-surface-variant">
+      <span class="material-symbols-outlined" style="font-size:22px">edit_note</span>
+      <span class="text-[10px] font-medium">Compose</span>
+    </button>
+    <button onclick="switchView('compose')" class="btn-primary w-12 h-12 rounded-full flex items-center justify-center shadow-lg -mt-5 shrink-0">
+      <span class="material-symbols-outlined" style="font-size:22px">add</span>
+    </button>
+    <button onclick="switchView('calendar')" data-mobile="calendar" class="flex flex-col items-center gap-0.5 flex-1 h-full justify-center text-on-surface-variant">
+      <span class="material-symbols-outlined" style="font-size:22px">calendar_month</span>
+      <span class="text-[10px] font-medium">Calendar</span>
+    </button>
+    <button onclick="switchView('analytics')" data-mobile="analytics" class="flex flex-col items-center gap-0.5 flex-1 h-full justify-center text-on-surface-variant">
+      <span class="material-symbols-outlined" style="font-size:22px">analytics</span>
+      <span class="text-[10px] font-medium">Analytics</span>
+    </button>
+  </div>
+</nav>
+
+<div class="lg:hidden h-20"></div>
+
+<!-- JAVASCRIPT -->
+<!-- ============================================================
+     AI ASSIST SLIDE-IN PANEL
+     ============================================================ -->
+<div id="ai-panel" class="fixed top-0 right-0 h-full w-full sm:w-96 z-50 transform translate-x-full transition-transform duration-300 ease-out flex flex-col bg-surface shadow-2xl shadow-on-surface/20">
+  <!-- Header -->
+  <div class="flex items-center justify-between px-5 py-4 bg-surface-container-low/80 backdrop-blur-md shrink-0">
+    <div class="flex items-center gap-2">
+      <span class="material-symbols-outlined text-secondary" style="font-size:20px">auto_awesome</span>
+      <h2 class="font-bold text-on-surface text-sm">AI Assist</h2>
+      <span class="text-[11px] text-on-surface-variant bg-surface-container px-2 py-0.5 rounded-full font-medium">Claude</span>
+    </div>
+    <button onclick="closeAiPanel()" class="w-8 h-8 flex items-center justify-center rounded-xl hover:bg-surface-container transition-colors text-on-surface-variant">
+      <span class="material-symbols-outlined" style="font-size:18px">close</span>
+    </button>
+  </div>
+
+  <!-- Tabs -->
+  <div class="flex gap-1 px-4 pt-3 pb-2 shrink-0">
+    <button onclick="setAiTab('generate')" id="ai-tab-generate" class="ai-tab flex-1 py-2 rounded-xl text-xs font-semibold transition-all bg-surface-container text-on-surface">Generate</button>
+    <button onclick="setAiTab('improve')" id="ai-tab-improve" class="ai-tab flex-1 py-2 rounded-xl text-xs font-semibold transition-all text-on-surface-variant hover:bg-surface-container-low">Improve</button>
+    <button onclick="setAiTab('adapt')" id="ai-tab-adapt" class="ai-tab flex-1 py-2 rounded-xl text-xs font-semibold transition-all text-on-surface-variant hover:bg-surface-container-low">Adapt</button>
+  </div>
+
+  <!-- Scrollable content -->
+  <div class="flex-1 overflow-y-auto p-4 flex flex-col gap-4">
+
+    <!-- GENERATE TAB -->
+    <div id="ai-content-generate" class="ai-tab-content flex flex-col gap-3">
+      <div>
+        <label class="text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-1.5 block">Topic</label>
+        <input type="text" id="ai-topic" placeholder="e.g. New product launch, Q2 results…" class="w-full bg-surface-container-low rounded-xl px-4 py-2.5 text-sm text-on-surface placeholder:text-on-surface-variant/60 border-none transition-all focus:bg-surface-container-lowest"/>
+      </div>
+      <div>
+        <label class="text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-1.5 block">Tone (optional)</label>
+        <input type="text" id="ai-tone" placeholder="e.g. Inspiring, Witty, Urgent…" class="w-full bg-surface-container-low rounded-xl px-4 py-2.5 text-sm text-on-surface placeholder:text-on-surface-variant/60 border-none transition-all focus:bg-surface-container-lowest"/>
+      </div>
+      <div>
+        <label class="text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-1.5 block">Platform</label>
+        <select id="ai-platform" class="w-full bg-surface-container-low rounded-xl px-4 py-2.5 text-sm text-on-surface border-none appearance-none cursor-pointer">
+          <option value="linkedin">LinkedIn</option>
+          <option value="x">X / Twitter</option>
+          <option value="instagram">Instagram</option>
+          <option value="facebook">Facebook</option>
+          <option value="tiktok">TikTok</option>
+          <option value="youtube">YouTube</option>
+        </select>
+      </div>
+      <div>
+        <label class="text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-1.5 block">Keywords (optional)</label>
+        <input type="text" id="ai-keywords" placeholder="e.g. innovation, AI, future…" class="w-full bg-surface-container-low rounded-xl px-4 py-2.5 text-sm text-on-surface placeholder:text-on-surface-variant/60 border-none transition-all focus:bg-surface-container-lowest"/>
+      </div>
+      <button onclick="aiGenerate()" class="w-full py-2.5 rounded-xl text-sm font-semibold btn-primary shadow-lg transition-all active:scale-95 flex items-center justify-center gap-2">
+        <span class="material-symbols-outlined" style="font-size:16px">auto_awesome</span>
+        Generate Post
+      </button>
+    </div>
+
+    <!-- IMPROVE TAB -->
+    <div id="ai-content-improve" class="ai-tab-content hidden flex flex-col gap-3">
+      <p class="text-xs text-on-surface-variant bg-surface-container-low rounded-xl px-4 py-3 leading-relaxed">Claude will improve whatever is currently in your compose editor.</p>
+      <div>
+        <label class="text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-1.5 block">Focus instruction (optional)</label>
+        <input type="text" id="ai-instruction" placeholder="e.g. Make it punchier, add a CTA…" class="w-full bg-surface-container-low rounded-xl px-4 py-2.5 text-sm text-on-surface placeholder:text-on-surface-variant/60 border-none transition-all focus:bg-surface-container-lowest"/>
+      </div>
+      <div>
+        <label class="text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-1.5 block">Platform</label>
+        <select id="ai-improve-platform" class="w-full bg-surface-container-low rounded-xl px-4 py-2.5 text-sm text-on-surface border-none appearance-none cursor-pointer">
+          <option value="linkedin">LinkedIn</option>
+          <option value="x">X / Twitter</option>
+          <option value="instagram">Instagram</option>
+          <option value="facebook">Facebook</option>
+          <option value="tiktok">TikTok</option>
+          <option value="youtube">YouTube</option>
+        </select>
+      </div>
+      <button onclick="aiImprove()" class="w-full py-2.5 rounded-xl text-sm font-semibold btn-primary shadow-lg transition-all active:scale-95 flex items-center justify-center gap-2">
+        <span class="material-symbols-outlined" style="font-size:16px">edit_note</span>
+        Improve Post
+      </button>
+    </div>
+
+    <!-- ADAPT TAB -->
+    <div id="ai-content-adapt" class="ai-tab-content hidden flex flex-col gap-3">
+      <p class="text-xs text-on-surface-variant bg-surface-container-low rounded-xl px-4 py-3 leading-relaxed">Rewrite your current post for a different platform's style, length, and tone.</p>
+      <div>
+        <label class="text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-1.5 block">Target Platform</label>
+        <select id="ai-adapt-platform" class="w-full bg-surface-container-low rounded-xl px-4 py-2.5 text-sm text-on-surface border-none appearance-none cursor-pointer">
+          <option value="x">X / Twitter</option>
+          <option value="linkedin">LinkedIn</option>
+          <option value="instagram">Instagram</option>
+          <option value="facebook">Facebook</option>
+          <option value="tiktok">TikTok</option>
+          <option value="youtube">YouTube</option>
+        </select>
+      </div>
+      <button onclick="aiAdapt()" class="w-full py-2.5 rounded-xl text-sm font-semibold btn-primary shadow-lg transition-all active:scale-95 flex items-center justify-center gap-2">
+        <span class="material-symbols-outlined" style="font-size:16px">sync_alt</span>
+        Adapt Post
+      </button>
+    </div>
+
+    <!-- Shared output area -->
+    <div id="ai-output-area" class="hidden flex flex-col gap-3">
+      <div class="flex items-center gap-2">
+        <span class="material-symbols-outlined text-secondary" id="ai-spinner" style="font-size:16px;animation:spin 1s linear infinite">progress_activity</span>
+        <p class="text-xs font-semibold text-on-surface-variant" id="ai-output-label">Generating…</p>
+      </div>
+      <div id="ai-output-text" class="bg-surface-container-low rounded-xl p-4 text-sm text-on-surface leading-relaxed min-h-[100px] whitespace-pre-wrap"></div>
+      <div class="flex gap-2">
+        <button onclick="useAiPost()" id="ai-use-btn" class="hidden flex-1 py-2.5 rounded-xl text-sm font-semibold btn-primary shadow-lg transition-all active:scale-95 flex items-center justify-center gap-2">
+          <span class="material-symbols-outlined" style="font-size:16px">check</span>
+          Use this post
+        </button>
+        <button onclick="aiSuggestHashtags()" id="ai-hashtags-btn" class="hidden flex-1 py-2.5 rounded-xl text-sm font-semibold bg-surface-container text-on-surface hover:bg-surface-container-high transition-all active:scale-95 flex items-center justify-center gap-2">
+          <span class="material-symbols-outlined" style="font-size:14px">tag</span>
+          Hashtags
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>
+<!-- AI panel backdrop -->
+<div id="ai-backdrop" class="fixed inset-0 z-40 bg-on-surface/20 backdrop-blur-sm hidden" onclick="closeAiPanel()"></div>
+
+<style>
+@keyframes spin { from { transform: rotate(0deg) } to { transform: rotate(360deg) } }
+</style>
+
+<script>
+  const BACKEND = '' // served from same origin
+
+  // Tracks which platforms are currently selected in the compose view
+  const activePlatforms = new Set()
+
+  // View switching
+  function switchView(view) {
+    var views = ['dashboard', 'compose', 'calendar', 'analytics'];
+    views.forEach(function(v) {
+      var el = document.getElementById('view-' + v);
+      if (el) el.classList.toggle('hidden', v !== view);
+    });
+
+    document.querySelectorAll('.header-tab').forEach(function(btn) {
+      var isActive = btn.dataset.view === view;
+      btn.classList.toggle('active', isActive);
+      btn.classList.toggle('text-on-surface-variant', !isActive);
+    });
+
+    document.querySelectorAll('.sidebar-link').forEach(function(btn) {
+      var isActive = btn.dataset.sidebar === view;
+      btn.classList.toggle('active', isActive);
+      btn.classList.toggle('text-on-surface-variant', !isActive);
+    });
+
+    document.querySelectorAll('[data-mobile]').forEach(function(btn) {
+      var isActive = btn.dataset.mobile === view;
+      btn.classList.toggle('text-secondary', isActive);
+      btn.classList.toggle('text-on-surface-variant', !isActive);
+      var icon = btn.querySelector('.material-symbols-outlined');
+      if (icon) {
+        if (isActive) { icon.classList.add('ms-fill'); }
+        else { icon.classList.remove('ms-fill'); }
+      }
+    });
+  }
+
+  // Dark mode toggle
+  function toggleDark() {
+    var html = document.documentElement;
+    var isDark = html.classList.toggle('dark');
+    html.classList.toggle('light', !isDark);
+    var icon = document.getElementById('dark-icon');
+    if (icon) icon.textContent = isDark ? 'light_mode' : 'dark_mode';
+  }
+
+  // Platform chip toggle
+  function togglePlatform(btn, platform) {
+    var isActive = btn.classList.contains('active-' + platform);
+    if (isActive) {
+      btn.classList.remove('active-' + platform);
+      activePlatforms.delete(platform);
+    } else {
+      btn.classList.add('active-' + platform);
+      activePlatforms.add(platform);
+    }
+    updateScore(document.getElementById('post-textarea').value);
+  }
+
+  // Character count and live preview sync
+  function updateCharCount(textarea) {
+    var len = textarea.value.length;
+    var el = document.getElementById('char-count');
+    if (el) {
+      el.textContent = len + ' / 280';
+      el.classList.toggle('text-error', len > 280);
+    }
+    var displayText = textarea.value || 'Your post will appear here as you type...';
+    var ids = ['preview-x-text', 'preview-linkedin-text', 'preview-ig-text'];
+    ids.forEach(function(id) {
+      var node = document.getElementById(id);
+      if (node) node.textContent = displayText;
+    });
+    updateScore(textarea.value);
+  }
+
+  // Post score calculation
+  function updateScore(text) {
+    if (!text || text.length === 0) {
+      setScoreBar('clarity', 0);
+      setScoreBar('engagement', 0);
+      setScoreBar('reach', 0);
+      setScoreBar('hashtags', 0);
+      var badge = document.getElementById('score-badge');
+      if (badge) badge.textContent = '0';
+      var tip = document.getElementById('score-tip');
+      if (tip) tip.textContent = 'Start typing your post to receive optimization tips.';
+      return;
+    }
+
+    var words = text.trim().split(/\s+/).filter(Boolean);
+    var wordCount = words.length;
+    var charCount = text.length;
+    var hashtagMatches = text.match(/#\w+/g);
+    var hashtagCount = hashtagMatches ? hashtagMatches.length : 0;
+    var emojiMatches = text.match(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/gu);
+    var emojiCount = emojiMatches ? emojiMatches.length : 0;
+    var hasQuestion = /\?/.test(text);
+    var ctaWords = ['click', 'share', 'follow', 'like', 'comment', 'tag', 'subscribe', 'visit', 'check', 'discover', 'learn', 'join', 'get', 'try', 'download'];
+    var textLower = text.toLowerCase();
+    var hasCTA = ctaWords.some(function(w) { return textLower.indexOf(w) !== -1; });
+    var hasLink = /https?:\/\/|bit\.ly|link\.bio/.test(text);
+
+    var clarity = 0;
+    if (wordCount >= 5) clarity += 20;
+    if (wordCount >= 15) clarity += 25;
+    if (wordCount >= 25) clarity += 20;
+    if (charCount <= 280) clarity += 15;
+    if (wordCount > 5 && wordCount < 80) clarity += 20;
+    clarity = Math.min(clarity, 100);
+
+    var engagement = 0;
+    if (emojiCount >= 1) engagement += 25;
+    if (emojiCount >= 3) engagement += 15;
+    if (hasQuestion) engagement += 25;
+    if (hasCTA) engagement += 25;
+    if (wordCount >= 20) engagement += 10;
+    engagement = Math.min(engagement, 100);
+
+    var reach = 0;
+    if (hashtagCount >= 1) reach += 20;
+    if (hashtagCount >= 3) reach += 20;
+    if (hashtagCount >= 5) reach += 15;
+    if (hasLink) reach += 20;
+    var activePlatformCount = document.querySelectorAll('.platform-chip[class*="active-"]').length;
+    reach += activePlatformCount * 5;
+    if (wordCount >= 10) reach += 10;
+    reach = Math.min(reach, 100);
+
+    var hashScore = 0;
+    if (hashtagCount === 0) { hashScore = 0; }
+    else if (hashtagCount <= 3) { hashScore = 40 + hashtagCount * 15; }
+    else if (hashtagCount <= 7) { hashScore = 80 + (hashtagCount - 3) * 3; }
+    else { hashScore = Math.max(60, 95 - (hashtagCount - 7) * 5); }
+    hashScore = Math.min(hashScore, 100);
+
+    setScoreBar('clarity', Math.round(clarity));
+    setScoreBar('engagement', Math.round(engagement));
+    setScoreBar('reach', Math.round(reach));
+    setScoreBar('hashtags', Math.round(hashScore));
+
+    var total = Math.round((clarity + engagement + reach + hashScore) / 4);
+    var badge = document.getElementById('score-badge');
+    if (badge) badge.textContent = String(total);
+
+    var tip = document.getElementById('score-tip');
+    if (tip) {
+      if (total < 30) { tip.textContent = 'Add some emojis and a question to boost engagement.'; }
+      else if (!hasCTA) { tip.textContent = 'Try adding a call-to-action like "Click the link" or "Share your thoughts" to increase clicks.'; }
+      else if (hashtagCount === 0) { tip.textContent = 'Add 3-5 relevant hashtags to expand your reach significantly.'; }
+      else if (hashtagCount > 10) { tip.textContent = 'Too many hashtags can look spammy. Aim for 3-7 targeted hashtags.'; }
+      else if (!hasQuestion) { tip.textContent = 'End with a question to drive comments and boost algorithm visibility.'; }
+      else { tip.textContent = 'Great post! Your content is well-optimized for engagement and reach.'; }
+    }
+  }
+
+  function setScoreBar(metric, value) {
+    var bar = document.getElementById('score-' + metric);
+    var val = document.getElementById('score-' + metric + '-val');
+    if (bar) bar.style.width = value + '%';
+    if (val) val.textContent = String(value);
+  }
+
+  // Preview platform switching
+  function setPreview(platform) {
+    document.querySelectorAll('.preview-content').forEach(function(el) {
+      el.classList.add('hidden');
+    });
+    var target = document.getElementById('preview-' + platform);
+    if (target) target.classList.remove('hidden');
+
+    document.querySelectorAll('.preview-tab').forEach(function(btn) {
+      var isActive = btn.dataset.preview === platform;
+      btn.classList.toggle('active', isActive);
+      btn.classList.toggle('text-on-surface-variant', !isActive);
+    });
+  }
+
+  // File upload — uses safe DOM manipulation, no innerHTML with external data
+  function handleFileUpload(input) {
+    processFiles(Array.from(input.files));
+  }
+
+  function handleDrop(event) {
+    event.preventDefault();
+    document.getElementById('upload-zone').classList.remove('drag-over');
+    processFiles(Array.from(event.dataTransfer.files));
+  }
+
+  function processFiles(files) {
+    var container = document.getElementById('media-previews');
+    files.forEach(function(file) {
+      if (!file.type.startsWith('image/') && !file.type.startsWith('video/')) return;
+      var url = URL.createObjectURL(file);
+
+      // Build thumbnail using safe DOM methods only
+      var thumb = document.createElement('div');
+      thumb.className = 'relative rounded-xl overflow-hidden';
+      thumb.style.width = '80px';
+      thumb.style.height = '80px';
+
+      if (file.type.startsWith('image/')) {
+        var img = document.createElement('img');
+        img.src = url;
+        img.className = 'w-full h-full object-cover';
+        img.alt = 'Upload preview';
+        thumb.appendChild(img);
+      } else {
+        var vid = document.createElement('video');
+        vid.src = url;
+        vid.className = 'w-full h-full object-cover';
+        vid.muted = true;
+        thumb.appendChild(vid);
+      }
+
+      var removeBtn = document.createElement('button');
+      removeBtn.className = 'absolute top-0.5 right-0.5 w-5 h-5 rounded-full flex items-center justify-center';
+      removeBtn.style.cssText = 'background:rgba(0,0,0,0.6);color:#fff;font-size:12px;';
+      removeBtn.textContent = '×';
+      removeBtn.setAttribute('aria-label', 'Remove media');
+      removeBtn.addEventListener('click', function() {
+        thumb.remove();
+        clearPreviews();
+      });
+      thumb.appendChild(removeBtn);
+      container.appendChild(thumb);
+
+      // Update live previews with image
+      if (file.type.startsWith('image/')) {
+        ['x', 'linkedin'].forEach(function(p) {
+          var imgEl = document.getElementById('preview-' + p + '-img');
+          var imgSrc = document.getElementById('preview-' + p + '-img-src');
+          if (imgEl && imgSrc) {
+            imgSrc.src = url;
+            imgEl.classList.remove('hidden');
+          }
+        });
+        var igImg = document.getElementById('preview-ig-img');
+        var igSrc = document.getElementById('preview-ig-img-src');
+        var igPh = document.getElementById('preview-ig-placeholder');
+        if (igImg && igSrc) {
+          igSrc.src = url;
+          igImg.classList.remove('hidden');
+        }
+        if (igPh) igPh.classList.add('hidden');
+      }
+    });
+  }
+
+  function clearPreviews() {
+    ['x', 'linkedin'].forEach(function(p) {
+      var imgEl = document.getElementById('preview-' + p + '-img');
+      if (imgEl) imgEl.classList.add('hidden');
+    });
+    var igImg = document.getElementById('preview-ig-img');
+    var igPh = document.getElementById('preview-ig-placeholder');
+    if (igImg) igImg.classList.add('hidden');
+    if (igPh) igPh.classList.remove('hidden');
+  }
+
+  // Hashtag suggestions
+  function openHashtagSuggestions() {
+    var panel = document.getElementById('hashtag-panel');
+    if (panel) panel.classList.add('open');
+  }
+
+  function closeHashtagSuggestions() {
+    var panel = document.getElementById('hashtag-panel');
+    if (panel) panel.classList.remove('open');
+  }
+
+  function addHashtag(btn) {
+    if (btn.classList.contains('added')) return;
+    btn.classList.add('added');
+    var hashtag = btn.textContent.trim();
+    var textarea = document.getElementById('post-textarea');
+    if (textarea) {
+      var text = textarea.value;
+      var needsSpace = text.length > 0 && text[text.length - 1] !== ' ' && text[text.length - 1] !== '\n';
+      textarea.value = text + (needsSpace ? ' ' : '') + hashtag + ' ';
+      updateCharCount(textarea);
+      textarea.focus();
+      textarea.selectionStart = textarea.selectionEnd = textarea.value.length;
+    }
+  }
+
+  // Formatting toolbar
+  function formatText(type) {
+    var textarea = document.getElementById('post-textarea');
+    if (!textarea) return;
+    var start = textarea.selectionStart;
+    var end = textarea.selectionEnd;
+    var selected = textarea.value.substring(start, end);
+    var insert = '';
+    if (type === 'bold') insert = '*' + (selected || 'bold text') + '*';
+    else if (type === 'italic') insert = '_' + (selected || 'italic text') + '_';
+    else if (type === 'list') insert = '\n\u2022 ' + (selected || 'list item');
+    else if (type === 'link') insert = (selected || 'text') + ' [https://]';
+    else if (type === 'emoji') {
+      var emojis = ['\uD83D\uDE80', '\u2728', '\uD83D\uDCA1', '\uD83C\uDFAF', '\uD83D\uDCC8', '\uD83D\uDD25', '\uD83D\uDCAA', '\uD83D\uDC4B', '\uD83C\uDF1F', '\u2764\uFE0F'];
+      insert = emojis[Math.floor(Math.random() * emojis.length)];
+    }
+    textarea.value = textarea.value.substring(0, start) + insert + textarea.value.substring(end);
+    textarea.selectionStart = textarea.selectionEnd = start + insert.length;
+    textarea.focus();
+    updateCharCount(textarea);
+  }
+
+  // Schedule modal
+  function showScheduleModal() {
+    var modal = document.getElementById('schedule-modal');
+    if (modal) modal.classList.remove('hidden');
+  }
+
+  function closeScheduleModal() {
+    var modal = document.getElementById('schedule-modal');
+    if (modal) modal.classList.add('hidden');
+  }
+
+  async function confirmSchedule() {
+    const text = document.getElementById('post-textarea').value.trim()
+    if (!text) { showToast('Write something first!'); return }
+
+    const dateEl = document.querySelector('#schedule-modal input[type="date"]')
+    const timeEl = document.querySelector('#schedule-modal input[type="time"]')
+    const scheduledAt = new Date(`${dateEl.value}T${timeEl.value}`).toISOString()
+
+    try {
+      const fd = new FormData()
+      fd.append('text', text)
+      fd.append('platforms', JSON.stringify([...activePlatforms]))
+      fd.append('scheduledAt', scheduledAt)
+      const campaignInput = document.getElementById('campaign-name')
+      if (campaignInput && campaignInput.value.trim()) fd.append('campaignName', campaignInput.value.trim())
+      const fileInput = document.getElementById('file-input')
+      if (fileInput.files[0]) fd.append('media', fileInput.files[0])
+
+      const res = await fetch(`${BACKEND}/api/schedule`, { method: 'POST', body: fd })
+      const data = await res.json()
+      closeScheduleModal()
+      showToast(data.ok ? 'Scheduled for ' + dateEl.value + ' ' + timeEl.value : 'Schedule failed')
+    } catch (e) {
+      showToast('Cannot reach backend. Is it running?')
+    }
+  }
+
+  async function publishNow() {
+    const text = document.getElementById('post-textarea').value.trim()
+    if (!text) { showToast('Write something first!'); return }
+    if (!activePlatforms.size) { showToast('Select at least one platform'); return }
+
+    const btn = document.querySelector('[onclick="publishNow()"]')
+    if (btn) { btn.textContent = 'Publishing…'; btn.disabled = true }
+
+    try {
+      const fd = new FormData()
+      fd.append('text', text)
+      fd.append('platforms', JSON.stringify([...activePlatforms]))
+      const fileInput = document.getElementById('file-input')
+      if (fileInput.files[0]) fd.append('media', fileInput.files[0])
+
+      const res = await fetch(`${BACKEND}/api/publish`, { method: 'POST', body: fd })
+      const data = await res.json()
+
+      const ok = Object.keys(data.results || {})
+      const fail = Object.keys(data.errors || {})
+      if (ok.length) showToast('Published to: ' + ok.join(', '))
+      else showToast('Failed: ' + Object.values(data.errors)[0])
+    } catch (e) {
+      showToast('Cannot reach backend. Is it running?')
+    } finally {
+      if (btn) { btn.textContent = 'Publish Now'; btn.disabled = false }
+    }
+  }
+
+  function saveDraft() {
+    showToast('Draft saved successfully!');
+  }
+
+  // Toast
+  var toastTimer = null;
+  function showToast(msg) {
+    var toast = document.getElementById('toast');
+    var msgEl = document.getElementById('toast-msg');
+    if (!toast || !msgEl) return;
+    msgEl.textContent = msg;
+    toast.classList.remove('toast-hidden');
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(function() {
+      toast.classList.add('toast-hidden');
+    }, 3500);
+  }
+
+  // Date range chips
+  function setDateRange(btn) {
+    document.querySelectorAll('.range-chip').forEach(function(c) {
+      c.classList.remove('active');
+      if (!c.classList.contains('active')) {
+        c.style.background = '';
+        c.style.color = '';
+      }
+    });
+    btn.classList.add('active');
+  }
+
+  // OAuth connection status — polls /auth/status and lights up sidebar dots
+  async function checkConnectionStatus() {
+    try {
+      const res = await fetch(`${BACKEND}/auth/status`)
+      const status = await res.json()
+      var platforms = ['x', 'linkedin', 'facebook', 'instagram', 'tiktok', 'youtube']
+      platforms.forEach(function(p) {
+        var dot = document.getElementById('status-dot-' + p)
+        if (!dot) return
+        if (status[p]) {
+          dot.classList.remove('bg-surface-container-highest', 'bg-yellow-400')
+          dot.classList.add('bg-green-500')
+        } else {
+          dot.classList.remove('bg-green-500', 'bg-yellow-400')
+          dot.classList.add('bg-surface-container-highest')
+        }
+      })
+    } catch (e) { /* backend not running — silent */ }
+  }
+
+  // Open OAuth popup for a given platform
+  function connectPlatform(platform) {
+    var urls = {
+      x: `${BACKEND}/auth/x`,
+      linkedin: `${BACKEND}/auth/linkedin`,
+      facebook: `${BACKEND}/auth/facebook`,
+      instagram: `${BACKEND}/auth/facebook`, // Instagram shares Facebook OAuth
+      tiktok: `${BACKEND}/auth/tiktok`,
+      youtube: `${BACKEND}/auth/youtube`
+    }
+    var url = urls[platform]
+    if (!url) return
+    window.open(url, 'oauth', 'width=600,height=700,scrollbars=yes')
+  }
+
+  // Initialise on load
+  window.addEventListener('DOMContentLoaded', function() {
+    checkConnectionStatus()
+    // Refresh connection status after an OAuth popup closes successfully
+    window.addEventListener('message', function(e) {
+      if (e.data === 'oauth-success') checkConnectionStatus()
+    })
+  })
+
+  // ============================================================
+  // AI ASSIST PANEL
+  // ============================================================
+  var aiCurrentText = ''
+
+  function openAiPanel() {
+    document.getElementById('ai-panel').classList.remove('translate-x-full')
+    document.getElementById('ai-backdrop').classList.remove('hidden')
+  }
+
+  function closeAiPanel() {
+    document.getElementById('ai-panel').classList.add('translate-x-full')
+    document.getElementById('ai-backdrop').classList.add('hidden')
+  }
+
+  function setAiTab(tab) {
+    document.querySelectorAll('.ai-tab').forEach(function(t) {
+      t.classList.remove('bg-surface-container', 'text-on-surface')
+      t.classList.add('text-on-surface-variant')
+    })
+    document.querySelectorAll('.ai-tab-content').forEach(function(c) {
+      c.classList.add('hidden')
+    })
+    var activeTab = document.getElementById('ai-tab-' + tab)
+    if (activeTab) {
+      activeTab.classList.remove('text-on-surface-variant')
+      activeTab.classList.add('bg-surface-container', 'text-on-surface')
+    }
+    var activeContent = document.getElementById('ai-content-' + tab)
+    if (activeContent) activeContent.classList.remove('hidden')
+    document.getElementById('ai-output-area').classList.add('hidden')
+    aiCurrentText = ''
+  }
+
+  async function aiStream(endpoint, body) {
+    var outputArea = document.getElementById('ai-output-area')
+    var outputText = document.getElementById('ai-output-text')
+    var spinner   = document.getElementById('ai-spinner')
+    var useBtn    = document.getElementById('ai-use-btn')
+    var hashBtn   = document.getElementById('ai-hashtags-btn')
+    var label     = document.getElementById('ai-output-label')
+
+    outputArea.classList.remove('hidden')
+    outputText.textContent = ''
+    spinner.style.display = 'inline'
+    useBtn.classList.add('hidden')
+    hashBtn.classList.add('hidden')
+    label.textContent = 'Generating\u2026'
+    aiCurrentText = ''
+
+    try {
+      var res = await fetch(BACKEND + '/api/ai/' + endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      })
+
+      if (!res.ok) {
+        var errData = await res.json().catch(function() { return {} })
+        outputText.textContent = 'Error: ' + (errData.error || res.statusText)
+        spinner.style.display = 'none'
+        label.textContent = 'Error'
+        return
+      }
+
+      var reader  = res.body.getReader()
+      var decoder = new TextDecoder()
+      var buffer  = ''
+
+      while (true) {
+        var chunk = await reader.read()
+        if (chunk.done) break
+        buffer += decoder.decode(chunk.value, { stream: true })
+        var lines = buffer.split('\n')
+        buffer = lines.pop()
+        for (var i = 0; i < lines.length; i++) {
+          var line = lines[i]
+          if (!line.startsWith('data: ')) continue
+          var payload = line.slice(6)
+          if (payload === '[DONE]') {
+            spinner.style.display = 'none'
+            label.textContent = 'Done'
+            useBtn.classList.remove('hidden')
+            hashBtn.classList.remove('hidden')
+            return
+          }
+          try {
+            var parsed = JSON.parse(payload)
+            if (parsed.error) {
+              outputText.textContent = 'Error: ' + parsed.error
+              spinner.style.display = 'none'
+              label.textContent = 'Error'
+              return
+            }
+            if (parsed.text) {
+              aiCurrentText += parsed.text
+              outputText.textContent = aiCurrentText
+            }
+          } catch (e) {}
+        }
+      }
+    } catch (e) {
+      outputText.textContent = 'Cannot reach backend. Is it running?'
+      spinner.style.display = 'none'
+      label.textContent = 'Error'
+    }
+  }
+
+  function aiGenerate() {
+    var topic = document.getElementById('ai-topic').value.trim()
+    if (!topic) { showToast('Enter a topic first'); return }
+    aiStream('generate', {
+      topic:    topic,
+      tone:     document.getElementById('ai-tone').value.trim(),
+      platform: document.getElementById('ai-platform').value,
+      keywords: document.getElementById('ai-keywords').value.trim()
+    })
+  }
+
+  function aiImprove() {
+    var text = document.getElementById('post-textarea').value.trim()
+    if (!text) { showToast('Write something in the composer first'); return }
+    aiStream('improve', {
+      text:        text,
+      instruction: document.getElementById('ai-instruction').value.trim(),
+      platform:    document.getElementById('ai-improve-platform').value
+    })
+  }
+
+  function aiAdapt() {
+    var text = document.getElementById('post-textarea').value.trim()
+    if (!text) { showToast('Write something in the composer first'); return }
+    aiStream('adapt', {
+      text:           text,
+      targetPlatform: document.getElementById('ai-adapt-platform').value
+    })
+  }
+
+  function useAiPost() {
+    var textarea = document.getElementById('post-textarea')
+    if (textarea && aiCurrentText) {
+      textarea.value = aiCurrentText
+      updateCharCount(textarea)
+      closeAiPanel()
+      showToast('AI post applied to composer!')
+    }
+  }
+
+  async function aiSuggestHashtags() {
+    var sourceText = aiCurrentText || document.getElementById('post-textarea').value.trim()
+    if (!sourceText) { showToast('No text to suggest hashtags for'); return }
+
+    var btn = document.getElementById('ai-hashtags-btn')
+    if (btn) { btn.disabled = true; btn.textContent = 'Loading\u2026' }
+
+    try {
+      var res = await fetch(BACKEND + '/api/ai/hashtags', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          text: sourceText,
+          platform: document.getElementById('ai-platform').value || 'linkedin'
+        })
+      })
+      var data = await res.json()
+      if (data.hashtags && data.hashtags.length) {
+        var joined = data.hashtags.join(' ')
+        if (aiCurrentText) {
+          aiCurrentText = aiCurrentText.trimEnd() + '\n\n' + joined
+          document.getElementById('ai-output-text').textContent = aiCurrentText
+        } else {
+          var textarea = document.getElementById('post-textarea')
+          textarea.value = textarea.value.trimEnd() + '\n\n' + joined
+          updateCharCount(textarea)
+        }
+        showToast('Hashtags added!')
+      } else {
+        showToast('No hashtags returned')
+      }
+    } catch (e) {
+      showToast('Cannot reach backend')
+    } finally {
+      if (btn) { btn.disabled = false; btn.textContent = '# Hashtags' }
+    }
+  }
+</script>
+</body>
+</html>

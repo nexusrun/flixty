@@ -1,0 +1,47 @@
+{
+  "tokens": {},
+  "posts": [
+    {
+      "text": "Drop you build URL",
+      "platforms": [
+        "facebook"
+      ],
+      "mediaUrl": null,
+      "results": {},
+      "errors": {
+        "facebook": "Not connected — visit /auth/facebook"
+      },
+      "id": 1775411596419,
+      "createdAt": "2026-04-05T17:53:16.419Z"
+    },
+    {
+      "text": "Drop you build URL",
+      "platforms": [
+        "x",
+        "facebook"
+      ],
+      "mediaUrl": null,
+      "results": {},
+      "errors": {
+        "x": "Not connected — visit /auth/x",
+        "facebook": "Not connected — visit /auth/facebook"
+      },
+      "id": 1775411589589,
+      "createdAt": "2026-04-05T17:53:09.589Z"
+    },
+    {
+      "text": "Drop you build URL",
+      "platforms": [
+        "x"
+      ],
+      "mediaUrl": null,
+      "results": {},
+      "errors": {
+        "x": "Not connected — visit /auth/x"
+      },
+      "id": 1775410946039,
+      "createdAt": "2026-04-05T17:42:26.039Z"
+    }
+  ],
+  "scheduled": []
+}
