@@ -3,7 +3,7 @@ import axios from 'axios'
 const APP_ID = process.env.FB_APP_ID
 const APP_SECRET = process.env.FB_APP_SECRET
 const REDIRECT_URI = `${process.env.BASE_URL}/auth/facebook/callback`
-const SCOPES = ['pages_manage_posts', 'pages_read_engagement', 'instagram_content_publish', 'instagram_manage_posts']
+const SCOPES = ['pages_manage_posts', 'pages_read_engagement', 'instagram_content_publish']
 
 export function getAuthUrl(state) {
   const p = new URLSearchParams({
