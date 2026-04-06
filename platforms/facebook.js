@@ -5,7 +5,7 @@ import FormData from 'form-data'
 const APP_ID = process.env.FB_APP_ID
 const APP_SECRET = process.env.FB_APP_SECRET
 const REDIRECT_URI = `${process.env.BASE_URL}/auth/facebook/callback`
-const SCOPES = ['pages_show_list', 'pages_manage_posts', 'pages_read_engagement', 'instagram_content_publish']
+const SCOPES = ['pages_show_list', 'pages_manage_posts', 'pages_read_engagement', 'instagram_content_publish', 'publish_video']
 
 export function getAuthUrl(state) {
   const p = new URLSearchParams({
