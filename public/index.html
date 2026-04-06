@@ -328,6 +328,25 @@
       }
     }
 
+    /* Mobile sidebar drawer */
+    #sidebar {
+      transform: translateX(-100%);
+      transition: transform 0.28s cubic-bezier(.4,0,.2,1);
+    }
+    @media (min-width: 1024px) {
+      #sidebar { transform: translateX(0) !important; }
+    }
+    #sidebar.open { transform: translateX(0); }
+    #mobile-overlay {
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.28s ease;
+    }
+    #mobile-overlay.open { opacity: 1; pointer-events: auto; }
+
+    /* Bottom nav active tab */
+    .bottom-tab.active svg, .bottom-tab.active span { color: #00e5cc; }
+    .bottom-tab.active .bottom-tab-dot { background: #00e5cc; }
+
     .live-pulse {
       width: 8px; height: 8px; border-radius: 50%;
       background: #ff4444;
@@ -455,6 +474,10 @@
   <header class="fixed top-0 w-full z-50 bg-[#0a0a0e]/90 backdrop-blur-xl border-b border-outline-variant/30">
     <div class="flex items-center h-16 px-4 lg:px-6 gap-4 max-w-screen-2xl mx-auto">
 
+      <button onclick="toggleMobileMenu()" class="lg:hidden w-8 h-8 flex items-center justify-center rounded-xl hover:bg-surface-container-low transition-colors shrink-0">
+        <span class="material-symbols-outlined text-on-surface-variant" style="font-size:22px">menu</span>
+      </button>
+
       <div class="flex items-center gap-3 shrink-0">
         <img src="/LFITX.png" alt="LFITX" class="h-8 w-auto object-contain" />
         <span
@@ -504,11 +527,14 @@
     </div>
   </header>
 
+  <!-- Mobile overlay (behind drawer) -->
+  <div id="mobile-overlay" class="fixed inset-0 z-30 lg:hidden" style="background:rgba(0,0,0,0.55)" onclick="closeMobileMenu()"></div>
+
   <!-- LAYOUT WRAPPER -->
   <div class="flex pt-16 min-h-screen">
 
-    <!-- LEFT SIDEBAR -->
-    <aside class="hidden lg:flex flex-col h-screen w-60 fixed left-0 top-0 pt-16 bg-surface-container-low z-40">
+    <!-- LEFT SIDEBAR / MOBILE DRAWER -->
+    <aside id="sidebar" class="flex flex-col h-screen w-64 fixed left-0 top-0 pt-16 z-40" style="background:#0d1018;border-right:1px solid rgba(0,229,204,0.10)">
       <div class="flex flex-col flex-1 p-4 gap-1 overflow-y-auto">
 
         <nav class="flex flex-col gap-0.5 mt-2">
@@ -629,7 +655,7 @@
     </aside>
 
     <!-- MAIN CONTENT -->
-    <main class="flex-1 lg:ml-60 min-h-screen">
+    <main class="flex-1 lg:ml-64 min-h-screen pb-20 lg:pb-0">
 
       <!-- DASHBOARD VIEW -->
       <div id="view-dashboard" class="p-5 lg:p-8 max-w-7xl mx-auto">
@@ -2277,16 +2303,20 @@
         btn.classList.toggle('text-on-surface-variant', !isActive);
       });
 
-      document.querySelectorAll('[data-mobile]').forEach(function (btn) {
-        var isActive = btn.dataset.mobile === view;
-        btn.classList.toggle('text-secondary', isActive);
-        btn.classList.toggle('text-on-surface-variant', !isActive);
-        var icon = btn.querySelector('.material-symbols-outlined');
-        if (icon) {
-          if (isActive) { icon.classList.add('ms-fill'); }
-          else { icon.classList.remove('ms-fill'); }
+      // Bottom nav active state
+      document.querySelectorAll('.bottom-tab').forEach(function (btn) {
+        var isActive = btn.dataset.bottom === view;
+        btn.classList.toggle('active', isActive);
+        if (isActive) {
+          btn.style.color = '#00e5cc';
+        } else {
+          btn.style.color = '';
+          btn.classList.add('text-on-surface-variant');
         }
       });
+
+      // Close mobile drawer when navigating
+      closeMobileMenu()
 
       if (view === 'live') loadLiveHistory();
     }
@@ -3981,7 +4011,60 @@
         })
       } catch (_) {}
     }
+
+    // ── Mobile menu ──────────────────────────────────────────────────────────
+    function toggleMobileMenu() {
+      var sidebar = document.getElementById('sidebar')
+      var overlay = document.getElementById('mobile-overlay')
+      var isOpen  = sidebar.classList.contains('open')
+      if (isOpen) { closeMobileMenu() } else {
+        sidebar.classList.add('open')
+        overlay.classList.add('open')
+        document.body.style.overflow = 'hidden'
+      }
+    }
+    function closeMobileMenu() {
+      document.getElementById('sidebar').classList.remove('open')
+      document.getElementById('mobile-overlay').classList.remove('open')
+      document.body.style.overflow = ''
+    }
   </script>
+
+  <!-- BOTTOM NAVIGATION (mobile only) -->
+  <nav class="fixed bottom-0 left-0 right-0 z-40 lg:hidden flex items-center justify-around px-2 py-1 safe-area-inset-bottom"
+    style="background:#0a0a0e;border-top:1px solid rgba(255,255,255,0.07);height:60px">
+
+    <button onclick="switchView('dashboard')" data-bottom="dashboard"
+      class="bottom-tab active flex flex-col items-center justify-center gap-0.5 flex-1 py-1 rounded-xl transition-colors">
+      <span class="material-symbols-outlined" style="font-size:22px;color:inherit">grid_view</span>
+      <span class="text-[10px] font-medium" style="color:inherit">Home</span>
+    </button>
+
+    <button onclick="switchView('compose')" data-bottom="compose"
+      class="bottom-tab flex flex-col items-center justify-center gap-0.5 flex-1 py-1 rounded-xl transition-colors text-on-surface-variant">
+      <span class="material-symbols-outlined" style="font-size:22px;color:inherit">edit_note</span>
+      <span class="text-[10px] font-medium" style="color:inherit">Compose</span>
+    </button>
+
+    <button onclick="switchView('calendar')" data-bottom="calendar"
+      class="bottom-tab flex flex-col items-center justify-center gap-0.5 flex-1 py-1 rounded-xl transition-colors text-on-surface-variant">
+      <span class="material-symbols-outlined" style="font-size:22px;color:inherit">calendar_month</span>
+      <span class="text-[10px] font-medium" style="color:inherit">Calendar</span>
+    </button>
+
+    <button onclick="switchView('analytics')" data-bottom="analytics"
+      class="bottom-tab flex flex-col items-center justify-center gap-0.5 flex-1 py-1 rounded-xl transition-colors text-on-surface-variant">
+      <span class="material-symbols-outlined" style="font-size:22px;color:inherit">analytics</span>
+      <span class="text-[10px] font-medium" style="color:inherit">Analytics</span>
+    </button>
+
+    <button onclick="switchView('live')" data-bottom="live"
+      class="bottom-tab flex flex-col items-center justify-center gap-0.5 flex-1 py-1 rounded-xl transition-colors text-on-surface-variant">
+      <span class="material-symbols-outlined" style="font-size:22px;color:inherit">podcasts</span>
+      <span class="text-[10px] font-medium" style="color:inherit">Live</span>
+    </button>
+
+  </nav>
 </body>
 
 </html>
