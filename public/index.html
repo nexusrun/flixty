@@ -514,11 +514,11 @@
           <span id="dark-icon" class="material-symbols-outlined text-on-surface-variant"
             style="font-size:20px">dark_mode</span>
         </button>
-        <div class="relative group">
-          <div id="user-avatar" class="w-8 h-8 rounded-full bg-gradient-to-br from-secondary to-secondary-dim flex items-center justify-center text-on-secondary text-xs font-bold shrink-0 cursor-pointer select-none">?</div>
-          <div class="absolute right-0 top-10 hidden group-hover:flex flex-col min-w-[160px] rounded-xl py-1 z-[200]" style="background:#0d1018;border:1px solid rgba(0,229,204,0.2);box-shadow:0 8px 32px rgba(0,0,0,0.5)">
+        <div class="relative">
+          <div id="user-avatar" onclick="toggleUserMenu(event)" class="w-8 h-8 rounded-full bg-gradient-to-br from-secondary to-secondary-dim flex items-center justify-center text-on-secondary text-xs font-bold shrink-0 cursor-pointer select-none">?</div>
+          <div id="user-dropdown" class="hidden absolute right-0 top-10 flex-col min-w-[160px] rounded-xl py-1 z-[200]" style="background:#0d1018;border:1px solid rgba(0,229,204,0.2);box-shadow:0 8px 32px rgba(0,0,0,0.5)">
             <p id="user-dropdown-name" class="px-4 py-2.5 text-xs font-semibold text-on-surface truncate border-b border-outline-variant/20"></p>
-            <button onclick="logoutUser()" class="px-4 py-2.5 text-sm text-left text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors flex items-center gap-2">
+            <button onclick="logoutUser()" class="px-4 py-2.5 text-sm text-left text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors flex items-center gap-2 w-full">
               <span class="material-symbols-outlined" style="font-size:16px">logout</span> Sign Out
             </button>
           </div>
@@ -4011,6 +4011,20 @@
         })
       } catch (_) {}
     }
+
+    // ── User avatar dropdown ──────────────────────────────────────────────────
+    function toggleUserMenu(e) {
+      e.stopPropagation()
+      var dd = document.getElementById('user-dropdown')
+      var isHidden = dd.classList.contains('hidden')
+      dd.classList.toggle('hidden', !isHidden)
+      dd.style.display = isHidden ? 'flex' : ''
+    }
+    // Close dropdown when clicking anywhere else
+    document.addEventListener('click', function () {
+      var dd = document.getElementById('user-dropdown')
+      if (dd) { dd.classList.add('hidden'); dd.style.display = '' }
+    })
 
     // ── Mobile menu ──────────────────────────────────────────────────────────
     function toggleMobileMenu() {
