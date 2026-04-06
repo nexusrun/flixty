@@ -50,7 +50,11 @@ router.post('/start', async (req, res) => {
         }
       }
     } catch (e) {
-      errors[platform] = e.response?.data?.error?.message || e.message
+      const fbErr = e.response?.data?.error
+      errors[platform] = fbErr
+        ? `${fbErr.message} (code ${fbErr.code}, subcode ${fbErr.error_subcode})`
+        : e.message
+      console.error(`[live/${platform}]`, fbErr || e.message)
     }
   }))
 
