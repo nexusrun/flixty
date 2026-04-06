@@ -8,6 +8,7 @@ import 'dotenv/config'
 import authRoutes from './routes/auth.js'
 import postRoutes from './routes/posts.js'
 import aiRoutes from './routes/ai.js'
+import liveRoutes from './routes/live.js'
 import { startScheduler } from './lib/scheduler.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -40,6 +41,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'data/uploads')))
 app.use('/auth', authRoutes)
 app.use('/api', postRoutes)
 app.use('/api/ai', aiRoutes)
+app.use('/api/live', liveRoutes)
 
 // index.html is served automatically by express.static above
 app.get('/health', (_req, res) => res.json({ ok: true, time: new Date().toISOString() }))

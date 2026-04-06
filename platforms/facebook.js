@@ -91,3 +91,31 @@ export async function getInstagramAccountId(pageId, pageToken) {
   })
   return data.instagram_business_account?.id || null
 }
+
+// ── Live Streaming ──
+
+export async function createLiveVideo(pageToken, pageId, title, description) {
+  const { data } = await axios.post(
+    `https://graph.facebook.com/v19.0/${pageId}/live_videos`,
+    { title, description: description || '', status: 'LIVE_NOW' },
+    { params: { access_token: pageToken } }
+  )
+  return data // { id, stream_url, secure_stream_url }
+}
+
+export async function endLiveVideo(pageToken, liveVideoId) {
+  const { data } = await axios.post(
+    `https://graph.facebook.com/v19.0/${liveVideoId}`,
+    { end_live_video: true },
+    { params: { access_token: pageToken } }
+  )
+  return data
+}
+
+export async function getLiveVideoStatus(pageToken, liveVideoId) {
+  const { data } = await axios.get(
+    `https://graph.facebook.com/v19.0/${liveVideoId}`,
+    { params: { fields: 'id,title,status,live_views', access_token: pageToken } }
+  )
+  return data
+}

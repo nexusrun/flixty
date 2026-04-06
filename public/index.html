@@ -5,7 +5,7 @@
   <meta charset="utf-8" />
   <link rel="icon" type="image/png" href="/LFITX.png" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>LFITX | Marketing Studio</title>
+  <title>LFITX | Creators Studio</title>
   <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
     rel="stylesheet" />
@@ -327,6 +327,29 @@
         grid-template-columns: 1fr 380px;
       }
     }
+
+    .live-pulse {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: #ff4444;
+      box-shadow: 0 0 0 0 rgba(255,68,68,0.6);
+      animation: livePulse 1.4s infinite;
+      display: inline-block;
+    }
+    @keyframes livePulse {
+      0%   { box-shadow: 0 0 0 0 rgba(255,68,68,0.6); }
+      70%  { box-shadow: 0 0 0 8px rgba(255,68,68,0); }
+      100% { box-shadow: 0 0 0 0 rgba(255,68,68,0); }
+    }
+    .credential-box {
+      background: var(--surface-container);
+      border: 1px solid var(--outline-variant);
+      border-radius: 0.75rem;
+      padding: 0.75rem 1rem;
+      font-family: monospace;
+      font-size: 0.75rem;
+      word-break: break-all;
+      color: var(--on-surface);
+    }
   </style>
 </head>
 
@@ -340,7 +363,7 @@
       <div class="flex items-center gap-3 shrink-0">
         <img src="/LFITX.png" alt="LFITX" class="h-8 w-auto object-contain" />
         <span
-          class="hidden sm:inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold tracking-wide bg-secondary-container text-on-secondary-container">Marketing
+          class="hidden sm:inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold tracking-wide bg-secondary-container text-on-secondary-container">Creators
           Studio</span>
       </div>
 
@@ -353,6 +376,7 @@
           class="header-tab px-3 py-1.5 rounded-xl text-sm font-medium text-on-surface-variant hover:text-on-surface transition-all duration-200">Calendar</button>
         <button onclick="switchView('analytics')" data-view="analytics"
           class="header-tab px-3 py-1.5 rounded-xl text-sm font-medium text-on-surface-variant hover:text-on-surface transition-all duration-200">Analytics</button>
+        <button onclick="switchView('live')" data-view="live" class="header-tab px-3 py-1.5 rounded-xl text-sm font-medium text-on-surface-variant hover:text-on-surface transition-all duration-200">Live</button>
       </nav>
 
       <div class="ml-auto flex items-center gap-2 lg:gap-3">
@@ -406,6 +430,10 @@
             class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-on-surface-variant transition-all duration-200 w-full text-left">
             <span class="material-symbols-outlined" style="font-size:20px">analytics</span>
             <span>Analytics</span>
+          </button>
+          <button onclick="switchView('live')" data-sidebar="live" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-on-surface-variant transition-all duration-200 w-full text-left">
+            <span class="material-symbols-outlined" style="font-size:20px">podcasts</span>
+            <span>Live</span>
           </button>
         </nav>
 
@@ -734,7 +762,7 @@
               <!-- Post Title -->
               <input type="text" id="post-title" oninput="updatePreviewTitle(this.value)"
                 placeholder="Post title (required for YouTube)…"
-                class="w-full bg-surface-container-low rounded-xl px-4 py-2.5 text-sm text-on-surface placeholder:text-on-surface-variant/60 border-none transition-all mb-3"/>
+                class="w-full bg-surface-container-low rounded-xl px-4 py-2.5 text-sm text-on-surface placeholder:text-on-surface-variant/60 border-none transition-all mb-3" />
 
               <textarea id="post-textarea" oninput="updateCharCount(this)" rows="6"
                 placeholder="What's on your mind? Start typing your post..."
@@ -816,13 +844,15 @@
 
             <!-- Audience & Targeting -->
             <div class="bg-surface-container-lowest rounded-xl p-5 shadow-sm shadow-on-surface/5">
-              <label class="text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-3 block">Audience &amp; Targeting</label>
+              <label class="text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-3 block">Audience
+                &amp; Targeting</label>
               <div class="grid grid-cols-2 gap-3">
 
                 <!-- Age Range -->
                 <div>
                   <label class="text-xs text-on-surface-variant mb-1 block">Age Range</label>
-                  <select class="w-full bg-surface-container-low rounded-xl px-3 py-2 text-sm text-on-surface border-none appearance-none">
+                  <select
+                    class="w-full bg-surface-container-low rounded-xl px-3 py-2 text-sm text-on-surface border-none appearance-none">
                     <option value="">All Ages</option>
                     <option>13 – 17</option>
                     <option>18 – 24</option>
@@ -837,7 +867,8 @@
                 <!-- Gender -->
                 <div>
                   <label class="text-xs text-on-surface-variant mb-1 block">Gender</label>
-                  <select class="w-full bg-surface-container-low rounded-xl px-3 py-2 text-sm text-on-surface border-none appearance-none">
+                  <select
+                    class="w-full bg-surface-container-low rounded-xl px-3 py-2 text-sm text-on-surface border-none appearance-none">
                     <option selected>All Genders</option>
                     <option>Male</option>
                     <option>Female</option>
@@ -848,7 +879,8 @@
                 <!-- Location -->
                 <div>
                   <label class="text-xs text-on-surface-variant mb-1 block">Location</label>
-                  <select class="w-full bg-surface-container-low rounded-xl px-3 py-2 text-sm text-on-surface border-none appearance-none">
+                  <select
+                    class="w-full bg-surface-container-low rounded-xl px-3 py-2 text-sm text-on-surface border-none appearance-none">
                     <option>Global</option>
                     <option selected>United States</option>
                     <option>United Kingdom</option>
@@ -879,7 +911,8 @@
                 <!-- Language -->
                 <div>
                   <label class="text-xs text-on-surface-variant mb-1 block">Language</label>
-                  <select class="w-full bg-surface-container-low rounded-xl px-3 py-2 text-sm text-on-surface border-none appearance-none">
+                  <select
+                    class="w-full bg-surface-container-low rounded-xl px-3 py-2 text-sm text-on-surface border-none appearance-none">
                     <option selected>English</option>
                     <option>Spanish</option>
                     <option>French</option>
@@ -905,7 +938,8 @@
                 <!-- Interest (full width) -->
                 <div class="col-span-2">
                   <label class="text-xs text-on-surface-variant mb-1 block">Interest / Topic</label>
-                  <select class="w-full bg-surface-container-low rounded-xl px-3 py-2 text-sm text-on-surface border-none appearance-none">
+                  <select
+                    class="w-full bg-surface-container-low rounded-xl px-3 py-2 text-sm text-on-surface border-none appearance-none">
                     <option value="">All Interests</option>
                     <optgroup label="Business &amp; Finance">
                       <option>Business &amp; Entrepreneurship</option>
@@ -956,7 +990,8 @@
                 <!-- Industry (full width) -->
                 <div class="col-span-2">
                   <label class="text-xs text-on-surface-variant mb-1 block">Industry</label>
-                  <select class="w-full bg-surface-container-low rounded-xl px-3 py-2 text-sm text-on-surface border-none appearance-none">
+                  <select
+                    class="w-full bg-surface-container-low rounded-xl px-3 py-2 text-sm text-on-surface border-none appearance-none">
                     <option value="">All Industries</option>
                     <optgroup label="Technology">
                       <option selected>SaaS / Software</option>
@@ -1012,7 +1047,8 @@
                 <!-- Device -->
                 <div>
                   <label class="text-xs text-on-surface-variant mb-1 block">Device</label>
-                  <select class="w-full bg-surface-container-low rounded-xl px-3 py-2 text-sm text-on-surface border-none appearance-none">
+                  <select
+                    class="w-full bg-surface-container-low rounded-xl px-3 py-2 text-sm text-on-surface border-none appearance-none">
                     <option selected>All Devices</option>
                     <option>Mobile</option>
                     <option>Desktop</option>
@@ -1023,7 +1059,8 @@
                 <!-- Relationship Status -->
                 <div>
                   <label class="text-xs text-on-surface-variant mb-1 block">Relationship</label>
-                  <select class="w-full bg-surface-container-low rounded-xl px-3 py-2 text-sm text-on-surface border-none appearance-none">
+                  <select
+                    class="w-full bg-surface-container-low rounded-xl px-3 py-2 text-sm text-on-surface border-none appearance-none">
                     <option selected>Any</option>
                     <option>Single</option>
                     <option>In a Relationship</option>
@@ -1065,32 +1102,50 @@
               <div class="flex gap-1 mb-4 overflow-x-auto pb-1 scrollbar-thin" style="scrollbar-width:none">
                 <button onclick="setPreview('x')" data-preview="x"
                   class="preview-tab active text-xs px-2.5 py-1 rounded-lg font-medium transition-all text-on-surface-variant shrink-0 flex items-center gap-1">
-                  <svg class="w-3 h-3 fill-current" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.748l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                  <svg class="w-3 h-3 fill-current" viewBox="0 0 24 24">
+                    <path
+                      d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.748l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                  </svg>
                   X
                 </button>
                 <button onclick="setPreview('linkedin')" data-preview="linkedin"
                   class="preview-tab text-xs px-2.5 py-1 rounded-lg font-medium transition-all text-on-surface-variant shrink-0 flex items-center gap-1">
-                  <svg class="w-3 h-3 fill-current" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+                  <svg class="w-3 h-3 fill-current" viewBox="0 0 24 24">
+                    <path
+                      d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+                  </svg>
                   Li
                 </button>
                 <button onclick="setPreview('instagram')" data-preview="instagram"
                   class="preview-tab text-xs px-2.5 py-1 rounded-lg font-medium transition-all text-on-surface-variant shrink-0 flex items-center gap-1">
-                  <svg class="w-3 h-3 fill-current" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+                  <svg class="w-3 h-3 fill-current" viewBox="0 0 24 24">
+                    <path
+                      d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z" />
+                  </svg>
                   IG
                 </button>
                 <button onclick="setPreview('facebook')" data-preview="facebook"
                   class="preview-tab text-xs px-2.5 py-1 rounded-lg font-medium transition-all text-on-surface-variant shrink-0 flex items-center gap-1">
-                  <svg class="w-3 h-3 fill-current" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                  <svg class="w-3 h-3 fill-current" viewBox="0 0 24 24">
+                    <path
+                      d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+                  </svg>
                   FB
                 </button>
                 <button onclick="setPreview('tiktok')" data-preview="tiktok"
                   class="preview-tab text-xs px-2.5 py-1 rounded-lg font-medium transition-all text-on-surface-variant shrink-0 flex items-center gap-1">
-                  <svg class="w-3 h-3 fill-current" viewBox="0 0 24 24"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/></svg>
+                  <svg class="w-3 h-3 fill-current" viewBox="0 0 24 24">
+                    <path
+                      d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z" />
+                  </svg>
                   TT
                 </button>
                 <button onclick="setPreview('youtube')" data-preview="youtube"
                   class="preview-tab text-xs px-2.5 py-1 rounded-lg font-medium transition-all text-on-surface-variant shrink-0 flex items-center gap-1">
-                  <svg class="w-3 h-3 fill-current" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                  <svg class="w-3 h-3 fill-current" viewBox="0 0 24 24">
+                    <path
+                      d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+                  </svg>
                   YT
                 </button>
               </div>
@@ -1210,27 +1265,39 @@
               <div id="preview-facebook" class="preview-content hidden">
                 <div class="bg-surface-container-low rounded-xl p-4">
                   <div class="flex items-start gap-2.5 mb-3">
-                    <div class="w-9 h-9 rounded-full flex items-center justify-center shrink-0" style="background:#1877f2">
-                      <svg class="w-4 h-4 fill-white" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                    <div class="w-9 h-9 rounded-full flex items-center justify-center shrink-0"
+                      style="background:#1877f2">
+                      <svg class="w-4 h-4 fill-white" viewBox="0 0 24 24">
+                        <path
+                          d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+                      </svg>
                     </div>
                     <div>
                       <p id="preview-fb-name" class="text-sm font-bold text-on-surface">Your Facebook Page</p>
-                      <p class="text-[11px] text-on-surface-variant">Just now · <span style="color:#1877f2">🌐</span></p>
+                      <p class="text-[11px] text-on-surface-variant">Just now · <span style="color:#1877f2">🌐</span>
+                      </p>
                     </div>
-                    <span class="ml-auto material-symbols-outlined text-on-surface-variant" style="font-size:18px">more_horiz</span>
+                    <span class="ml-auto material-symbols-outlined text-on-surface-variant"
+                      style="font-size:18px">more_horiz</span>
                   </div>
-                  <p id="preview-fb-text" class="text-sm text-on-surface leading-relaxed mb-3 whitespace-pre-wrap">Your post will appear here as you type...</p>
+                  <p id="preview-fb-text" class="text-sm text-on-surface leading-relaxed mb-3 whitespace-pre-wrap">Your
+                    post will appear here as you type...</p>
                   <div id="preview-fb-img" class="hidden mb-3">
-                    <img id="preview-fb-img-src" class="w-full rounded-lg object-cover max-h-48" src="" alt="Media preview"/>
+                    <img id="preview-fb-img-src" class="w-full rounded-lg object-cover max-h-48" src=""
+                      alt="Media preview" />
                   </div>
-                  <div class="border-t border-outline-variant/20 pt-3 flex items-center gap-1 text-xs text-on-surface-variant">
-                    <button class="flex-1 flex items-center justify-center gap-1 py-1.5 rounded-lg hover:bg-surface-container transition-colors">
+                  <div
+                    class="border-t border-outline-variant/20 pt-3 flex items-center gap-1 text-xs text-on-surface-variant">
+                    <button
+                      class="flex-1 flex items-center justify-center gap-1 py-1.5 rounded-lg hover:bg-surface-container transition-colors">
                       <span class="material-symbols-outlined" style="font-size:16px">thumb_up</span> Like
                     </button>
-                    <button class="flex-1 flex items-center justify-center gap-1 py-1.5 rounded-lg hover:bg-surface-container transition-colors">
+                    <button
+                      class="flex-1 flex items-center justify-center gap-1 py-1.5 rounded-lg hover:bg-surface-container transition-colors">
                       <span class="material-symbols-outlined" style="font-size:16px">chat_bubble</span> Comment
                     </button>
-                    <button class="flex-1 flex items-center justify-center gap-1 py-1.5 rounded-lg hover:bg-surface-container transition-colors">
+                    <button
+                      class="flex-1 flex items-center justify-center gap-1 py-1.5 rounded-lg hover:bg-surface-container transition-colors">
                       <span class="material-symbols-outlined" style="font-size:16px">share</span> Share
                     </button>
                   </div>
@@ -1241,9 +1308,10 @@
               <div id="preview-tiktok" class="preview-content hidden">
                 <div class="rounded-xl overflow-hidden" style="background:#010101">
                   <!-- Video placeholder -->
-                  <div id="preview-tt-video" class="w-full h-44 flex items-center justify-center relative" style="background:#111">
+                  <div id="preview-tt-video" class="w-full h-44 flex items-center justify-center relative"
+                    style="background:#111">
                     <div id="preview-tt-img-wrap" class="hidden absolute inset-0">
-                      <img id="preview-tt-img-src" class="w-full h-full object-cover" src="" alt="Media preview"/>
+                      <img id="preview-tt-img-src" class="w-full h-full object-cover" src="" alt="Media preview" />
                     </div>
                     <div id="preview-tt-placeholder" class="flex flex-col items-center gap-2 text-white/40">
                       <span class="material-symbols-outlined" style="font-size:36px">play_circle</span>
@@ -1254,7 +1322,8 @@
                     <div class="flex items-end gap-3">
                       <div class="flex-1">
                         <p id="preview-tt-username" class="text-xs font-bold text-white mb-1">@your_tiktok</p>
-                        <p id="preview-tt-text" class="text-xs text-white/80 leading-relaxed whitespace-pre-wrap">Your caption will appear here as you type...</p>
+                        <p id="preview-tt-text" class="text-xs text-white/80 leading-relaxed whitespace-pre-wrap">Your
+                          caption will appear here as you type...</p>
                       </div>
                       <!-- TikTok right actions -->
                       <div class="flex flex-col items-center gap-3 text-white/80 text-[10px]">
@@ -1282,25 +1351,35 @@
                   <!-- Thumbnail area -->
                   <div class="w-full h-40 flex items-center justify-center relative" style="background:#111">
                     <div id="preview-yt-img-wrap" class="hidden absolute inset-0">
-                      <img id="preview-yt-img-src" class="w-full h-full object-cover" src="" alt="Thumbnail"/>
+                      <img id="preview-yt-img-src" class="w-full h-full object-cover" src="" alt="Thumbnail" />
                     </div>
                     <div id="preview-yt-placeholder" class="flex flex-col items-center gap-2 text-white/40">
-                      <svg class="w-10 h-10" viewBox="0 0 24 24" fill="#ff0000"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                      <svg class="w-10 h-10" viewBox="0 0 24 24" fill="#ff0000">
+                        <path
+                          d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+                      </svg>
                       <span class="text-xs text-white/50">Video thumbnail</span>
                     </div>
                   </div>
                   <div class="p-3">
-                    <p id="preview-yt-title" class="text-sm font-bold text-on-surface mb-1 leading-snug">Your video title will appear here…</p>
+                    <p id="preview-yt-title" class="text-sm font-bold text-on-surface mb-1 leading-snug">Your video
+                      title will appear here…</p>
                     <div class="flex items-center gap-2 mb-2">
-                      <div class="w-6 h-6 rounded-full flex items-center justify-center shrink-0" style="background:#ff0000">
-                        <svg class="w-3 h-3 fill-white" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                      <div class="w-6 h-6 rounded-full flex items-center justify-center shrink-0"
+                        style="background:#ff0000">
+                        <svg class="w-3 h-3 fill-white" viewBox="0 0 24 24">
+                          <path
+                            d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+                        </svg>
                       </div>
                       <div>
                         <p id="preview-yt-channel" class="text-xs font-semibold text-on-surface">Your Channel</p>
                         <p class="text-[10px] text-on-surface-variant">Just now · 0 views</p>
                       </div>
                     </div>
-                    <p id="preview-yt-desc" class="text-xs text-on-surface-variant leading-relaxed line-clamp-2 whitespace-pre-wrap">Description will appear here as you type...</p>
+                    <p id="preview-yt-desc"
+                      class="text-xs text-on-surface-variant leading-relaxed line-clamp-2 whitespace-pre-wrap">
+                      Description will appear here as you type...</p>
                   </div>
                 </div>
               </div>
@@ -1553,6 +1632,134 @@
             </div>
           </div>
           <div id="engagement-chart" class="flex items-end gap-3 h-40"></div>
+        </div>
+      </div>
+
+      <!-- LIVE STREAMING VIEW -->
+      <div id="view-live" class="hidden p-5 lg:p-8 max-w-5xl mx-auto">
+
+        <div class="flex items-start justify-between mb-6 flex-wrap gap-4">
+          <div>
+            <h1 class="text-2xl font-black text-on-surface tracking-tight flex items-center gap-3">
+              <span class="live-pulse"></span> Live Streaming
+            </h1>
+            <p class="text-on-surface-variant text-sm mt-1">Broadcast simultaneously to YouTube and Facebook</p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 xl:grid-cols-[1fr_360px] gap-6">
+
+          <!-- Left: Start stream form -->
+          <div class="flex flex-col gap-4">
+
+            <!-- Stream Setup Card -->
+            <div class="bg-surface-container-lowest rounded-xl p-5">
+              <h2 class="font-bold text-on-surface mb-4 text-sm uppercase tracking-wider">Stream Setup</h2>
+
+              <div class="flex flex-col gap-3">
+                <div>
+                  <label class="text-xs text-on-surface-variant mb-1.5 block font-medium">Stream Title *</label>
+                  <input type="text" id="live-title" placeholder="e.g. Product launch live Q&A…"
+                    class="w-full bg-surface-container-low rounded-xl px-4 py-2.5 text-sm text-on-surface placeholder:text-on-surface-variant/60 border-none transition-all"/>
+                </div>
+                <div>
+                  <label class="text-xs text-on-surface-variant mb-1.5 block font-medium">Description (optional)</label>
+                  <textarea id="live-desc" rows="2" placeholder="Tell viewers what this stream is about…"
+                    class="w-full bg-surface-container-low rounded-xl px-4 py-3 text-sm text-on-surface placeholder:text-on-surface-variant/60 border-none resize-none transition-all"></textarea>
+                </div>
+              </div>
+
+              <!-- Platform selection -->
+              <div class="mt-4">
+                <label class="text-xs text-on-surface-variant mb-3 block font-medium">Platforms</label>
+                <div class="flex flex-col gap-2">
+
+                  <label id="live-yt-label" class="flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-all hover:bg-surface-container-low" style="border:1px solid var(--outline-variant)">
+                    <input type="checkbox" id="live-yt-check" class="hidden" onchange="updateLivePlatforms()"/>
+                    <div class="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style="background:#ff0000">
+                      <svg class="w-4 h-4 fill-white" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                    </div>
+                    <div class="flex-1">
+                      <p class="text-sm font-semibold text-on-surface">YouTube</p>
+                      <p id="live-yt-status" class="text-xs text-on-surface-variant">Checking…</p>
+                    </div>
+                    <div id="live-yt-check-indicator" class="w-5 h-5 rounded-md border-2 border-outline-variant flex items-center justify-center transition-all">
+                      <span class="material-symbols-outlined text-transparent" style="font-size:14px">check</span>
+                    </div>
+                  </label>
+
+                  <label id="live-fb-label" class="flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-all hover:bg-surface-container-low" style="border:1px solid var(--outline-variant)">
+                    <input type="checkbox" id="live-fb-check" class="hidden" onchange="updateLivePlatforms()"/>
+                    <div class="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style="background:#1877f2">
+                      <svg class="w-4 h-4 fill-white" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                    </div>
+                    <div class="flex-1">
+                      <p class="text-sm font-semibold text-on-surface">Facebook Page</p>
+                      <p id="live-fb-status" class="text-xs text-on-surface-variant">Checking…</p>
+                    </div>
+                    <div id="live-fb-check-indicator" class="w-5 h-5 rounded-md border-2 border-outline-variant flex items-center justify-center transition-all">
+                      <span class="material-symbols-outlined text-transparent" style="font-size:14px">check</span>
+                    </div>
+                  </label>
+
+                </div>
+              </div>
+
+              <button id="live-start-btn" onclick="startLiveStream()"
+                class="mt-5 w-full py-3 rounded-xl text-sm font-bold btn-primary transition-all active:scale-95 flex items-center justify-center gap-2 disabled:opacity-50"
+                style="box-shadow:0 0 20px rgba(178,255,77,0.25)">
+                <span class="material-symbols-outlined" style="font-size:18px">podcasts</span>
+                Go Live
+              </button>
+            </div>
+
+            <!-- Active Credentials (shown after going live) -->
+            <div id="live-credentials-section" class="hidden flex flex-col gap-4"></div>
+
+          </div>
+
+          <!-- Right: Instructions + Active streams -->
+          <div class="flex flex-col gap-4">
+
+            <!-- How it works -->
+            <div class="bg-surface-container-lowest rounded-xl p-5">
+              <h3 class="font-bold text-on-surface text-sm mb-3">How it works</h3>
+              <ol class="flex flex-col gap-3 text-sm text-on-surface-variant">
+                <li class="flex gap-3">
+                  <span class="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 mt-0.5" style="background:rgba(0,229,204,0.15);color:#00e5cc">1</span>
+                  Select platforms and click <strong class="text-on-surface">Go Live</strong> — we create the stream sessions instantly.
+                </li>
+                <li class="flex gap-3">
+                  <span class="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 mt-0.5" style="background:rgba(0,229,204,0.15);color:#00e5cc">2</span>
+                  Copy the <strong class="text-on-surface">RTMP URL</strong> and <strong class="text-on-surface">Stream Key</strong> for each platform.
+                </li>
+                <li class="flex gap-3">
+                  <span class="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 mt-0.5" style="background:rgba(0,229,204,0.15);color:#00e5cc">3</span>
+                  Open <strong class="text-on-surface">OBS Studio</strong>, go to Settings → Stream, and add each platform as a custom RTMP service.
+                </li>
+                <li class="flex gap-3">
+                  <span class="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 mt-0.5" style="background:rgba(0,229,204,0.15);color:#00e5cc">4</span>
+                  Use <strong class="text-on-surface">multiple scene collections</strong> or a tool like <strong class="text-on-surface">Restream</strong> to broadcast to all at once.
+                </li>
+                <li class="flex gap-3">
+                  <span class="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 mt-0.5" style="background:rgba(178,255,77,0.2);color:#b2ff4d">5</span>
+                  When done, click <strong class="text-on-surface">End Stream</strong> to close the broadcast on all platforms.
+                </li>
+              </ol>
+              <div class="mt-4 p-3 rounded-xl text-xs" style="background:rgba(0,229,204,0.06);border:1px solid rgba(0,229,204,0.15);color:#00e5cc">
+                <strong>Note:</strong> TikTok and Instagram Live require their native apps and don't offer public APIs for external streaming tools.
+              </div>
+            </div>
+
+            <!-- Past streams -->
+            <div class="bg-surface-container-lowest rounded-xl p-5">
+              <h3 class="font-bold text-on-surface text-sm mb-3">Recent Streams</h3>
+              <div id="live-history" class="flex flex-col gap-2 text-sm text-on-surface-variant">
+                <p class="text-xs">No streams yet.</p>
+              </div>
+            </div>
+
+          </div>
         </div>
       </div>
 
@@ -1821,7 +2028,7 @@
 
     // View switching
     function switchView(view) {
-      var views = ['dashboard', 'compose', 'calendar', 'analytics'];
+      var views = ['dashboard', 'compose', 'calendar', 'analytics', 'live'];
       views.forEach(function (v) {
         var el = document.getElementById('view-' + v);
         if (el) el.classList.toggle('hidden', v !== view);
@@ -1849,6 +2056,8 @@
           else { icon.classList.remove('ms-fill'); }
         }
       });
+
+      if (view === 'live') loadLiveHistory();
     }
 
     // Dark mode toggle
@@ -1883,7 +2092,7 @@
       }
       var displayText = textarea.value || 'Your post will appear here as you type...';
       var ids = ['preview-x-text', 'preview-linkedin-text', 'preview-ig-text',
-                 'preview-fb-text', 'preview-tt-text', 'preview-yt-desc'];
+        'preview-fb-text', 'preview-tt-text', 'preview-yt-desc'];
       ids.forEach(function (id) {
         var node = document.getElementById(id);
         if (node) node.textContent = displayText;
@@ -2102,15 +2311,15 @@
         var imgEl = document.getElementById('preview-' + p + '-img');
         if (imgEl) imgEl.classList.add('hidden');
       });
-      ['preview-ig-img','preview-fb-img'].forEach(function(id) {
+      ['preview-ig-img', 'preview-fb-img'].forEach(function (id) {
         var el = document.getElementById(id); if (el) el.classList.add('hidden');
       });
       var igPh = document.getElementById('preview-ig-placeholder');
       if (igPh) igPh.classList.remove('hidden');
-      ['preview-yt-img-wrap','preview-tt-img-wrap'].forEach(function(id) {
+      ['preview-yt-img-wrap', 'preview-tt-img-wrap'].forEach(function (id) {
         var el = document.getElementById(id); if (el) el.classList.add('hidden');
       });
-      ['preview-yt-placeholder','preview-tt-placeholder'].forEach(function(id) {
+      ['preview-yt-placeholder', 'preview-tt-placeholder'].forEach(function (id) {
         var el = document.getElementById(id); if (el) el.classList.remove('hidden');
       });
     }
@@ -3228,6 +3437,7 @@
         posts = Array.isArray(results[0]) ? results[0] : [];
         scheduled = Array.isArray(results[1]) ? results[1] : [];
         initPreviewNames(results[2] || {});
+        initLiveView(results[2] || {});
       } catch (e) {
         // Backend not running — render all empty states gracefully
       }
@@ -3285,6 +3495,252 @@
       } finally {
         if (btn) { btn.disabled = false; btn.textContent = '# Hashtags' }
       }
+    }
+
+    // ── Live Streaming ──
+
+    var activeLiveId = null
+    var liveStatusInterval = null
+    var selectedLivePlatforms = new Set()
+
+    function updateLivePlatforms() {
+      var yt = document.getElementById('live-yt-check')
+      var fb = document.getElementById('live-fb-check')
+      var ytInd = document.getElementById('live-yt-check-indicator')
+      var fbInd = document.getElementById('live-fb-check-indicator')
+      var ytLabel = document.getElementById('live-yt-label')
+      var fbLabel = document.getElementById('live-fb-label')
+
+      if (yt && yt.checked) {
+        selectedLivePlatforms.add('youtube')
+        if (ytInd) { ytInd.style.background = '#ff0000'; ytInd.style.borderColor = '#ff0000'; ytInd.querySelector('span').style.color = '#fff' }
+        if (ytLabel) ytLabel.style.borderColor = '#ff0000'
+      } else {
+        selectedLivePlatforms.delete('youtube')
+        if (ytInd) { ytInd.style.background = ''; ytInd.style.borderColor = ''; ytInd.querySelector('span').style.color = 'transparent' }
+        if (ytLabel) ytLabel.style.borderColor = ''
+      }
+
+      if (fb && fb.checked) {
+        selectedLivePlatforms.add('facebook')
+        if (fbInd) { fbInd.style.background = '#1877f2'; fbInd.style.borderColor = '#1877f2'; fbInd.querySelector('span').style.color = '#fff' }
+        if (fbLabel) fbLabel.style.borderColor = '#1877f2'
+      } else {
+        selectedLivePlatforms.delete('facebook')
+        if (fbInd) { fbInd.style.background = ''; fbInd.style.borderColor = ''; fbInd.querySelector('span').style.color = 'transparent' }
+        if (fbLabel) fbLabel.style.borderColor = ''
+      }
+    }
+
+    function initLiveView(authStatus) {
+      var yt = authStatus.youtube || null
+      var fb = authStatus.facebook || null
+      var ytStatus = document.getElementById('live-yt-status')
+      var fbStatus = document.getElementById('live-fb-status')
+      var ytCheck = document.getElementById('live-yt-check')
+      var fbCheck = document.getElementById('live-fb-check')
+      var ytLabel = document.getElementById('live-yt-label')
+      var fbLabel = document.getElementById('live-fb-label')
+
+      if (yt && yt.connected) {
+        if (ytStatus) ytStatus.textContent = 'Connected · ' + (yt.channelTitle || yt.displayName || 'YouTube')
+        if (ytCheck) ytCheck.disabled = false
+        if (ytLabel) ytLabel.style.opacity = '1'
+      } else {
+        if (ytStatus) ytStatus.textContent = 'Not connected — connect YouTube first'
+        if (ytCheck) { ytCheck.disabled = true; ytCheck.checked = false }
+        if (ytLabel) ytLabel.style.opacity = '0.5'
+      }
+
+      if (fb && fb.connected) {
+        if (fbStatus) fbStatus.textContent = 'Connected · ' + (fb.pageName || 'Facebook Page')
+        if (fbCheck) fbCheck.disabled = false
+        if (fbLabel) fbLabel.style.opacity = '1'
+      } else {
+        if (fbStatus) fbStatus.textContent = 'Not connected — connect Facebook first'
+        if (fbCheck) { fbCheck.disabled = true; fbCheck.checked = false }
+        if (fbLabel) fbLabel.style.opacity = '0.5'
+      }
+    }
+
+    async function startLiveStream() {
+      var title = (document.getElementById('live-title') || {}).value?.trim()
+      var desc  = (document.getElementById('live-desc') || {}).value?.trim() || ''
+      if (!title) { showToast('Enter a stream title first'); return }
+      if (!selectedLivePlatforms.size) { showToast('Select at least one platform'); return }
+
+      var btn = document.getElementById('live-start-btn')
+      if (btn) { btn.textContent = 'Creating stream…'; btn.disabled = true }
+
+      try {
+        const res  = await fetch(BACKEND + '/api/live/start', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ platforms: [...selectedLivePlatforms], title, description: desc })
+        })
+        const data = await res.json()
+
+        if (!data.ok && !Object.keys(data.results || {}).length) {
+          var errMsg = Object.values(data.errors || {})[0] || 'Failed to start stream'
+          showToast('Error: ' + errMsg)
+          return
+        }
+
+        activeLiveId = data.live?.id
+        renderLiveCredentials(data)
+        showToast('Stream created! Open OBS and paste the credentials.')
+
+        // Poll status every 30s
+        if (liveStatusInterval) clearInterval(liveStatusInterval)
+        liveStatusInterval = setInterval(function() { pollLiveStatus(activeLiveId) }, 30000)
+
+        loadLiveHistory()
+      } catch (e) {
+        showToast('Cannot reach backend.')
+      } finally {
+        if (btn) { btn.textContent = 'Go Live'; btn.disabled = false }
+      }
+    }
+
+    function renderLiveCredentials(data) {
+      var section = document.getElementById('live-credentials-section')
+      if (!section) return
+      section.innerHTML = ''
+      section.classList.remove('hidden')
+
+      Object.entries(data.results || {}).forEach(function([platform, info]) {
+        var card = document.createElement('div')
+        card.className = 'bg-surface-container-lowest rounded-xl p-5'
+        card.id = 'live-cred-' + platform
+
+        var platformColor = platform === 'youtube' ? '#ff0000' : '#1877f2'
+        var platformName  = platform === 'youtube' ? 'YouTube' : 'Facebook'
+        var platformIcon  = platform === 'youtube'
+          ? '<svg class="w-4 h-4 fill-white" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>'
+          : '<svg class="w-4 h-4 fill-white" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>'
+
+        card.innerHTML = [
+          '<div class="flex items-center justify-between mb-4">',
+          '  <div class="flex items-center gap-2">',
+          '    <div class="w-7 h-7 rounded-lg flex items-center justify-center" style="background:' + platformColor + '">' + platformIcon + '</div>',
+          '    <span class="font-bold text-on-surface text-sm">' + platformName + '</span>',
+          '    <span class="flex items-center gap-1.5 text-xs font-semibold px-2 py-0.5 rounded-full" style="background:rgba(255,68,68,0.15);color:#ff4444"><span class="live-pulse" style="width:6px;height:6px"></span>LIVE</span>',
+          '  </div>',
+          '  <span id="live-viewers-' + platform + '" class="text-xs text-on-surface-variant">0 viewers</span>',
+          '</div>',
+
+          '<div class="flex flex-col gap-3">',
+          '  <div>',
+          '    <p class="text-[11px] font-semibold text-on-surface-variant uppercase tracking-wider mb-1.5">RTMP URL</p>',
+          '    <div class="flex items-center gap-2">',
+          '      <div class="credential-box flex-1 truncate">' + (info.rtmpUrl || '') + '</div>',
+          '      <button onclick="copyToClipboard(\'' + escapeAttr(info.rtmpUrl || '') + '\', this)" class="shrink-0 w-8 h-8 flex items-center justify-center rounded-lg bg-surface-container hover:bg-surface-container-high transition-colors"><span class="material-symbols-outlined text-on-surface-variant" style="font-size:16px">content_copy</span></button>',
+          '    </div>',
+          '  </div>',
+          '  <div>',
+          '    <p class="text-[11px] font-semibold text-on-surface-variant uppercase tracking-wider mb-1.5">STREAM KEY</p>',
+          '    <div class="flex items-center gap-2">',
+          '      <div class="credential-box flex-1 truncate" id="skey-' + platform + '" data-key="' + escapeAttr(info.streamKey || '') + '" data-visible="false">••••••••••••••••</div>',
+          '      <button onclick="toggleStreamKey(\'' + platform + '\')" class="shrink-0 w-8 h-8 flex items-center justify-center rounded-lg bg-surface-container hover:bg-surface-container-high transition-colors"><span class="material-symbols-outlined text-on-surface-variant" style="font-size:16px">visibility</span></button>',
+          '      <button onclick="copyToClipboard(\'' + escapeAttr(info.streamKey || '') + '\', this)" class="shrink-0 w-8 h-8 flex items-center justify-center rounded-lg bg-surface-container hover:bg-surface-container-high transition-colors"><span class="material-symbols-outlined text-on-surface-variant" style="font-size:16px">content_copy</span></button>',
+          '    </div>',
+          '  </div>',
+          '</div>',
+
+          info.watchUrl ? '<a href="' + info.watchUrl + '" target="_blank" class="mt-3 flex items-center gap-1.5 text-xs font-medium hover:underline" style="color:#00e5cc"><span class="material-symbols-outlined" style="font-size:14px">open_in_new</span>View on ' + platformName + ' Studio</a>' : '',
+
+          '<button onclick="endLiveStream(\'' + platform + '\',' + data.live.id + ')" class="mt-4 w-full py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all active:scale-95" style="background:rgba(255,68,68,0.15);color:#ff4444;border:1px solid rgba(255,68,68,0.3)">',
+          '  <span class="material-symbols-outlined" style="font-size:16px">stop_circle</span> End Stream on ' + platformName,
+          '</button>',
+        ].join('')
+
+        section.appendChild(card)
+      })
+
+      // Show errors too
+      Object.entries(data.errors || {}).forEach(function([platform, err]) {
+        var errDiv = document.createElement('div')
+        errDiv.className = 'rounded-xl p-4 text-sm'
+        errDiv.style.cssText = 'background:rgba(255,77,109,0.1);border:1px solid rgba(255,77,109,0.3);color:#ff4d6d'
+        errDiv.textContent = (platform === 'youtube' ? 'YouTube' : 'Facebook') + ': ' + err
+        section.appendChild(errDiv)
+      })
+    }
+
+    function toggleStreamKey(platform) {
+      var el = document.getElementById('skey-' + platform)
+      if (!el) return
+      var visible = el.dataset.visible === 'true'
+      el.textContent = visible ? '••••••••••••••••' : el.dataset.key
+      el.dataset.visible = visible ? 'false' : 'true'
+    }
+
+    function escapeAttr(str) {
+      return String(str).replace(/\\/g, '\\\\').replace(/'/g, "\\'")
+    }
+
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+    }
+
+    function copyToClipboard(text, btn) {
+      navigator.clipboard.writeText(text).then(function() {
+        var icon = btn.querySelector('.material-symbols-outlined')
+        if (icon) { icon.textContent = 'check'; setTimeout(function() { icon.textContent = 'content_copy' }, 1500) }
+      })
+    }
+
+    async function endLiveStream(platform, liveId) {
+      if (!confirm('End the ' + platform + ' stream?')) return
+      try {
+        const res = await fetch(BACKEND + '/api/live/' + liveId + '/end', { method: 'POST', headers: { 'Content-Type': 'application/json' } })
+        const data = await res.json()
+        if (data.ok || data.results?.[platform]?.ended) {
+          var card = document.getElementById('live-cred-' + platform)
+          if (card) card.remove()
+          showToast(platform + ' stream ended')
+          loadLiveHistory()
+        } else {
+          showToast('Error: ' + (data.errors?.[platform] || 'Failed to end stream'))
+        }
+      } catch (e) { showToast('Cannot reach backend') }
+    }
+
+    async function pollLiveStatus(liveId) {
+      if (!liveId) return
+      try {
+        const res = await fetch(BACKEND + '/api/live/' + liveId + '/status')
+        const data = await res.json()
+        Object.entries(data).forEach(function([platform, info]) {
+          var el = document.getElementById('live-viewers-' + platform)
+          if (el && info.viewers !== undefined) el.textContent = info.viewers + ' viewer' + (info.viewers === 1 ? '' : 's')
+        })
+      } catch (_) {}
+    }
+
+    async function loadLiveHistory() {
+      try {
+        const res = await fetch(BACKEND + '/api/live')
+        const items = await res.json()
+        var container = document.getElementById('live-history')
+        if (!container) return
+        if (!items.length) { container.innerHTML = '<p class="text-xs text-on-surface-variant">No streams yet.</p>'; return }
+        container.innerHTML = ''
+        items.slice(0, 5).forEach(function(item) {
+          var div = document.createElement('div')
+          div.className = 'flex items-center justify-between py-2 border-b border-outline-variant/20 last:border-0'
+          var date = new Date(item.startedAt)
+          var statusBadge = item.status === 'live'
+            ? '<span class="text-[10px] font-bold px-1.5 py-0.5 rounded-full" style="background:rgba(255,68,68,0.15);color:#ff4444">LIVE</span>'
+            : '<span class="text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-surface-container text-on-surface-variant">ENDED</span>'
+          div.innerHTML = '<div><p class="text-xs font-medium text-on-surface">' + escapeHtml(item.title || 'Untitled') + '</p><p class="text-[11px] text-on-surface-variant">' + date.toLocaleDateString() + ' · ' + (item.platforms || []).join(', ') + '</p></div>' + statusBadge
+          container.appendChild(div)
+        })
+      } catch (_) {}
     }
   </script>
 </body>

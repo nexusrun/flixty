@@ -5,6 +5,7 @@ const CLIENT_ID     = process.env.GOOGLE_CLIENT_ID
 const CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET
 const REDIRECT_URI  = `${process.env.BASE_URL}/auth/youtube/callback`
 const SCOPES = [
+  'https://www.googleapis.com/auth/youtube',
   'https://www.googleapis.com/auth/youtube.upload',
   'https://www.googleapis.com/auth/youtube.readonly',
 ]
@@ -123,4 +124,60 @@ export async function uploadVideo(accessToken, filePath, { title, description, t
   }
 
   return uploadData
+}
+
+// ── Live Streaming ──
+// Requires 'https://www.googleapis.com/auth/youtube' scope (broader than current upload-only scope).
+// Users must reconnect YouTube after the scope update.
+
+export async function createLiveBroadcast(accessToken, title) {
+  const scheduledStartTime = new Date(Date.now() + 30000).toISOString()
+  const { data } = await axios.post(
+    'https://www.googleapis.com/youtube/v3/liveBroadcasts?part=snippet,status,contentDetails',
+    {
+      snippet: { title: title.slice(0, 100), scheduledStartTime },
+      status:  { privacyStatus: 'public', selfDeclaredMadeForKids: false },
+      contentDetails: { enableAutoStart: true, enableAutoStop: true, enableClosedCaptions: false },
+    },
+    { headers: { Authorization: `Bearer ${accessToken}` } }
+  )
+  return data
+}
+
+export async function createLiveStream(accessToken, title) {
+  const { data } = await axios.post(
+    'https://www.googleapis.com/youtube/v3/liveStreams?part=snippet,cdn,status',
+    {
+      snippet: { title: title.slice(0, 100) },
+      cdn: { frameRate: 'variable', ingestionType: 'rtmp', resolution: 'variable' },
+    },
+    { headers: { Authorization: `Bearer ${accessToken}` } }
+  )
+  return data
+}
+
+export async function bindBroadcast(accessToken, broadcastId, streamId) {
+  const { data } = await axios.post(
+    `https://www.googleapis.com/youtube/v3/liveBroadcasts/bind?id=${broadcastId}&part=id,contentDetails&streamId=${streamId}`,
+    {},
+    { headers: { Authorization: `Bearer ${accessToken}` } }
+  )
+  return data
+}
+
+export async function transitionBroadcast(accessToken, broadcastId, broadcastStatus) {
+  const { data } = await axios.post(
+    `https://www.googleapis.com/youtube/v3/liveBroadcasts/transition?broadcastStatus=${broadcastStatus}&id=${broadcastId}&part=id,status`,
+    {},
+    { headers: { Authorization: `Bearer ${accessToken}` } }
+  )
+  return data
+}
+
+export async function getBroadcastStatus(accessToken, broadcastId) {
+  const { data } = await axios.get(
+    `https://www.googleapis.com/youtube/v3/liveBroadcasts?part=snippet,status,statistics&id=${broadcastId}`,
+    { headers: { Authorization: `Bearer ${accessToken}` } }
+  )
+  return data.items?.[0] || null
 }
