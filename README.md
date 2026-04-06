@@ -45,7 +45,7 @@ Flixty is a self-hosted social media management platform. Write once, publish ev
 ## Quick Start (Local)
 
 ```bash
-git clone https://github.com/your-username/flixty.git
+git clone https://github.com/nexusrun/flixty.git
 cd flixty
 npm install
 cp .env.example .env
@@ -187,7 +187,7 @@ AI Assist uses `claude-sonnet-4-6` to generate and rewrite content tailored to e
 
 ### NexusAI (Recommended)
 
-Flixty is optimized for deployment on [NexusAI](https://nexusai.run).
+Flixty is optimized for deployment on [NEXUS AI](https://nexusai.run).
 
 1. Push your code to GitHub
 2. Connect your repo in the NexusAI dashboard
@@ -235,15 +235,6 @@ Then add SSL with Certbot:
 ```bash
 certbot --nginx -d your-domain.com
 ```
-
-### Railway / Render / Fly.io
-
-These platforms all work with standard Node.js deployments:
-
-1. Connect your GitHub repo
-2. Set the start command to `npm start`
-3. Add environment variables in the platform dashboard
-4. Set `BASE_URL` to the assigned domain
 
 ---
 
