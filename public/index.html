@@ -3,9 +3,209 @@
 
 <head>
   <meta charset="utf-8" />
-  <link rel="icon" type="image/png" href="/LFITX.png" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>LFITX | Creators Studio</title>
+
+  <!-- ── Primary SEO ─────────────────────────────────────────────────────── -->
+  <title>Flixty — Open-Source Social Media Creator Studio</title>
+  <meta name="description" content="Flixty is a free, open-source social media management platform. Write once, publish to X, LinkedIn, Facebook, Instagram, TikTok, and YouTube. AI-assisted content, scheduling, live streaming, and analytics — self-hosted with no SaaS fees." />
+  <meta name="keywords" content="social media management, open source social media scheduler, multi-platform posting, AI content generator, content creator tools, self-hosted social media, post scheduler, LinkedIn scheduler, YouTube scheduler, social media automation" />
+  <meta name="author" content="Flixty" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://flixty.nexusai.run/" />
+
+  <!-- ── Open Graph (Facebook, LinkedIn, WhatsApp) ──────────────────────── -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Flixty" />
+  <meta property="og:title" content="Flixty — Open-Source Social Media Creator Studio" />
+  <meta property="og:description" content="Write once, publish everywhere. Free and open-source social media management with AI assist, scheduling, and live streaming for X, LinkedIn, Facebook, Instagram, TikTok, and YouTube." />
+  <meta property="og:url" content="https://flixty.nexusai.run/" />
+  <meta property="og:image" content="https://flixty.nexusai.run/og-image.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Flixty Creator Studio dashboard showing multi-platform social media posting" />
+  <meta property="og:locale" content="en_US" />
+
+  <!-- ── Twitter / X Card ───────────────────────────────────────────────── -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@flixtyapp" />
+  <meta name="twitter:title" content="Flixty — Open-Source Social Media Creator Studio" />
+  <meta name="twitter:description" content="Write once, publish everywhere. Free, self-hosted social media management with AI assist, scheduling, and live streaming." />
+  <meta name="twitter:image" content="https://flixty.nexusai.run/og-image.png" />
+  <meta name="twitter:image:alt" content="Flixty Creator Studio dashboard" />
+
+  <!-- ── PWA / Mobile ───────────────────────────────────────────────────── -->
+  <link rel="icon" type="image/png" href="/LFITX.png" />
+  <link rel="apple-touch-icon" href="/LFITX.png" />
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#060709" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Flixty" />
+
+  <!-- ── JSON-LD Structured Data ────────────────────────────────────────── -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "SoftwareApplication",
+        "name": "Flixty",
+        "alternateName": "Flixty Creator Studio",
+        "description": "Open-source social media management platform. Write once, publish to X, LinkedIn, Facebook, Instagram, TikTok, and YouTube with AI-assisted content, scheduling, and live streaming.",
+        "url": "https://flixty.nexusai.run",
+        "applicationCategory": "BusinessApplication",
+        "applicationSubCategory": "Social Media Management",
+        "operatingSystem": "Web",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD",
+          "description": "Free and open-source. Self-host for free."
+        },
+        "featureList": [
+          "Multi-platform publishing to 6 social networks",
+          "AI-assisted content generation per platform",
+          "Post scheduling with calendar view",
+          "Live streaming to YouTube and Facebook",
+          "Audience and targeting configuration",
+          "Real-time live preview per platform",
+          "Google Sign-In authentication",
+          "Mobile-responsive interface"
+        ],
+        "screenshot": "https://flixty.nexusai.run/og-image.png",
+        "softwareVersion": "1.0.0",
+        "license": "https://opensource.org/licenses/MIT",
+        "codeRepository": "https://github.com/your-username/flixty",
+        "programmingLanguage": ["JavaScript", "Node.js"],
+        "author": {
+          "@type": "Organization",
+          "name": "Flixty",
+          "url": "https://flixty.nexusai.run"
+        }
+      },
+      {
+        "@type": "WebSite",
+        "name": "Flixty",
+        "url": "https://flixty.nexusai.run",
+        "description": "Open-source social media creator studio",
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": "https://flixty.nexusai.run/?q={search_term_string}",
+          "query-input": "required name=search_term_string"
+        }
+      },
+      {
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "What is Flixty?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Flixty is a free, open-source social media management platform that lets you write a post once and publish it to X (Twitter), LinkedIn, Facebook, Instagram, TikTok, and YouTube simultaneously. It includes AI-assisted content generation, post scheduling, live streaming support, and a mobile-responsive interface."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Is Flixty free to use?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Yes. Flixty is completely free and open-source under the MIT license. You self-host it on your own server or a platform like NexusAI, Railway, or Render with no subscription fees. You only pay for the API keys you choose to use (e.g. Anthropic for AI, or platform developer accounts)."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Which social media platforms does Flixty support?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Flixty supports X (Twitter), LinkedIn, Facebook Pages, Instagram, TikTok, and YouTube. You connect each platform once via OAuth and then publish to any combination with a single click."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Does Flixty use AI to write content?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Yes. Flixty integrates with Anthropic's Claude AI to generate and rewrite content tailored to each platform's tone, style, and character limits — punchy for X, professional for LinkedIn, visual for Instagram, and so on."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Can I schedule posts with Flixty?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Yes. Flixty includes a built-in post scheduler. You pick a date and time, select your platforms, and Flixty automatically publishes the post when the time comes using an internal cron job — no third-party service required."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Does Flixty support live streaming?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Yes. Flixty can create live broadcasts on YouTube and Facebook simultaneously, providing RTMP stream URLs and stream keys that you paste into OBS or any RTMP-compatible streaming software."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "How do I self-host Flixty?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Clone the repository from GitHub, run npm install, copy .env.example to .env and fill in your API credentials, then run npm start. You can deploy to NexusAI, Railway, Render, Fly.io, or any VPS running Node.js 18+. Full instructions are in the README."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "What are the alternatives to Flixty?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Flixty is an open-source alternative to paid tools like Buffer, Hootsuite, Sprout Social, and Later. Unlike those SaaS platforms, Flixty is self-hosted with no monthly fees, no post limits, and full source code access."
+            }
+          }
+        ]
+      },
+      {
+        "@type": "HowTo",
+        "name": "How to set up Flixty for social media management",
+        "description": "Steps to install, configure, and start publishing with Flixty",
+        "totalTime": "PT15M",
+        "step": [
+          {
+            "@type": "HowToStep",
+            "position": 1,
+            "name": "Clone and install",
+            "text": "Clone the Flixty repository from GitHub and run npm install to install dependencies."
+          },
+          {
+            "@type": "HowToStep",
+            "position": 2,
+            "name": "Configure environment variables",
+            "text": "Copy .env.example to .env and add your API credentials for the platforms you want to use."
+          },
+          {
+            "@type": "HowToStep",
+            "position": 3,
+            "name": "Register OAuth apps",
+            "text": "Create developer apps on each social platform (LinkedIn, Facebook, Google, TikTok) and add the redirect URIs pointing to your Flixty domain."
+          },
+          {
+            "@type": "HowToStep",
+            "position": 4,
+            "name": "Deploy and start",
+            "text": "Run npm start locally or deploy to NexusAI, Railway, or any Node.js host. Visit your domain and create an account."
+          },
+          {
+            "@type": "HowToStep",
+            "position": 5,
+            "name": "Connect platforms and publish",
+            "text": "Click each platform in the sidebar to connect via OAuth, then compose a post and publish to all connected platforms at once."
+          }
+        ]
+      }
+    ]
+  }
+  </script>
+
   <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
     rel="stylesheet" />

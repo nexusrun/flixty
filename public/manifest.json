@@ -1,0 +1,27 @@
+{
+  "name": "Flixty — Creator Studio",
+  "short_name": "Flixty",
+  "description": "Open-source social media management. Write once, publish everywhere.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#060709",
+  "theme_color": "#060709",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/LFITX.png",
+      "sizes": "any",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["productivity", "social", "business"],
+  "screenshots": [
+    {
+      "src": "/og-image.png",
+      "sizes": "1200x630",
+      "type": "image/png",
+      "label": "Flixty Creator Studio dashboard"
+    }
+  ]
+}
