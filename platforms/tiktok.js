@@ -68,8 +68,9 @@ export async function getUserInfo(accessToken) {
   return data?.data?.user || {}
 }
 
-// Upload a video to TikTok using the Direct Post (file upload) flow
-export async function uploadVideo(accessToken, filePath, { caption = '', disableDuet = false, disableComment = false, disableStitch = false } = {}) {
+// Upload a video to TikTok using the Direct Post (file upload) flow.
+// privacyLevel: 'SELF_ONLY' works in sandbox; 'PUBLIC_TO_EVERYONE' requires TikTok production approval.
+export async function uploadVideo(accessToken, filePath, { caption = '', privacyLevel = 'SELF_ONLY', disableDuet = false, disableComment = false, disableStitch = false } = {}) {
   const stat      = fs.statSync(filePath)
   const fileSize  = stat.size
   const chunkSize = Math.min(fileSize, 64 * 1024 * 1024) // max 64 MB per chunk
@@ -80,7 +81,7 @@ export async function uploadVideo(accessToken, filePath, { caption = '', disable
     {
       post_info: {
         title:             caption.slice(0, 2200),
-        privacy_level:     'PUBLIC_TO_EVERYONE',
+        privacy_level:     privacyLevel,
         disable_duet:      disableDuet,
         disable_comment:   disableComment,
         disable_stitch:    disableStitch,

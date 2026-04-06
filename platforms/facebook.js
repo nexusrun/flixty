@@ -37,8 +37,8 @@ export async function getPages(userToken) {
 export async function postToPage(pageToken, pageId, message) {
   const { data } = await axios.post(
     `https://graph.facebook.com/v19.0/${pageId}/feed`,
-    null,
-    { params: { message, access_token: pageToken } }
+    new URLSearchParams({ message, access_token: pageToken }),
+    { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
   )
   return data
 }
@@ -46,8 +46,8 @@ export async function postToPage(pageToken, pageId, message) {
 export async function postPhotoToPage(pageToken, pageId, message, imageUrl) {
   const { data } = await axios.post(
     `https://graph.facebook.com/v19.0/${pageId}/photos`,
-    null,
-    { params: { message, url: imageUrl, access_token: pageToken } }
+    new URLSearchParams({ caption: message, url: imageUrl, access_token: pageToken }),
+    { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
   )
   return data
 }
