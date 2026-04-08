@@ -14,6 +14,7 @@
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "express-session": "^1.18.0",
+<<<<<<< HEAD
     "gh": "^2.5.0",
     "multer": "^2.0.1",
     "nexusapp-cli": "^1.2.5",
@@ -21,6 +22,10 @@
     "pg": "^8.22.0",
     "sharp": "^0.35.3",
     "zod": "^4.4.3"
+=======
+    "multer": "^2.0.1",
+    "node-cron": "^3.0.3"
+>>>>>>> 866748d (Update package.json)
   },
   "devDependencies": {
     "@tailwindcss/container-queries": "^0.1.1",
