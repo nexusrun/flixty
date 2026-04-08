@@ -8,10 +8,30 @@ const GOOGLE_CLIENT_ID     = process.env.GOOGLE_CLIENT_ID
 const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET
 const googleRedirectUri = () => `${process.env.BASE_URL || 'http://localhost:3000'}/api/user/google/callback`
 
+// Simple in-memory rate limiter — max 10 attempts per IP per 15 minutes
+const RATE_LIMIT_MAX = 10
+const RATE_LIMIT_WINDOW_MS = 15 * 60 * 1000
+const rateLimitStore = new Map()
+
+function rateLimiter(req, res, next) {
+  const ip = req.ip || req.socket.remoteAddress || 'unknown'
+  const now = Date.now()
+  const entry = rateLimitStore.get(ip)
+  if (!entry || now - entry.windowStart >= RATE_LIMIT_WINDOW_MS) {
+    rateLimitStore.set(ip, { windowStart: now, count: 1 })
+    return next()
+  }
+  entry.count++
+  if (entry.count > RATE_LIMIT_MAX) {
+    return res.status(429).json({ error: 'Too many attempts. Please try again later.' })
+  }
+  next()
+}
+
 const router = Router()
 
 // POST /api/user/register  { name, email, password }
-router.post('/register', async (req, res) => {
+router.post('/register', rateLimiter, async (req, res) => {
   const { name, email, password } = req.body
   if (!name || !email || !password)
     return res.status(400).json({ error: 'name, email and password are required' })
@@ -27,7 +47,7 @@ router.post('/register', async (req, res) => {
 })
 
 // POST /api/user/login  { email, password }
-router.post('/login', async (req, res) => {
+router.post('/login', rateLimiter, async (req, res) => {
   const { email, password } = req.body
   if (!email || !password)
     return res.status(400).json({ error: 'email and password are required' })

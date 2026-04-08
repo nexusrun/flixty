@@ -22,7 +22,7 @@ fs.mkdirSync(path.join(__dirname, 'data/uploads'), { recursive: true })
 const app = express()
 
 app.use(cors({
-  origin: true,
+  origin: process.env.BASE_URL || 'http://localhost:3000',
   credentials: true
 }))
 app.use(express.json({ limit: '10mb' }))
@@ -31,7 +31,7 @@ app.use(session({
   secret: process.env.SESSION_SECRET || 'curator-dev-secret',
   resave: false,
   saveUninitialized: false,
-  cookie: { secure: false, maxAge: 7 * 24 * 60 * 60 * 1000 } // 7-day session
+  cookie: { secure: (process.env.BASE_URL || '').startsWith('https'), sameSite: 'strict', maxAge: 7 * 24 * 60 * 60 * 1000 } // 7-day session
 }))
 
 // Serve frontend

@@ -1,6 +1,16 @@
 import crypto from 'crypto'
 import axios from 'axios'
 import fs from 'fs'
+import path from 'path'
+
+const UPLOADS_DIR = path.resolve('./data/uploads')
+function safeUploadPath(filePath) {
+  const resolved = path.resolve(filePath)
+  if (!resolved.startsWith(UPLOADS_DIR + path.sep) && resolved !== UPLOADS_DIR) {
+    throw new Error('Invalid file path: outside uploads directory')
+  }
+  return resolved
+}
 
 const CLIENT_KEY    = process.env.TIKTOK_CLIENT_KEY
 const CLIENT_SECRET = process.env.TIKTOK_CLIENT_SECRET
@@ -71,6 +81,7 @@ export async function getUserInfo(accessToken) {
 // Upload a video to TikTok using the Direct Post (file upload) flow.
 // privacyLevel: 'SELF_ONLY' works in sandbox; 'PUBLIC_TO_EVERYONE' requires TikTok production approval.
 export async function uploadVideo(accessToken, filePath, { caption = '', privacyLevel = 'SELF_ONLY', disableDuet = false, disableComment = false, disableStitch = false } = {}) {
+  filePath = safeUploadPath(filePath)
   const stat      = fs.statSync(filePath)
   const fileSize  = stat.size
   const chunkSize = Math.min(fileSize, 64 * 1024 * 1024) // max 64 MB per chunk

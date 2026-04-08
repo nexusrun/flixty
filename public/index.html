@@ -4102,7 +4102,7 @@
           '  <div>',
           '    <p class="text-[11px] font-semibold text-on-surface-variant uppercase tracking-wider mb-1.5">RTMP URL</p>',
           '    <div class="flex items-center gap-2">',
-          '      <div class="credential-box flex-1 truncate">' + (info.rtmpUrl || '') + '</div>',
+          '      <div class="credential-box flex-1 truncate">' + escapeHtml(info.rtmpUrl || '') + '</div>',
           '      <button onclick="copyToClipboard(\'' + escapeAttr(info.rtmpUrl || '') + '\', this)" class="shrink-0 w-8 h-8 flex items-center justify-center rounded-lg bg-surface-container hover:bg-surface-container-high transition-colors"><span class="material-symbols-outlined text-on-surface-variant" style="font-size:16px">content_copy</span></button>',
           '    </div>',
           '  </div>',
@@ -4206,7 +4206,7 @@
           var statusBadge = item.status === 'live'
             ? '<span class="text-[10px] font-bold px-1.5 py-0.5 rounded-full" style="background:rgba(255,68,68,0.15);color:#ff4444">LIVE</span>'
             : '<span class="text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-surface-container text-on-surface-variant">ENDED</span>'
-          div.innerHTML = '<div><p class="text-xs font-medium text-on-surface">' + escapeHtml(item.title || 'Untitled') + '</p><p class="text-[11px] text-on-surface-variant">' + date.toLocaleDateString() + ' · ' + (item.platforms || []).join(', ') + '</p></div>' + statusBadge
+          div.innerHTML = '<div><p class="text-xs font-medium text-on-surface">' + escapeHtml(item.title || 'Untitled') + '</p><p class="text-[11px] text-on-surface-variant">' + date.toLocaleDateString() + ' · ' + escapeHtml((item.platforms || []).join(', ')) + '</p></div>' + statusBadge
           container.appendChild(div)
         })
       } catch (_) {}

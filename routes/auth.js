@@ -154,8 +154,9 @@ router.post('/facebook/data-deletion', (req, res) => {
 })
 
 // Deletion status page — shown to users who want to confirm their data was deleted
+const escHtml = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#x27;')
 router.get('/facebook/deletion-status', (req, res) => {
-  const code = req.query.code || ''
+  const code = escHtml(req.query.code || '')
   res.send(`<html><body style="font-family:sans-serif;padding:2rem">
     <h2>Data Deletion Confirmed</h2>
     <p>Your Facebook and Instagram data has been removed from Flixty.</p>

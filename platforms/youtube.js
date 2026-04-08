@@ -1,5 +1,15 @@
 import axios from 'axios'
 import fs from 'fs'
+import path from 'path'
+
+const UPLOADS_DIR = path.resolve('./data/uploads')
+function safeUploadPath(filePath) {
+  const resolved = path.resolve(filePath)
+  if (!resolved.startsWith(UPLOADS_DIR + path.sep) && resolved !== UPLOADS_DIR) {
+    throw new Error('Invalid file path: outside uploads directory')
+  }
+  return resolved
+}
 
 const CLIENT_ID     = process.env.GOOGLE_CLIENT_ID
 const CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET
@@ -78,6 +88,7 @@ export async function getChannelTitle(accessToken) {
 // Upload a video via resumable upload.
 // mimeType should be the actual file MIME type (e.g. 'video/mp4').
 export async function uploadVideo(accessToken, filePath, { title, description, tags = [], mimeType = 'video/mp4' }) {
+  filePath = safeUploadPath(filePath)
   const stat = fs.statSync(filePath)
 
   // Step 1 — initiate resumable session and get the upload URL

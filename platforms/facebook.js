@@ -1,6 +1,16 @@
 import axios from 'axios'
 import fs from 'fs'
 import FormData from 'form-data'
+import path from 'path'
+
+const UPLOADS_DIR = path.resolve('./data/uploads')
+function safeUploadPath(filePath) {
+  const resolved = path.resolve(filePath)
+  if (!resolved.startsWith(UPLOADS_DIR + path.sep) && resolved !== UPLOADS_DIR) {
+    throw new Error('Invalid file path: outside uploads directory')
+  }
+  return resolved
+}
 
 const APP_ID = process.env.FB_APP_ID
 const APP_SECRET = process.env.FB_APP_SECRET
@@ -68,6 +78,7 @@ export async function postPhotoToPage(pageToken, pageId, message, imageUrl) {
 
 export async function postVideoToPage(pageToken, pageId, message, filePath) {
   console.log('[facebook] postVideoToPage pageId=%s filePath=%s', pageId, filePath)
+  filePath = safeUploadPath(filePath)
   try {
     const form = new FormData()
     form.append('access_token', pageToken)
