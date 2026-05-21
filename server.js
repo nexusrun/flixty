@@ -38,6 +38,15 @@ app.use(session({
   cookie: { secure: (process.env.BASE_URL || '').startsWith('https'), sameSite: 'lax', maxAge: 7 * 24 * 60 * 60 * 1000 } // 7-day session
 }))
 
+// Root: landing page for guests, app for authenticated users
+app.get('/', (req, res) => {
+  if (req.session?.userId) {
+    res.sendFile(path.join(__dirname, 'public/index.html'))
+  } else {
+    res.sendFile(path.join(__dirname, 'public/landing.html'))
+  }
+})
+
 // Serve frontend
 app.use(express.static(path.join(__dirname, 'public')))
 

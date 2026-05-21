@@ -1,0 +1,1036 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+  <!-- ── Primary SEO ───────────────────────────────────────────────────── -->
+  <title>Flixty — Free Open-Source Social Media Creator Studio</title>
+  <meta name="description" content="Flixty is a free, open-source social media creator studio. Write once, publish to X, LinkedIn, Facebook, Instagram, TikTok, and YouTube simultaneously. AI-assisted content generation, smart scheduling, live streaming, and audience targeting — self-hosted with no SaaS fees."/>
+  <meta name="keywords" content="social media management, open source social media scheduler, multi-platform publisher, AI content generator, self-hosted social media, free Buffer alternative, free Hootsuite alternative, post scheduler, YouTube scheduler, LinkedIn scheduler, TikTok scheduler, social media automation, content creator tools"/>
+  <meta name="author" content="Flixty"/>
+  <meta name="robots" content="index, follow"/>
+  <link rel="canonical" href="https://flixty.nexusai.run/"/>
+
+  <!-- ── Open Graph ─────────────────────────────────────────────────────── -->
+  <meta property="og:type" content="website"/>
+  <meta property="og:site_name" content="Flixty"/>
+  <meta property="og:title" content="Flixty — Free Open-Source Social Media Creator Studio"/>
+  <meta property="og:description" content="Write once, publish everywhere. Free and open-source social media management with AI assist, scheduling, and live streaming for X, LinkedIn, Facebook, Instagram, TikTok, and YouTube."/>
+  <meta property="og:url" content="https://flixty.nexusai.run/"/>
+  <meta property="og:image" content="https://flixty.nexusai.run/og-image.png"/>
+  <meta property="og:image:width" content="1200"/>
+  <meta property="og:image:height" content="630"/>
+  <meta property="og:locale" content="en_US"/>
+
+  <!-- ── Twitter Card ───────────────────────────────────────────────────── -->
+  <meta name="twitter:card" content="summary_large_image"/>
+  <meta name="twitter:site" content="@flixtyapp"/>
+  <meta name="twitter:title" content="Flixty — Free Open-Source Social Media Creator Studio"/>
+  <meta name="twitter:description" content="Write once, publish everywhere. Free, self-hosted social media management with AI assist, scheduling, and live streaming."/>
+  <meta name="twitter:image" content="https://flixty.nexusai.run/og-image.png"/>
+
+  <!-- ── PWA ────────────────────────────────────────────────────────────── -->
+  <link rel="icon" type="image/png" href="/LFITX.png"/>
+  <link rel="apple-touch-icon" href="/LFITX.png"/>
+  <meta name="theme-color" content="#050709"/>
+
+  <!-- ── JSON-LD: SEO + AEO + GEO ──────────────────────────────────────── -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "SoftwareApplication",
+        "name": "Flixty",
+        "alternateName": ["Flixty Creator Studio", "Flixty Social Media Manager"],
+        "description": "Flixty is a free, open-source social media creator studio that enables users to write once and publish to X (Twitter), LinkedIn, Facebook, Instagram, TikTok, and YouTube simultaneously. It features AI-assisted content generation powered by Anthropic Claude, post scheduling with a calendar view, live streaming to YouTube and Facebook, real-time live preview, and audience targeting — all self-hosted with no subscription fees.",
+        "url": "https://flixty.nexusai.run",
+        "applicationCategory": "BusinessApplication",
+        "applicationSubCategory": "Social Media Management",
+        "operatingSystem": "Web, Linux, macOS, Windows",
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD", "description": "Free and open-source. Self-host for free. MIT licensed." },
+        "featureList": [
+          "Publish to X (Twitter), LinkedIn, Facebook, Instagram, TikTok, and YouTube simultaneously",
+          "AI-assisted content generation per platform using Anthropic Claude",
+          "Post scheduling with calendar view and cron-based auto-publishing",
+          "Live streaming to YouTube and Facebook with RTMP credentials for OBS",
+          "Real-time live preview per platform before publishing",
+          "Audience targeting by age, gender, location, language, and interests",
+          "Google OAuth and email/password authentication",
+          "Mobile-responsive interface"
+        ],
+        "license": "https://opensource.org/licenses/MIT",
+        "programmingLanguage": ["JavaScript", "Node.js"],
+        "softwareVersion": "1.0.0"
+      },
+      {
+        "@type": "Organization",
+        "name": "Flixty",
+        "url": "https://flixty.nexusai.run",
+        "description": "Free, open-source social media creator studio — self-hosted alternative to Buffer and Hootsuite",
+        "foundingDate": "2024",
+        "license": "https://opensource.org/licenses/MIT"
+      },
+      {
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "What is Flixty?",
+            "acceptedAnswer": { "@type": "Answer", "text": "Flixty is a free, open-source social media creator studio that lets you write once and publish to X (Twitter), LinkedIn, Facebook, Instagram, TikTok, and YouTube simultaneously. It includes AI-assisted content generation powered by Anthropic Claude, post scheduling, live streaming, and audience targeting — all self-hosted with no monthly fees." }
+          },
+          {
+            "@type": "Question",
+            "name": "How is Flixty different from Buffer or Hootsuite?",
+            "acceptedAnswer": { "@type": "Answer", "text": "Unlike Buffer and Hootsuite, Flixty is completely free and open-source under the MIT license. You self-host it on your own server — no subscription fees, no per-seat pricing, no vendor lock-in. Flixty also includes built-in AI content generation powered by Anthropic Claude, which most paid tools charge extra for." }
+          },
+          {
+            "@type": "Question",
+            "name": "Is Flixty free?",
+            "acceptedAnswer": { "@type": "Answer", "text": "Yes. Flixty is MIT-licensed and free to use, modify, and self-host. You only pay for server hosting (typically $5–$20/month) and optional API costs for Anthropic Claude if you use AI features. There are no hidden fees, no trial periods, and no premium tiers." }
+          },
+          {
+            "@type": "Question",
+            "name": "Which social media platforms does Flixty support?",
+            "acceptedAnswer": { "@type": "Answer", "text": "Flixty supports X (Twitter), LinkedIn, Facebook, Instagram, TikTok, and YouTube. Each platform has a native OAuth integration with platform-specific content formatting, character limits, and media requirements." }
+          },
+          {
+            "@type": "Question",
+            "name": "Can Flixty generate content with AI?",
+            "acceptedAnswer": { "@type": "Answer", "text": "Yes. Flixty integrates with the Anthropic Claude API to generate platform-optimized content. You can generate a new post from a topic, rewrite existing content for a different platform's tone and character limits, adapt posts across all 6 platforms simultaneously, and get AI-suggested hashtags." }
+          },
+          {
+            "@type": "Question",
+            "name": "Does Flixty support live streaming?",
+            "acceptedAnswer": { "@type": "Answer", "text": "Yes. Flixty can create YouTube and Facebook Live broadcasts and provide RTMP server credentials and stream keys for OBS, Streamlabs, or any RTMP-compatible streaming software. TikTok and Instagram Live do not currently offer public streaming APIs." }
+          },
+          {
+            "@type": "Question",
+            "name": "How do I install Flixty?",
+            "acceptedAnswer": { "@type": "Answer", "text": "Clone the GitHub repository, run npm install, copy .env.example to .env and fill in your API credentials, then run npm start. Full setup takes approximately 15 minutes. Flixty can be deployed on NexusAI, any VPS, Railway, Render, or Docker." }
+          }
+        ]
+      },
+      {
+        "@type": "HowTo",
+        "name": "How to get started with Flixty",
+        "description": "Set up Flixty to manage and publish to 6 social media platforms simultaneously",
+        "step": [
+          { "@type": "HowToStep", "position": 1, "name": "Create your account", "text": "Sign up with your email or Google account at flixty.nexusai.run. No credit card required." },
+          { "@type": "HowToStep", "position": 2, "name": "Connect your platforms", "text": "Authenticate your X, LinkedIn, Facebook, Instagram, TikTok, and YouTube accounts using OAuth in the Settings panel." },
+          { "@type": "HowToStep", "position": 3, "name": "Write, generate, and publish", "text": "Compose your post, use AI Assist to generate platform-optimized content, preview how it looks on each platform, then publish immediately or schedule for later." }
+        ]
+      }
+    ]
+  }
+  </script>
+
+  <!-- ── Fonts ──────────────────────────────────────────────────────────── -->
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet"/>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:          #050709;
+      --bg2:         #080c10;
+      --surface:     #0c1018;
+      --surface2:    #111620;
+      --accent:      #00e5cc;
+      --accent-dim:  rgba(0,229,204,0.10);
+      --accent-glow: rgba(0,229,204,0.18);
+      --violet:      #7c6ced;
+      --violet-dim:  rgba(124,108,237,0.12);
+      --text:        #dde3ee;
+      --text-muted:  #6b778f;
+      --text-dim:    #3d4657;
+      --border:      rgba(255,255,255,0.07);
+      --border-acc:  rgba(0,229,204,0.20);
+      --r:           16px;
+    }
+
+    html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', system-ui, sans-serif;
+      font-size: 16px;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* grain overlay */
+    body::after {
+      content: '';
+      position: fixed; inset: 0; z-index: 0;
+      pointer-events: none; opacity: 0.032;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-size: 160px;
+    }
+
+    /* ── NAV ──────────────────────────────────────────────────────────── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      height: 64px; padding: 0 2rem;
+      display: flex; align-items: center; justify-content: space-between;
+      border-bottom: 1px solid transparent;
+      transition: background .3s, border-color .3s;
+    }
+    nav.scrolled {
+      background: rgba(5,7,9,.9);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border-color: var(--border);
+    }
+
+    .nav-logo { display: flex; align-items: center; gap: 9px; text-decoration: none; }
+    .nav-logo img { height: 26px; }
+    .nav-logo-name { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.2rem; color: #fff; letter-spacing: -.02em; }
+
+    .nav-links { display: flex; align-items: center; gap: .125rem; list-style: none; }
+    .nav-links a {
+      text-decoration: none; color: var(--text-muted); font-size: .875rem; font-weight: 500;
+      padding: .5rem .875rem; border-radius: 8px; transition: color .18s, background .18s;
+    }
+    .nav-links a:hover { color: var(--text); background: rgba(255,255,255,.05); }
+
+    .nav-actions { display: flex; align-items: center; gap: .625rem; }
+
+    .btn-ghost {
+      background: transparent; border: 1px solid var(--border-acc); color: var(--accent);
+      font-family: 'DM Sans', sans-serif; font-size: .875rem; font-weight: 600;
+      padding: .5rem 1.125rem; border-radius: 10px; cursor: pointer;
+      transition: background .18s; text-decoration: none; display: inline-block;
+    }
+    .btn-ghost:hover { background: var(--accent-dim); }
+
+    .btn-primary {
+      background: var(--accent); color: #050709;
+      font-family: 'DM Sans', sans-serif; font-size: .875rem; font-weight: 700;
+      padding: .5rem 1.25rem; border-radius: 10px; cursor: pointer; border: none;
+      transition: opacity .18s, transform .15s; text-decoration: none;
+      display: inline-flex; align-items: center; gap: .3rem;
+    }
+    .btn-primary:hover { opacity: .88; transform: translateY(-1px); }
+    .btn-primary:active { transform: none; }
+
+    .nav-hamburger {
+      display: none; flex-direction: column; gap: 5px;
+      cursor: pointer; padding: 4px; border: none; background: transparent;
+    }
+    .nav-hamburger span { display: block; width: 22px; height: 2px; background: var(--text); border-radius: 2px; }
+
+    .nav-mobile {
+      display: none; position: fixed; top: 64px; left: 0; right: 0; z-index: 99;
+      background: rgba(8,12,16,.97); backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border); padding: 1.5rem;
+      flex-direction: column; gap: .5rem;
+    }
+    .nav-mobile.open { display: flex; }
+    .nav-mobile a {
+      text-decoration: none; color: var(--text-muted); font-size: 1rem; font-weight: 500;
+      padding: .75rem 1rem; border-radius: 10px; transition: color .18s, background .18s;
+    }
+    .nav-mobile a:hover { color: var(--text); background: rgba(255,255,255,.05); }
+    .nav-mobile .btn-primary { margin-top: .5rem; justify-content: center; }
+
+    /* ── LAYOUT ───────────────────────────────────────────────────────── */
+    section { position: relative; z-index: 1; }
+    .container { max-width: 1100px; margin: 0 auto; padding: 0 2rem; }
+
+    /* ── HERO ─────────────────────────────────────────────────────────── */
+    #home {
+      min-height: 100vh; padding: 130px 2rem 90px;
+      display: flex; flex-direction: column; align-items: center;
+      justify-content: center; text-align: center; overflow: hidden;
+    }
+
+    .orb {
+      position: absolute; border-radius: 50%; filter: blur(88px); pointer-events: none;
+    }
+    .orb-1 {
+      width: 680px; height: 680px; top: -140px; left: 50%; transform: translateX(-50%);
+      background: radial-gradient(circle, rgba(0,229,204,.14) 0%, transparent 68%);
+      animation: float1 9s ease-in-out infinite;
+    }
+    .orb-2 {
+      width: 420px; height: 420px; bottom: 0; right: -80px;
+      background: radial-gradient(circle, rgba(124,108,237,.12) 0%, transparent 68%);
+      animation: float1 11s ease-in-out infinite reverse;
+    }
+    .orb-3 {
+      width: 320px; height: 320px; top: 45%; left: -60px;
+      background: radial-gradient(circle, rgba(0,229,204,.07) 0%, transparent 68%);
+      animation: float1 13s ease-in-out infinite;
+    }
+    @keyframes float1 {
+      0%,100% { transform: translateY(0) scale(1); }
+      50% { transform: translateY(-28px) scale(1.04); }
+    }
+    .orb-1 { animation-name: float1-center; }
+    @keyframes float1-center {
+      0%,100% { transform: translateX(-50%) translateY(0); }
+      50% { transform: translateX(-50%) translateY(-28px); }
+    }
+
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: .5rem;
+      padding: .35rem .875rem; border-radius: 100px;
+      background: var(--accent-dim); border: 1px solid rgba(0,229,204,.25);
+      font-size: .75rem; font-weight: 600; color: var(--accent);
+      letter-spacing: .06em; text-transform: uppercase; margin-bottom: 1.75rem;
+    }
+    .badge-dot {
+      width: 6px; height: 6px; border-radius: 50%; background: var(--accent);
+      animation: blink 2s ease-in-out infinite;
+    }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.4} }
+
+    .hero-h1 {
+      font-family: 'Syne', sans-serif; font-weight: 800;
+      font-size: clamp(2.6rem, 7.5vw, 5.25rem);
+      line-height: 1.04; letter-spacing: -.03em; color: #fff;
+      margin-bottom: 1.5rem; max-width: 860px;
+    }
+    .grad {
+      background: linear-gradient(130deg, var(--accent) 0%, #00c4ff 55%, var(--violet) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+
+    .hero-sub {
+      font-size: clamp(1rem, 2.2vw, 1.2rem); color: var(--text-muted);
+      max-width: 580px; margin: 0 auto 2.5rem; line-height: 1.68;
+    }
+
+    .hero-actions {
+      display: flex; align-items: center; justify-content: center;
+      gap: .875rem; flex-wrap: wrap; margin-bottom: 4rem;
+    }
+    .hero-actions .btn-primary { font-size: 1rem; padding: .75rem 1.875rem; }
+    .hero-actions .btn-ghost   { font-size: 1rem; padding: .75rem 1.5rem; }
+
+    .platforms {
+      display: flex; align-items: center; justify-content: center;
+      gap: .625rem; flex-wrap: wrap;
+      animation: fadeUp .8s ease .3s both;
+    }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:none} }
+
+    .plat-pill {
+      display: flex; align-items: center; gap: .45rem;
+      padding: .45rem .9rem; border-radius: 100px;
+      background: var(--surface); border: 1px solid var(--border);
+      font-size: .8rem; font-weight: 600; color: var(--text-muted);
+      transition: border-color .2s, color .2s;
+    }
+    .plat-pill:hover { border-color: rgba(255,255,255,.15); color: var(--text); }
+    .plat-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+    /* ── SECTION COMMONS ──────────────────────────────────────────────── */
+    .sec-label {
+      display: inline-flex; align-items: center; gap: .5rem;
+      font-size: .7rem; font-weight: 700; color: var(--accent);
+      letter-spacing: .12em; text-transform: uppercase; margin-bottom: 1.25rem;
+    }
+    .sec-label::before {
+      content: ''; display: inline-block; width: 18px; height: 2px;
+      background: var(--accent); border-radius: 2px;
+    }
+    .sec-h2 {
+      font-family: 'Syne', sans-serif; font-weight: 700;
+      font-size: clamp(1.75rem, 4.2vw, 2.75rem);
+      letter-spacing: -.025em; color: #fff; line-height: 1.14; margin-bottom: 1rem;
+    }
+    .sec-sub { font-size: 1.0625rem; color: var(--text-muted); max-width: 540px; line-height: 1.65; }
+
+    /* ── PRODUCT ──────────────────────────────────────────────────────── */
+    #product { padding: 100px 0 80px; }
+
+    .features-grid {
+      display: grid; grid-template-columns: repeat(3,1fr); gap: 1.125rem; margin-top: 3.5rem;
+    }
+    .feat-card {
+      background: var(--surface); border: 1px solid var(--border); border-radius: var(--r);
+      padding: 1.75rem; position: relative; overflow: hidden;
+      transition: border-color .25s, transform .25s, box-shadow .25s;
+    }
+    .feat-card::before {
+      content: ''; position: absolute; inset: 0; opacity: 0; transition: opacity .3s;
+      background: radial-gradient(circle at 0 0, var(--accent-dim), transparent 60%);
+    }
+    .feat-card:hover { border-color: rgba(0,229,204,.22); transform: translateY(-3px); box-shadow: 0 18px 44px rgba(0,0,0,.32); }
+    .feat-card:hover::before { opacity: 1; }
+
+    .feat-icon {
+      width: 44px; height: 44px; border-radius: 12px;
+      background: var(--accent-dim); border: 1px solid rgba(0,229,204,.2);
+      display: flex; align-items: center; justify-content: center; margin-bottom: 1.25rem;
+    }
+    .feat-icon svg { width: 20px; height: 20px; }
+    .feat-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.0625rem; color: #fff; margin-bottom: .6rem; }
+    .feat-desc { font-size: .9rem; color: var(--text-muted); line-height: 1.62; }
+
+    /* stats */
+    .stats-row {
+      display: grid; grid-template-columns: repeat(4,1fr);
+      gap: 1px; background: var(--border); border: 1px solid var(--border);
+      border-radius: var(--r); overflow: hidden; margin-top: 5rem;
+    }
+    .stat { background: var(--surface); padding: 2rem; text-align: center; }
+    .stat-n { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 2.25rem; color: var(--accent); letter-spacing: -.03em; line-height: 1; margin-bottom: .5rem; }
+    .stat-l { font-size: .875rem; color: var(--text-muted); font-weight: 500; }
+
+    /* steps */
+    .how { margin-top: 6rem; }
+    .steps {
+      display: grid; grid-template-columns: repeat(3,1fr); gap: 2rem;
+      margin-top: 3rem; position: relative;
+    }
+    .steps::before {
+      content: ''; position: absolute; top: 27px;
+      left: calc(16.666% + 1.5rem); right: calc(16.666% + 1.5rem);
+      height: 1px; background: linear-gradient(90deg, var(--accent), var(--violet)); opacity: .28;
+    }
+    .step { text-align: center; }
+    .step-n {
+      width: 54px; height: 54px; border-radius: 50%;
+      background: var(--bg2); border: 2px solid var(--accent);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1rem;
+      color: var(--accent); margin: 0 auto 1.25rem;
+      box-shadow: 0 0 22px rgba(0,229,204,.2); position: relative; z-index: 1;
+    }
+    .step-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1rem; color: #fff; margin-bottom: .5rem; }
+    .step-desc { font-size: .875rem; color: var(--text-muted); line-height: 1.6; }
+
+    /* ── ABOUT ────────────────────────────────────────────────────────── */
+    #about { padding: 100px 0; border-top: 1px solid var(--border); }
+
+    .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: start; margin-top: 3rem; }
+
+    .defn-block {
+      background: var(--surface); border-left: 3px solid var(--accent);
+      border-radius: 0 12px 12px 0; padding: 1.375rem 1.625rem;
+      font-size: .9375rem; line-height: 1.72; color: var(--text); margin-bottom: 2rem;
+    }
+
+    .about-copy p { font-size: 1rem; color: var(--text-muted); line-height: 1.75; margin-bottom: 1.25rem; }
+    .about-copy strong { color: var(--text); font-weight: 600; }
+
+    .tech-pills { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: 1.75rem; }
+    .tech-pill {
+      padding: .3rem .7rem; background: var(--surface2); border: 1px solid var(--border);
+      border-radius: 7px; font-size: .78rem; font-weight: 600; color: var(--text-muted);
+      font-family: monospace; letter-spacing: .01em;
+    }
+
+    .values { display: flex; flex-direction: column; gap: 1rem; }
+    .val {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--r); padding: 1.375rem 1.5rem;
+      transition: border-color .2s;
+    }
+    .val:hover { border-color: rgba(124,108,237,.3); }
+    .val-title {
+      font-family: 'Syne', sans-serif; font-weight: 700; font-size: .9375rem; color: #fff;
+      margin-bottom: .45rem; display: flex; align-items: center; gap: .5rem;
+    }
+    .val-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+    .val p { font-size: .875rem; color: var(--text-muted); line-height: 1.62; }
+
+    /* ── FAQ ──────────────────────────────────────────────────────────── */
+    #faq { padding: 100px 0; border-top: 1px solid var(--border); }
+
+    .faq-list {
+      margin-top: 3rem; border: 1px solid var(--border);
+      border-radius: var(--r); overflow: hidden;
+    }
+    .faq-item { border-bottom: 1px solid var(--border); }
+    .faq-item:last-child { border-bottom: none; }
+    .faq-q {
+      width: 100%; background: var(--surface); border: none;
+      padding: 1.375rem 1.75rem; text-align: left; cursor: pointer;
+      display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+      font-family: 'DM Sans', sans-serif; transition: background .15s;
+    }
+    .faq-q:hover { background: var(--surface2); }
+    .faq-qtext { font-size: 1rem; font-weight: 600; color: var(--text); line-height: 1.4; }
+    .faq-ico { width: 18px; height: 18px; flex-shrink: 0; color: var(--accent); transition: transform .24s; }
+    .faq-item.open .faq-ico { transform: rotate(45deg); }
+    .faq-a { max-height: 0; overflow: hidden; transition: max-height .32s ease; background: var(--bg2); }
+    .faq-item.open .faq-a { max-height: 320px; }
+    .faq-ai { padding: 0 1.75rem 1.5rem; font-size: .9375rem; color: var(--text-muted); line-height: 1.72; }
+    .faq-code { background: rgba(0,229,204,.1); padding: 2px 6px; border-radius: 4px; font-size: .85em; color: var(--accent); font-family: monospace; }
+
+    /* ── LOGIN CTA ────────────────────────────────────────────────────── */
+    #login { padding: 100px 0; border-top: 1px solid var(--border); }
+
+    .cta-box {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 22px; padding: 5rem 3rem; text-align: center;
+      position: relative; overflow: hidden;
+    }
+    .cta-box::before {
+      content: ''; position: absolute; top: -1px; left: 50%; transform: translateX(-50%);
+      width: 280px; height: 1px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    }
+    .cta-box::after {
+      content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+      width: 280px; height: 110px;
+      background: radial-gradient(ellipse at top, rgba(0,229,204,.1), transparent 70%);
+    }
+    .cta-h2 {
+      font-family: 'Syne', sans-serif; font-weight: 800;
+      font-size: clamp(1.75rem, 4vw, 2.5rem); color: #fff;
+      letter-spacing: -.025em; margin-bottom: 1rem;
+      position: relative; z-index: 1;
+    }
+    .cta-sub {
+      font-size: 1.0625rem; color: var(--text-muted);
+      max-width: 460px; margin: 0 auto 2.5rem; line-height: 1.65;
+      position: relative; z-index: 1;
+    }
+    .cta-actions {
+      display: flex; align-items: center; justify-content: center;
+      gap: 1rem; flex-wrap: wrap; position: relative; z-index: 1;
+    }
+    .cta-actions .btn-primary { font-size: 1rem; padding: .875rem 2rem; }
+    .cta-actions .btn-ghost   { font-size: 1rem; padding: .875rem 1.75rem; }
+
+    /* ── FOOTER ───────────────────────────────────────────────────────── */
+    footer { border-top: 1px solid var(--border); padding: 2.5rem 2rem; }
+    .foot { max-width: 1100px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1.25rem; }
+    .foot-logo { display: flex; align-items: center; gap: 8px; text-decoration: none; }
+    .foot-logo img { height: 22px; }
+    .foot-logo span { font-family: 'Syne', sans-serif; font-weight: 700; font-size: .9375rem; color: var(--text-muted); }
+    .foot-copy { font-size: .8rem; color: var(--text-dim); }
+    .foot-links { display: flex; gap: 1.5rem; list-style: none; }
+    .foot-links a { font-size: .8125rem; color: var(--text-muted); text-decoration: none; transition: color .18s; }
+    .foot-links a:hover { color: var(--text); }
+
+    /* ── AUTH MODAL ───────────────────────────────────────────────────── */
+    .overlay {
+      position: fixed; inset: 0; z-index: 200;
+      background: rgba(5,7,9,.88); backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      display: none; align-items: center; justify-content: center; padding: 1rem;
+    }
+    .overlay.open { display: flex; }
+
+    .modal {
+      background: #0c1018; border: 1px solid rgba(0,229,204,.22);
+      border-radius: 20px; padding: 2.25rem; width: 100%; max-width: 396px;
+      position: relative; box-shadow: 0 0 60px rgba(0,229,204,.07), 0 40px 80px rgba(0,0,0,.5);
+      animation: modalIn .22s ease;
+    }
+    @keyframes modalIn { from{opacity:0;transform:scale(.96) translateY(8px)} to{opacity:1;transform:none} }
+
+    .modal-x {
+      position: absolute; top: 1rem; right: 1rem; background: transparent;
+      border: none; color: var(--text-muted); cursor: pointer; font-size: 1.125rem;
+      padding: 4px 6px; border-radius: 6px; line-height: 1; transition: color .15s, background .15s;
+    }
+    .modal-x:hover { color: var(--text); background: rgba(255,255,255,.06); }
+
+    .modal-logo { text-align: center; margin-bottom: 1.75rem; }
+    .modal-logo img { height: 34px; }
+
+    .btn-google {
+      width: 100%; display: flex; align-items: center; justify-content: center; gap: .75rem;
+      padding: .75rem; border-radius: 12px; background: #fff; color: #1a1a1a;
+      font-family: 'DM Sans', sans-serif; font-size: .9375rem; font-weight: 600;
+      border: none; cursor: pointer; margin-bottom: 1.25rem; transition: opacity .18s;
+    }
+    .btn-google:hover { opacity: .9; }
+
+    .divider { display: flex; align-items: center; gap: .75rem; margin-bottom: 1.25rem; }
+    .div-line { flex: 1; height: 1px; background: var(--border); }
+    .div-text { font-size: .72rem; color: var(--text-dim); }
+
+    .tabs { display: flex; gap: .25rem; background: var(--bg); border-radius: 10px; padding: 4px; margin-bottom: 1.5rem; }
+    .tab {
+      flex: 1; padding: .5rem; border-radius: 7px; border: none; background: transparent;
+      font-family: 'DM Sans', sans-serif; font-size: .875rem; font-weight: 600;
+      color: var(--text-muted); cursor: pointer; transition: all .15s;
+    }
+    .tab.active { background: var(--accent-dim); color: var(--accent); }
+
+    .fg { margin-bottom: .9rem; }
+    .fg label { display: block; font-size: .8rem; font-weight: 600; color: var(--text-muted); margin-bottom: .35rem; }
+    .fi {
+      width: 100%; background: var(--bg); border: 1px solid var(--border);
+      border-radius: 10px; padding: .675rem .875rem; color: var(--text);
+      font-family: 'DM Sans', sans-serif; font-size: .9375rem; outline: none;
+      transition: border-color .18s;
+    }
+    .fi:focus { border-color: rgba(0,229,204,.4); }
+    .fi::placeholder { color: var(--text-dim); }
+
+    .ferr {
+      background: rgba(255,68,68,.1); border: 1px solid rgba(255,68,68,.25);
+      border-radius: 8px; padding: .6rem .875rem; font-size: .8125rem; color: #ff7070;
+      margin-bottom: .9rem; display: none;
+    }
+
+    .btn-submit {
+      width: 100%; padding: .75rem; border-radius: 12px; background: var(--accent);
+      color: #050709; font-family: 'DM Sans', sans-serif; font-size: 1rem; font-weight: 700;
+      border: none; cursor: pointer; margin-top: .2rem; transition: opacity .18s;
+    }
+    .btn-submit:hover { opacity: .88; }
+    .btn-submit:disabled { opacity: .5; cursor: not-allowed; }
+
+    /* ── RESPONSIVE ───────────────────────────────────────────────────── */
+    @media (max-width: 900px) {
+      .features-grid { grid-template-columns: repeat(2,1fr); }
+      .stats-row { grid-template-columns: repeat(2,1fr); }
+      .about-grid { grid-template-columns: 1fr; gap: 3rem; }
+      .steps { grid-template-columns: 1fr; }
+      .steps::before { display: none; }
+    }
+    @media (max-width: 640px) {
+      .nav-links, .nav-actions { display: none; }
+      .nav-hamburger { display: flex; }
+      .features-grid { grid-template-columns: 1fr; }
+      .cta-box { padding: 3rem 1.5rem; }
+      .foot { flex-direction: column; text-align: center; }
+      .foot-links { justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── NAV ─────────────────────────────────────────────────────────────── -->
+<nav id="nav">
+  <a href="/" class="nav-logo">
+    <img src="/LFITX.png" alt="Flixty"/>
+    <span class="nav-logo-name">Flixty</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#home">Home</a></li>
+    <li><a href="#product">Product</a></li>
+    <li><a href="#about">About Us</a></li>
+    <li><a href="#login">Login</a></li>
+  </ul>
+  <div class="nav-actions">
+    <button class="btn-ghost" onclick="openAuth('login')">Sign In</button>
+    <button class="btn-primary" onclick="openAuth('register')">Get Started Free ›</button>
+  </div>
+  <button class="nav-hamburger" onclick="toggleNav()" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<div class="nav-mobile" id="nav-mobile">
+  <a href="#home" onclick="closeNav()">Home</a>
+  <a href="#product" onclick="closeNav()">Product</a>
+  <a href="#about" onclick="closeNav()">About Us</a>
+  <a href="#login" onclick="closeNav()">Login</a>
+  <button class="btn-primary" onclick="closeNav();openAuth('register')">Get Started Free ›</button>
+</div>
+
+<!-- ── HERO ──────────────────────────────────────────────────────────────── -->
+<section id="home">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+
+  <div class="hero-badge"><span class="badge-dot"></span>Free &amp; Open-Source · MIT Licensed</div>
+
+  <h1 class="hero-h1">
+    Write Once.<br/>
+    <span class="grad">Publish Everywhere.</span>
+  </h1>
+
+  <p class="hero-sub">
+    The free, self-hosted social media creator studio. AI-assisted content, smart scheduling, and live streaming — for X, LinkedIn, Facebook, Instagram, TikTok, and YouTube, from one command center.
+  </p>
+
+  <div class="hero-actions">
+    <button class="btn-primary" onclick="openAuth('register')">Start for Free &nbsp;→</button>
+    <a class="btn-ghost" href="https://github.com/nexusrun/flixty" target="_blank" rel="noopener">View on GitHub</a>
+  </div>
+
+  <div class="platforms">
+    <span class="plat-pill"><span class="plat-dot" style="background:#1d9bf0"></span>X / Twitter</span>
+    <span class="plat-pill"><span class="plat-dot" style="background:#0a66c2"></span>LinkedIn</span>
+    <span class="plat-pill"><span class="plat-dot" style="background:#1877f2"></span>Facebook</span>
+    <span class="plat-pill"><span class="plat-dot" style="background:#e1306c"></span>Instagram</span>
+    <span class="plat-pill"><span class="plat-dot" style="background:#69c9d0"></span>TikTok</span>
+    <span class="plat-pill"><span class="plat-dot" style="background:#ff0000"></span>YouTube</span>
+  </div>
+</section>
+
+<!-- ── PRODUCT ───────────────────────────────────────────────────────────── -->
+<section id="product">
+  <div class="container">
+    <span class="sec-label">Product</span>
+    <h2 class="sec-h2">Everything a creator needs.<br/>Nothing they don't.</h2>
+    <p class="sec-sub">Six platforms. One compose window. AI that writes for each platform's tone, character limits, and audience.</p>
+
+    <div class="features-grid">
+
+      <div class="feat-card">
+        <div class="feat-icon">
+          <svg fill="none" viewBox="0 0 24 24" stroke="#00e5cc" stroke-width="1.8">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/>
+          </svg>
+        </div>
+        <h3 class="feat-title">AI Content Engine</h3>
+        <p class="feat-desc">Generate platform-optimized posts with Anthropic Claude. Each platform gets content tuned to its tone, character limits, and audience — all from one prompt.</p>
+      </div>
+
+      <div class="feat-card">
+        <div class="feat-icon">
+          <svg fill="none" viewBox="0 0 24 24" stroke="#00e5cc" stroke-width="1.8">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186l9.566-5.314m-9.566 7.5l9.566 5.314m0 0a2.25 2.25 0 103.935 2.186 2.25 2.25 0 00-3.935-2.186zm0-12.814a2.25 2.25 0 103.933-2.185 2.25 2.25 0 00-3.933 2.185z"/>
+          </svg>
+        </div>
+        <h3 class="feat-title">Multi-Platform Publisher</h3>
+        <p class="feat-desc">Post to X, LinkedIn, Facebook, Instagram, TikTok, and YouTube simultaneously from one compose window. One action — six platforms, zero repetition.</p>
+      </div>
+
+      <div class="feat-card">
+        <div class="feat-icon">
+          <svg fill="none" viewBox="0 0 24 24" stroke="#00e5cc" stroke-width="1.8">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 9v7.5"/>
+          </svg>
+        </div>
+        <h3 class="feat-title">Smart Scheduler</h3>
+        <p class="feat-desc">Schedule posts with a calendar view. A built-in cron engine publishes them automatically at the exact moment you choose — even while you sleep.</p>
+      </div>
+
+      <div class="feat-card">
+        <div class="feat-icon">
+          <svg fill="none" viewBox="0 0 24 24" stroke="#00e5cc" stroke-width="1.8">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.348a1.125 1.125 0 010 1.971l-11.54 6.347a1.125 1.125 0 01-1.667-.985V5.653z"/>
+          </svg>
+        </div>
+        <h3 class="feat-title">Live Streaming Hub</h3>
+        <p class="feat-desc">Create YouTube and Facebook Live broadcasts. Get RTMP server credentials and stream keys for OBS, Streamlabs, or any compatible streaming software.</p>
+      </div>
+
+      <div class="feat-card">
+        <div class="feat-icon">
+          <svg fill="none" viewBox="0 0 24 24" stroke="#00e5cc" stroke-width="1.8">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"/>
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+          </svg>
+        </div>
+        <h3 class="feat-title">Live Preview</h3>
+        <p class="feat-desc">See exactly how your post looks on each platform — formatting, character count, media layout — before you publish. No surprises after the fact.</p>
+      </div>
+
+      <div class="feat-card">
+        <div class="feat-icon">
+          <svg fill="none" viewBox="0 0 24 24" stroke="#00e5cc" stroke-width="1.8">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z"/>
+            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z"/>
+          </svg>
+        </div>
+        <h3 class="feat-title">Audience Targeting</h3>
+        <p class="feat-desc">Configure age, gender, location, language, interest, industry, and device targeting per platform. Reach the right people — not just any people.</p>
+      </div>
+
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-row">
+      <div class="stat"><div class="stat-n">6</div><div class="stat-l">Social Platforms</div></div>
+      <div class="stat"><div class="stat-n">$0</div><div class="stat-l">Monthly Fee</div></div>
+      <div class="stat"><div class="stat-n">AI</div><div class="stat-l">Content Generation</div></div>
+      <div class="stat"><div class="stat-n">MIT</div><div class="stat-l">Open Source License</div></div>
+    </div>
+
+    <!-- How it works -->
+    <div class="how">
+      <span class="sec-label">How It Works</span>
+      <h2 class="sec-h2">Up and running in 3 steps.</h2>
+      <div class="steps">
+        <div class="step">
+          <div class="step-n">01</div>
+          <h3 class="step-title">Create your account</h3>
+          <p class="step-desc">Sign up with your email or Google account. No credit card, no trial — free from day one.</p>
+        </div>
+        <div class="step">
+          <div class="step-n">02</div>
+          <h3 class="step-title">Connect your platforms</h3>
+          <p class="step-desc">Authenticate your social accounts with OAuth. Flixty handles all platform-specific permissions securely.</p>
+        </div>
+        <div class="step">
+          <div class="step-n">03</div>
+          <h3 class="step-title">Write, generate, publish</h3>
+          <p class="step-desc">Compose your post, let AI adapt it per platform, preview the result, then publish now or schedule for later.</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── ABOUT ──────────────────────────────────────────────────────────────── -->
+<section id="about">
+  <div class="container">
+    <span class="sec-label">About Us</span>
+    <h2 class="sec-h2">Built by creators, for creators.</h2>
+
+    <div class="about-grid">
+      <div class="about-copy">
+        <div class="defn-block">
+          <strong>Flixty</strong> is a free, open-source social media creator studio that enables individuals and teams to publish to X (Twitter), LinkedIn, Facebook, Instagram, TikTok, and YouTube simultaneously — with built-in AI content generation, scheduling, and live streaming.
+        </div>
+        <p>We built Flixty because we got tired of paying $99/month for features that should be free. Every major social media tool charges per seat, per platform, and per feature — pricing out the independent creators who need these tools most.</p>
+        <p>Flixty tears down that wall. <strong>Every feature is free. Every platform is included. No upsells, no limits, no lock-in.</strong> Deploy it on your own server and own your tooling entirely.</p>
+        <p>Powered by <strong>Anthropic Claude</strong> for AI content generation — the same model behind Claude.ai — Flixty gives you enterprise-grade AI without the enterprise price tag.</p>
+        <div class="tech-pills">
+          <span class="tech-pill">Node.js</span>
+          <span class="tech-pill">Express</span>
+          <span class="tech-pill">Anthropic Claude</span>
+          <span class="tech-pill">Google OAuth</span>
+          <span class="tech-pill">MIT License</span>
+        </div>
+      </div>
+
+      <div class="values">
+        <div class="val">
+          <div class="val-title"><span class="val-dot" style="background:var(--violet)"></span>Free. Always.</div>
+          <p>MIT-licensed and free to use forever. No trial periods, no paywalls, no "freemium" traps. You only pay for your own server hosting.</p>
+        </div>
+        <div class="val">
+          <div class="val-title"><span class="val-dot" style="background:var(--accent)"></span>Your data. Your server.</div>
+          <p>Self-hosted by design. Your content, tokens, and audience data never touch our servers. You own every byte.</p>
+        </div>
+        <div class="val">
+          <div class="val-title"><span class="val-dot" style="background:#f59e0b"></span>Open and auditable.</div>
+          <p>Every line of code is public on GitHub. Audit it, fork it, contribute to it. No black boxes, no proprietary algorithms.</p>
+        </div>
+        <div class="val">
+          <div class="val-title"><span class="val-dot" style="background:#34d399"></span>Built for the long run.</div>
+          <p>Vanilla JS and Node.js — no frontend framework to abandon. Flixty will run for years without forced migrations.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FAQ ────────────────────────────────────────────────────────────────── -->
+<section id="faq">
+  <div class="container">
+    <span class="sec-label">FAQ</span>
+    <h2 class="sec-h2">Common questions,<br/>direct answers.</h2>
+    <p class="sec-sub">Everything you need to know before you start.</p>
+
+    <div class="faq-list">
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span class="faq-qtext">What is Flixty?</span>
+          <svg class="faq-ico" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+        </button>
+        <div class="faq-a"><div class="faq-ai">Flixty is a free, open-source social media creator studio that lets you write once and publish to X (Twitter), LinkedIn, Facebook, Instagram, TikTok, and YouTube simultaneously. It includes AI-assisted content generation powered by Anthropic Claude, post scheduling with a calendar view, live streaming to YouTube and Facebook, real-time platform previews, and audience targeting — all self-hosted with no monthly fees.</div></div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span class="faq-qtext">How is Flixty different from Buffer or Hootsuite?</span>
+          <svg class="faq-ico" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+        </button>
+        <div class="faq-a"><div class="faq-ai">Unlike Buffer and Hootsuite, Flixty is completely free and open-source under the MIT license. You self-host it on your own server — no subscription fees, no per-seat pricing, no vendor lock-in. Flixty also includes built-in AI content generation powered by Anthropic Claude, which most paid tools charge extra for. Because you host it yourself, your data never leaves your infrastructure.</div></div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span class="faq-qtext">Is Flixty really free?</span>
+          <svg class="faq-ico" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+        </button>
+        <div class="faq-a"><div class="faq-ai">Yes. Flixty is MIT-licensed and free to use, modify, and self-host. You only pay for server hosting (typically $5–$20/month on any cloud provider) and optional API costs for Anthropic Claude if you use AI features. No hidden fees, no trial periods, no premium tiers.</div></div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span class="faq-qtext">Which social media platforms does Flixty support?</span>
+          <svg class="faq-ico" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+        </button>
+        <div class="faq-a"><div class="faq-ai">Flixty supports X (Twitter), LinkedIn, Facebook, Instagram, TikTok, and YouTube. Each platform has a native OAuth integration with platform-specific content formatting, character limits, and media requirements handled automatically.</div></div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span class="faq-qtext">Can Flixty generate content with AI?</span>
+          <svg class="faq-ico" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+        </button>
+        <div class="faq-a"><div class="faq-ai">Yes. Flixty integrates with the Anthropic Claude API to generate platform-optimized content. You can generate a new post from a topic, rewrite existing content adapted for a different platform's tone and character limits, and get AI-suggested hashtags — all from inside the compose window.</div></div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span class="faq-qtext">Does Flixty support live streaming?</span>
+          <svg class="faq-ico" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+        </button>
+        <div class="faq-a"><div class="faq-ai">Yes. Flixty creates YouTube and Facebook Live broadcasts and provides RTMP server credentials and stream keys for OBS, Streamlabs, or any RTMP-compatible software. Note: TikTok and Instagram Live do not currently offer public streaming APIs, so those platforms are not supported for live streaming.</div></div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span class="faq-qtext">How do I install and deploy Flixty?</span>
+          <svg class="faq-ico" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+        </button>
+        <div class="faq-a"><div class="faq-ai">Clone the GitHub repository, run <code class="faq-code">npm install</code>, copy <code class="faq-code">.env.example</code> to <code class="faq-code">.env</code> and fill in your API credentials, then run <code class="faq-code">npm start</code>. Full setup takes about 15 minutes. Flixty deploys on NexusAI, any VPS, Railway, Render, or Docker.</div></div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ── LOGIN / CTA ─────────────────────────────────────────────────────────── -->
+<section id="login">
+  <div class="container">
+    <div class="cta-box">
+      <h2 class="cta-h2">Ready to publish smarter?</h2>
+      <p class="cta-sub">Replace your $99/month tool with something better — and free. No credit card required.</p>
+      <div class="cta-actions">
+        <button class="btn-primary" onclick="openAuth('register')">Create Free Account &nbsp;→</button>
+        <button class="btn-ghost" onclick="openAuth('login')">Sign In</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FOOTER ──────────────────────────────────────────────────────────────── -->
+<footer>
+  <div class="foot">
+    <a href="/" class="foot-logo">
+      <img src="/LFITX.png" alt="Flixty"/>
+      <span>Flixty</span>
+    </a>
+    <p class="foot-copy" style="text-align:center">© 2025 Flixty · MIT License · Open-Source Social Media Creator Studio<br/><span style="color:#fff;font-weight:500">Powered by </span><a href="https://nexusai.run" target="_blank" rel="noopener" style="color:#fff;text-decoration:none;font-weight:700">NEXUS AI</a></p>
+    <ul class="foot-links">
+      <li><a href="#home">Home</a></li>
+      <li><a href="#product">Product</a></li>
+      <li><a href="#about">About</a></li>
+      <li><a href="#faq">FAQ</a></li>
+      <li><a href="https://github.com/nexusrun/flixty" target="_blank" rel="noopener">GitHub</a></li>
+    </ul>
+  </div>
+</footer>
+
+<!-- ── AUTH MODAL ──────────────────────────────────────────────────────────── -->
+<div class="overlay" id="auth-overlay" onclick="overlayClick(event)">
+  <div class="modal">
+    <button class="modal-x" onclick="closeAuth()">✕</button>
+
+    <div class="modal-logo"><img src="/LFITX.png" alt="Flixty"/></div>
+
+    <button class="btn-google" onclick="googleSignIn()">
+      <svg width="18" height="18" viewBox="0 0 24 24">
+        <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+        <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+        <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/>
+        <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+      </svg>
+      Continue with Google
+    </button>
+
+    <div class="divider"><div class="div-line"></div><span class="div-text">or</span><div class="div-line"></div></div>
+
+    <div class="tabs">
+      <button class="tab active" id="tab-login" onclick="switchTab('login')">Sign In</button>
+      <button class="tab" id="tab-register" onclick="switchTab('register')">Create Account</button>
+    </div>
+
+    <!-- Login -->
+    <form id="form-login" onsubmit="submitLogin(event)">
+      <div class="ferr" id="login-err"></div>
+      <div class="fg"><label for="l-email">Email</label><input id="l-email" type="email" class="fi" placeholder="you@example.com" required/></div>
+      <div class="fg"><label for="l-pass">Password</label><input id="l-pass" type="password" class="fi" placeholder="••••••••" required/></div>
+      <button type="submit" id="btn-login" class="btn-submit">Sign In</button>
+    </form>
+
+    <!-- Register -->
+    <form id="form-register" onsubmit="submitRegister(event)" style="display:none">
+      <div class="ferr" id="reg-err"></div>
+      <div class="fg"><label for="r-name">Name</label><input id="r-name" type="text" class="fi" placeholder="Your name" required/></div>
+      <div class="fg"><label for="r-email">Email</label><input id="r-email" type="email" class="fi" placeholder="you@example.com" required/></div>
+      <div class="fg"><label for="r-pass">Password</label><input id="r-pass" type="password" class="fi" placeholder="Min. 8 characters" minlength="8" required/></div>
+      <button type="submit" id="btn-register" class="btn-submit">Create Account</button>
+    </form>
+  </div>
+</div>
+
+<script>
+  // nav scroll
+  const nav = document.getElementById('nav')
+  window.addEventListener('scroll', () => nav.classList.toggle('scrolled', scrollY > 20), {passive:true})
+
+  // mobile nav
+  function toggleNav() { document.getElementById('nav-mobile').classList.toggle('open') }
+  function closeNav()  { document.getElementById('nav-mobile').classList.remove('open') }
+
+  // faq
+  function toggleFaq(btn) {
+    const item = btn.closest('.faq-item')
+    const was  = item.classList.contains('open')
+    document.querySelectorAll('.faq-item.open').forEach(el => el.classList.remove('open'))
+    if (!was) item.classList.add('open')
+  }
+
+  // auth modal
+  function openAuth(tab) { document.getElementById('auth-overlay').classList.add('open'); switchTab(tab||'login') }
+  function closeAuth()    { document.getElementById('auth-overlay').classList.remove('open') }
+  function overlayClick(e){ if (e.target===document.getElementById('auth-overlay')) closeAuth() }
+  document.addEventListener('keydown', e => { if (e.key==='Escape') closeAuth() })
+
+  function switchTab(tab) {
+    var login = tab==='login'
+    document.getElementById('form-login').style.display    = login ? '' : 'none'
+    document.getElementById('form-register').style.display = login ? 'none' : ''
+    document.getElementById('tab-login').classList.toggle('active', login)
+    document.getElementById('tab-register').classList.toggle('active', !login)
+  }
+
+  // google
+  function googleSignIn() {
+    window.open('/api/user/google', 'google-login', 'width=520,height=620,scrollbars=yes')
+  }
+  window.addEventListener('message', e => { if (e.data==='google-login-success') onSuccess() })
+
+  // login
+  async function submitLogin(e) {
+    e.preventDefault()
+    var err=document.getElementById('login-err'), btn=document.getElementById('btn-login')
+    err.style.display='none'; btn.textContent='Signing in…'; btn.disabled=true
+    try {
+      var r = await fetch('/api/user/login',{method:'POST',headers:{'Content-Type':'application/json'},credentials:'include',body:JSON.stringify({email:document.getElementById('l-email').value,password:document.getElementById('l-pass').value})})
+      var d = await r.json()
+      if (!r.ok){err.textContent=d.error||'Login failed';err.style.display='';return}
+      onSuccess()
+    } catch { err.textContent='Cannot reach server'; err.style.display='' }
+    finally  { btn.textContent='Sign In'; btn.disabled=false }
+  }
+
+  // register
+  async function submitRegister(e) {
+    e.preventDefault()
+    var err=document.getElementById('reg-err'), btn=document.getElementById('btn-register')
+    err.style.display='none'; btn.textContent='Creating…'; btn.disabled=true
+    try {
+      var r = await fetch('/api/user/register',{method:'POST',headers:{'Content-Type':'application/json'},credentials:'include',body:JSON.stringify({name:document.getElementById('r-name').value,email:document.getElementById('r-email').value,password:document.getElementById('r-pass').value})})
+      var d = await r.json()
+      if (!r.ok){err.textContent=d.error||'Registration failed';err.style.display='';return}
+      onSuccess()
+    } catch { err.textContent='Cannot reach server'; err.style.display='' }
+    finally  { btn.textContent='Create Account'; btn.disabled=false }
+  }
+
+  function onSuccess() { window.location.href = '/' }
+
+  // redirect if already logged in
+  fetch('/api/user/me',{credentials:'include'}).then(r=>{ if(r.ok) window.location.href='/' }).catch(()=>{})
+</script>
+</body>
+</html>
