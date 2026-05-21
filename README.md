@@ -356,4 +356,8 @@ Pull requests are welcome. For major changes, please open an issue first to disc
 
 ## License
 
+<<<<<<< HEAD
 MIT — see [LICENSE](LICENSE) for details.**
+=======
+MIT — see [LICENSE](LICENSE) for details**
+>>>>>>> ac3b132 (Update README.md)
