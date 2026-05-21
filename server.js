@@ -31,7 +31,7 @@ app.use(session({
   secret: process.env.SESSION_SECRET || 'curator-dev-secret',
   resave: false,
   saveUninitialized: false,
-  cookie: { secure: (process.env.BASE_URL || '').startsWith('https'), sameSite: 'strict', maxAge: 7 * 24 * 60 * 60 * 1000 } // 7-day session
+  cookie: { secure: (process.env.BASE_URL || '').startsWith('https'), sameSite: 'lax', maxAge: 7 * 24 * 60 * 60 * 1000 } // 7-day session
 }))
 
 // Serve frontend
