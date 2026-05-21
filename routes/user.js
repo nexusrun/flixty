@@ -81,16 +81,19 @@ router.get('/google', (req, res) => {
   if (!GOOGLE_CLIENT_ID) return res.status(503).send('<p>Google Sign-In is not configured on this server.</p>')
   const state = crypto.randomBytes(16).toString('hex')
   req.session.googleLoginState = state
-  const params = new URLSearchParams({
-    client_id:     GOOGLE_CLIENT_ID,
-    redirect_uri:  googleRedirectUri(),
-    response_type: 'code',
-    scope:         'openid email profile',
-    state,
-    access_type:   'online',
-    prompt:        'select_account',
+  req.session.save(err => {
+    if (err) return res.status(500).send('<p>Session error — please try again.</p>')
+    const params = new URLSearchParams({
+      client_id:     GOOGLE_CLIENT_ID,
+      redirect_uri:  googleRedirectUri(),
+      response_type: 'code',
+      scope:         'openid email profile',
+      state,
+      access_type:   'online',
+      prompt:        'select_account',
+    })
+    res.redirect(`https://accounts.google.com/o/oauth2/v2/auth?${params}`)
   })
-  res.redirect(`https://accounts.google.com/o/oauth2/v2/auth?${params}`)
 })
 
 // GET /api/user/google/callback  — Google redirects here after consent
