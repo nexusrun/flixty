@@ -21,6 +21,10 @@ fs.mkdirSync(path.join(__dirname, 'data/uploads'), { recursive: true })
 
 const app = express()
 
+// Trust the reverse proxy (Nexus AI / nginx) so req.secure reflects HTTPS
+// and express-session sends Secure cookies correctly
+app.set('trust proxy', 1)
+
 app.use(cors({
   origin: process.env.BASE_URL || 'http://localhost:3000',
   credentials: true
