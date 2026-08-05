@@ -11,6 +11,8 @@ import aiRoutes from './routes/ai.js'
 import liveRoutes from './routes/live.js'
 import userRoutes from './routes/user.js'
 import analyticsRoutes from './routes/analytics.js'
+import oauthServerRoutes from './routes/oauthServer.js'
+import mcpRoutes from './routes/mcp.js'
 import { requireAuth } from './lib/auth.js'
 import { startScheduler } from './lib/scheduler.js'
 import { runMigrations } from './lib/db/migrate.js'
@@ -68,6 +70,12 @@ app.use('/api', postRoutes)
 app.use('/api/ai', requireAuth, aiRoutes)
 app.use('/api/live', requireAuth, liveRoutes)
 app.use('/api/analytics', requireAuth, analyticsRoutes)
+
+// MCP: OAuth 2.1 authorization server (register/authorize/token, public by
+// design — DCR and the consent screen handle their own auth) + the /mcp
+// endpoint itself (bearer-token protected, see routes/mcp.js).
+app.use(oauthServerRoutes)
+app.use(mcpRoutes)
 
 app.get('/health', (_req, res) => res.json({ ok: true, time: new Date().toISOString() }))
 
