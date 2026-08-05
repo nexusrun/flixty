@@ -15,7 +15,13 @@ function safeUploadPath(filePath) {
 const CLIENT_KEY    = process.env.TIKTOK_CLIENT_KEY
 const CLIENT_SECRET = process.env.TIKTOK_CLIENT_SECRET
 const REDIRECT_URI  = `${process.env.BASE_URL}/auth/tiktok/callback`
-const SCOPES        = ['user.info.basic', 'video.publish', 'video.upload', 'video.list']
+// Posting is web-intent only (see lib/webPublish.js) — never calls TikTok's
+// own publish/upload/query APIs, so this only requests the one scope that's
+// actually used. video.publish/video.upload/video.list all require TikTok's
+// Content Posting API approval to even request, and an app that isn't
+// approved for a scope gets its whole authorization request rejected by
+// TikTok before the user sees a consent screen — not just that feature.
+const SCOPES        = ['user.info.basic']
 
 // In-memory PKCE store (single-user local app)
 const pkceStore = new Map()

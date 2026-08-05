@@ -84,8 +84,17 @@ router.get('/facebook/callback', async (req, res) => {
     )
     const page = pages[0]
     await saveToken(req.session.userId, 'facebook', { userToken: tok.access_token, pageToken: page.access_token, pageId: page.id, pageName: page.name, fbUserId })
-    const igId = await facebook.getInstagramAccountId(page.id, page.access_token)
-    if (igId) await saveToken(req.session.userId, 'instagram', { pageToken: page.access_token, igAccountId: igId, pageId: page.id })
+
+    // The linked Instagram Business Account can be on any of the user's
+    // pages, not necessarily the first one — check them all rather than
+    // only ever looking at pages[0].
+    for (const p of pages) {
+      const igId = await facebook.getInstagramAccountId(p.id, p.access_token)
+      if (igId) {
+        await saveToken(req.session.userId, 'instagram', { pageToken: p.access_token, igAccountId: igId, pageId: p.id })
+        break
+      }
+    }
     res.send(SUCCESS_HTML)
   } catch (e) { fail(res, e.response?.data?.error?.message || e.message) }
 })
