@@ -2924,10 +2924,51 @@
         const fail = Object.keys(data.errors || {})
         if (ok.length) showToast('Published to: ' + ok.join(', '))
         else showToast('Failed: ' + Object.values(data.errors)[0])
+
+        openWebPublishActions(data.results)
       } catch (e) {
         showToast('Cannot reach backend. Is it running?')
       } finally {
         if (btn) { btn.textContent = 'Publish Now'; btn.disabled = false }
+      }
+    }
+
+    // X and TikTok have no working API path (X needs paid access, TikTok needs
+    // app approval) — instead the backend hands back a link to the platform's
+    // own web posting interface for the user to finish manually.
+    function openWebPublishActions(results) {
+      if (!results) return
+      if (results.x && results.x.pending && results.x.url) {
+        window.open(results.x.url, '_blank')
+      }
+      if (results.tiktok && results.tiktok.pending && results.tiktok.url) {
+        window.open(results.tiktok.url, '_blank')
+        if (results.tiktok.caption && navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(results.tiktok.caption).catch(function () {})
+        }
+        var msg = 'TikTok upload page opened — caption copied, paste it in.'
+        if (results.tiktok.downloadUrl) msg += ' Video: ' + results.tiktok.downloadUrl
+        showToast(msg)
+      }
+    }
+
+    async function markPlatformPosted(postId, platform, btn) {
+      if (btn) { btn.disabled = true; btn.textContent = 'Saving…' }
+      try {
+        const res = await fetch(`${BACKEND}/api/posts/${postId}/mark-posted`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ platform })
+        })
+        if (!res.ok) { showToast('Could not update'); return }
+        var row = btn ? btn.closest('[data-pending-row]') : null
+        if (row) row.remove()
+        showToast('Marked as posted')
+      } catch (e) {
+        showToast('Cannot reach backend')
+      } finally {
+        if (btn) { btn.disabled = false; btn.textContent = 'Mark as posted' }
       }
     }
 
@@ -3356,6 +3397,38 @@
 
         contentDiv.appendChild(headerRow);
         contentDiv.appendChild(chipsRow);
+
+        // X/TikTok posts made via the web-intent flow need the user to finish
+        // manually on the platform's own site — show a "finish posting" prompt
+        // for each platform still marked pending.
+        ['x', 'tiktok'].forEach(function (pl) {
+          var action = post.results && post.results[pl];
+          if (!action || !action.pending) return;
+
+          var pendingRow = document.createElement('div');
+          pendingRow.setAttribute('data-pending-row', '');
+          pendingRow.className = 'flex items-center gap-2 mt-2 pt-2';
+          pendingRow.style.borderTop = '1px solid var(--outline-variant)';
+
+          var label = document.createElement('span');
+          label.className = 'text-xs text-on-surface-variant';
+          label.textContent = platformLabel(pl) + ': not posted yet';
+          pendingRow.appendChild(label);
+
+          var openBtn = document.createElement('button');
+          openBtn.className = 'ml-auto text-xs px-2.5 py-1 rounded-full font-medium bg-surface-container text-on-surface transition-all hover:bg-surface-container-high';
+          openBtn.textContent = 'Open ' + platformLabel(pl);
+          openBtn.onclick = function () { window.open(action.url, '_blank'); };
+          pendingRow.appendChild(openBtn);
+
+          var doneBtn = document.createElement('button');
+          doneBtn.className = 'text-xs px-2.5 py-1 rounded-full font-medium bg-surface-container text-on-surface transition-all hover:bg-surface-container-high';
+          doneBtn.textContent = 'Mark as posted';
+          doneBtn.onclick = function (e) { markPlatformPosted(post.id, pl, e.currentTarget); };
+          pendingRow.appendChild(doneBtn);
+
+          contentDiv.appendChild(pendingRow);
+        });
 
         var rowDiv = document.createElement('div');
         rowDiv.className = 'flex items-start gap-3';

@@ -2,14 +2,12 @@ import { Router } from 'express'
 import multer from 'multer'
 import path from 'path'
 import { fileURLToPath } from 'url'
-import * as twitter from '../platforms/twitter.js'
 import * as linkedin from '../platforms/linkedin.js'
 import * as facebook from '../platforms/facebook.js'
 import * as instagram from '../platforms/instagram.js'
 import * as youtube from '../platforms/youtube.js'
-import * as tiktok from '../platforms/tiktok.js'
-import { getTokens, saveToken, savePost, getPosts, saveScheduled, getScheduled, removeScheduled } from '../lib/store.js'
-import { publishPost } from '../lib/scheduler.js'
+import { getTokens, saveToken, savePost, getPosts, saveScheduled, getScheduled, removeScheduled, markPlatformPosted } from '../lib/store.js'
+import { buildXWebAction, buildTiktokWebAction } from '../lib/webPublish.js'
 import { requireAuth } from '../lib/auth.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -34,11 +32,17 @@ router.post('/publish', requireAuth, upload.single('media'), async (req, res) =>
     ? `${process.env.BASE_URL}/uploads/${req.file.filename}`
     : imageUrl || null
 
-  await Promise.allSettled(platforms.map(async platform => {
+  // X and TikTok don't go through their APIs (X needs paid API access, TikTok
+  // needs app review approval) — instead we hand back a link to the platform's
+  // own web posting interface, pre-filled where possible, for the user to
+  // finish manually. No token required for either.
+  if (platforms.includes('x')) results.x = buildXWebAction(text)
+  if (platforms.includes('tiktok')) results.tiktok = buildTiktokWebAction(text, mediaUrl)
+
+  await Promise.allSettled(platforms.filter(p => p !== 'x' && p !== 'tiktok').map(async platform => {
     const tok = tokens[platform]
     if (!tok) { errors[platform] = 'Not connected — visit /auth/' + platform; return }
     try {
-      if (platform === 'x')        results.x        = await twitter.postTweet(tok.access_token, text)
       if (platform === 'linkedin') results.linkedin = await linkedin.postUpdate(tok.access_token, tok.personId, text)
       if (platform === 'facebook') {
         const isVideo = req.file && req.file.mimetype.startsWith('video/')
@@ -53,10 +57,6 @@ router.post('/publish', requireAuth, upload.single('media'), async (req, res) =>
       if (platform === 'instagram') {
         if (!mediaUrl) { errors.instagram = 'Instagram requires an image URL'; return }
         results.instagram = await instagram.post(tok.igAccountId, tok.pageToken, { imageUrl: mediaUrl, caption: text })
-      }
-      if (platform === 'tiktok') {
-        if (!req.file) { errors.tiktok = 'TikTok requires a video file — attach one before publishing'; return }
-        results.tiktok = await tiktok.uploadVideo(tok.access_token, req.file.path, { caption: text })
       }
       if (platform === 'youtube') {
         if (!req.file) { errors.youtube = 'YouTube requires a video file — attach one before publishing'; return }
@@ -96,5 +96,14 @@ router.delete('/scheduled/:id', requireAuth, async (req, res) => {
 
 router.get('/posts',     requireAuth, async (req, res) => res.json(await getPosts(req.session.userId)))
 router.get('/scheduled', requireAuth, async (req, res) => res.json(await getScheduled(req.session.userId)))
+
+// Confirms a manual web-posted platform (X/TikTok) is done — clears the "pending" flag.
+router.patch('/posts/:id/mark-posted', requireAuth, async (req, res) => {
+  const { platform } = req.body
+  if (!platform) return res.status(400).json({ error: 'platform required' })
+  const post = await markPlatformPosted(req.session.userId, Number(req.params.id), platform)
+  if (!post) return res.status(404).json({ error: 'Post not found' })
+  res.json({ ok: true, post })
+})
 
 export default router
