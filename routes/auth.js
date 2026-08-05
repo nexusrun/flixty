@@ -17,8 +17,8 @@ const SUCCESS_HTML = `<html><body><script>
 const fail = (res, msg) => res.status(400).send(`<p>Error: ${msg}</p>`)
 
 // Status — which platforms are connected + display names
-router.get('/status', (_req, res) => {
-  const tokens = getTokens()
+router.get('/status', async (_req, res) => {
+  const tokens = await getTokens()
   const status = {}
   for (const [p, d] of Object.entries(tokens)) {
     status[p] = { connected: true, savedAt: d.savedAt, displayName: d.displayName || null, username: d.username || null, pageName: d.pageName || null }
@@ -37,11 +37,11 @@ router.get('/x/callback', async (req, res) => {
   try {
     const tok = await twitter.exchangeCode(req.query.code, req.query.state)
     const user = await twitter.getUser(tok.access_token)
-    saveToken('x', { ...tok, displayName: user.name, username: user.username })
+    await saveToken('x', { ...tok, displayName: user.name, username: user.username })
     res.send(SUCCESS_HTML)
   } catch (e) { fail(res, e.response?.data?.error_description || e.message) }
 })
-router.delete('/x', requireAuth, (_req, res) => { removeToken('x'); res.json({ ok: true }) })
+router.delete('/x', requireAuth, async (_req, res) => { await removeToken('x'); res.json({ ok: true }) })
 
 // ── LinkedIn ──
 router.get('/linkedin', requireAuth, (req, res) => {
@@ -54,11 +54,11 @@ router.get('/linkedin/callback', async (req, res) => {
   try {
     const tok = await linkedin.exchangeCode(req.query.code)
     const profile = await linkedin.getProfile(tok.access_token)
-    saveToken('linkedin', { ...tok, personId: profile.sub, displayName: profile.name || null, username: profile.email || null })
+    await saveToken('linkedin', { ...tok, personId: profile.sub, displayName: profile.name || null, username: profile.email || null })
     res.send(SUCCESS_HTML)
   } catch (e) { fail(res, e.response?.data?.message || e.message) }
 })
-router.delete('/linkedin', requireAuth, (_req, res) => { removeToken('linkedin'); res.json({ ok: true }) })
+router.delete('/linkedin', requireAuth, async (_req, res) => { await removeToken('linkedin'); res.json({ ok: true }) })
 
 // ── Facebook + Instagram (single OAuth flow) ──
 router.get('/facebook', requireAuth, (req, res) => {
@@ -77,13 +77,13 @@ router.get('/facebook/callback', async (req, res) => {
       '(2) your app has pages_show_list scope, (3) you are an Admin of the Page.'
     )
     const page = pages[0]
-    saveToken('facebook', { userToken: tok.access_token, pageToken: page.access_token, pageId: page.id, pageName: page.name })
+    await saveToken('facebook', { userToken: tok.access_token, pageToken: page.access_token, pageId: page.id, pageName: page.name })
     const igId = await facebook.getInstagramAccountId(page.id, page.access_token)
-    if (igId) saveToken('instagram', { pageToken: page.access_token, igAccountId: igId, pageId: page.id })
+    if (igId) await saveToken('instagram', { pageToken: page.access_token, igAccountId: igId, pageId: page.id })
     res.send(SUCCESS_HTML)
   } catch (e) { fail(res, e.response?.data?.error?.message || e.message) }
 })
-router.delete('/facebook', requireAuth, (_req, res) => { removeToken('facebook'); removeToken('instagram'); res.json({ ok: true }) })
+router.delete('/facebook', requireAuth, async (_req, res) => { await removeToken('facebook'); await removeToken('instagram'); res.json({ ok: true }) })
 
 // ── TikTok ──
 router.get('/tiktok', requireAuth, (req, res) => {
@@ -96,11 +96,11 @@ router.get('/tiktok/callback', async (req, res) => {
   try {
     const tok  = await tiktok.exchangeCode(req.query.code, req.query.state)
     const user = await tiktok.getUserInfo(tok.access_token)
-    saveToken('tiktok', { ...tok, displayName: user.display_name, openId: user.open_id })
+    await saveToken('tiktok', { ...tok, displayName: user.display_name, openId: user.open_id })
     res.send(SUCCESS_HTML)
   } catch (e) { fail(res, e.response?.data?.message || e.message) }
 })
-router.delete('/tiktok', requireAuth, (_req, res) => { removeToken('tiktok'); res.json({ ok: true }) })
+router.delete('/tiktok', requireAuth, async (_req, res) => { await removeToken('tiktok'); res.json({ ok: true }) })
 
 // ── YouTube (Google OAuth) ──
 router.get('/youtube', requireAuth, (req, res) => {
@@ -113,17 +113,17 @@ router.get('/youtube/callback', async (req, res) => {
   try {
     const tok = await youtube.exchangeCode(req.query.code)
     const channelTitle = await youtube.getChannelTitle(tok.access_token)
-    saveToken('youtube', { ...tok, channelTitle })
+    await saveToken('youtube', { ...tok, channelTitle })
     res.send(SUCCESS_HTML)
   } catch (e) { fail(res, e.response?.data?.error_description || e.message) }
 })
-router.delete('/youtube', requireAuth, (_req, res) => { removeToken('youtube'); res.json({ ok: true }) })
+router.delete('/youtube', requireAuth, async (_req, res) => { await removeToken('youtube'); res.json({ ok: true }) })
 
 // ── Facebook Data Deletion Callback ──
 // Required by Facebook for apps using Facebook Login.
 // Facebook sends a signed_request; we delete all stored Facebook/Instagram data
 // and return a confirmation URL the user can visit to verify deletion.
-router.post('/facebook/data-deletion', (req, res) => {
+router.post('/facebook/data-deletion', async (req, res) => {
   try {
     const signedRequest = req.body.signed_request
     if (!signedRequest) return res.status(400).json({ error: 'Missing signed_request' })
@@ -140,8 +140,8 @@ router.post('/facebook/data-deletion', (req, res) => {
     if (encodedSig !== expectedSig) return res.status(403).json({ error: 'Invalid signature' })
 
     // Delete all Facebook and Instagram data for this user
-    removeToken('facebook')
-    removeToken('instagram')
+    await removeToken('facebook')
+    await removeToken('instagram')
 
     const confirmationCode = `del_${data.user_id}_${Date.now()}`
     res.json({

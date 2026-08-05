@@ -15,7 +15,7 @@ function safeUploadPath(filePath) {
 const CLIENT_KEY    = process.env.TIKTOK_CLIENT_KEY
 const CLIENT_SECRET = process.env.TIKTOK_CLIENT_SECRET
 const REDIRECT_URI  = `${process.env.BASE_URL}/auth/tiktok/callback`
-const SCOPES        = ['user.info.basic', 'video.publish', 'video.upload']
+const SCOPES        = ['user.info.basic', 'video.publish', 'video.upload', 'video.list']
 
 // In-memory PKCE store (single-user local app)
 const pkceStore = new Map()
@@ -133,4 +133,37 @@ export async function uploadVideo(accessToken, filePath, { caption = '', privacy
   }
 
   return { publish_id }
+}
+
+// Direct Post uploads return a publish_id, not the final video ID — this resolves
+// the real video ID once TikTok finishes processing (may take a few minutes).
+// Returns null while still processing.
+export async function resolvePublishedVideoId(accessToken, publishId) {
+  const { data } = await axios.post(
+    'https://open.tiktokapis.com/v2/post/publish/status/fetch/',
+    { publish_id: publishId },
+    { headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json; charset=UTF-8' } }
+  )
+  const status = data?.data
+  if (status?.status !== 'PUBLISH_COMPLETE') return null
+  return status.publicaly_available_post_id?.[0] || status.publicly_available_post_id?.[0] || null
+}
+
+// Likes, comments, shares, views for a published video
+export async function getVideoMetrics(accessToken, videoId) {
+  const { data } = await axios.post(
+    'https://open.tiktokapis.com/v2/video/query/?fields=id,like_count,comment_count,share_count,view_count',
+    { filters: { video_ids: [videoId] } },
+    { headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json; charset=UTF-8' } }
+  )
+  const v = data?.data?.videos?.[0] || {}
+  return {
+    likes: v.like_count ?? 0,
+    comments: v.comment_count ?? 0,
+    shares: v.share_count ?? 0,
+    views: v.view_count ?? 0,
+    impressions: null,
+    saves: null,
+    raw: v,
+  }
 }

@@ -15,7 +15,7 @@ function safeUploadPath(filePath) {
 const APP_ID = process.env.FB_APP_ID
 const APP_SECRET = process.env.FB_APP_SECRET
 const REDIRECT_URI = `${process.env.BASE_URL}/auth/facebook/callback`
-const SCOPES = ['pages_show_list', 'pages_manage_posts', 'pages_read_engagement', 'instagram_content_publish', 'publish_video']
+const SCOPES = ['pages_show_list', 'pages_manage_posts', 'pages_read_engagement', 'instagram_content_publish', 'publish_video', 'instagram_manage_insights']
 
 export function getAuthUrl(state) {
   const p = new URLSearchParams({
@@ -93,6 +93,36 @@ export async function postVideoToPage(pageToken, pageId, message, filePath) {
   } catch (e) {
     console.error('[facebook] postVideoToPage error:', JSON.stringify(e.response?.data))
     throw e
+  }
+}
+
+// Reactions, comments, shares and post_impressions for a Page post
+export async function getPostMetrics(pageToken, postId) {
+  const { data } = await axios.get(`https://graph.facebook.com/v19.0/${postId}`, {
+    params: {
+      fields: 'reactions.summary(true).limit(0),comments.summary(true).limit(0),shares',
+      access_token: pageToken,
+    },
+  })
+
+  let impressions = null
+  try {
+    const { data: insights } = await axios.get(`https://graph.facebook.com/v19.0/${postId}/insights`, {
+      params: { metric: 'post_impressions', access_token: pageToken },
+    })
+    impressions = insights.data?.[0]?.values?.[0]?.value ?? null
+  } catch {
+    // insights unavailable (e.g. scope not granted) — leave impressions null
+  }
+
+  return {
+    likes: data.reactions?.summary?.total_count ?? 0,
+    comments: data.comments?.summary?.total_count ?? 0,
+    shares: data.shares?.count ?? 0,
+    views: null,
+    impressions,
+    saves: null,
+    raw: data,
   }
 }
 

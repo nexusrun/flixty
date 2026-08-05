@@ -37,11 +37,11 @@ router.post('/register', rateLimiter, async (req, res) => {
     return res.status(400).json({ error: 'name, email and password are required' })
   if (password.length < 8)
     return res.status(400).json({ error: 'Password must be at least 8 characters' })
-  if (findUserByEmail(email))
+  if (await findUserByEmail(email))
     return res.status(409).json({ error: 'An account with that email already exists' })
 
   const passwordHash = await hashPassword(password)
-  const user = createUser({ name: name.trim(), email: email.trim().toLowerCase(), passwordHash })
+  const user = await createUser({ name: name.trim(), email: email.trim().toLowerCase(), passwordHash })
   req.session.userId = user.id
   res.json({ ok: true, user: { id: user.id, name: user.name, email: user.email } })
 })
@@ -52,7 +52,7 @@ router.post('/login', rateLimiter, async (req, res) => {
   if (!email || !password)
     return res.status(400).json({ error: 'email and password are required' })
 
-  const user = findUserByEmail(email)
+  const user = await findUserByEmail(email)
   if (!user) return res.status(401).json({ error: 'Invalid email or password' })
 
   if (!user.passwordHash) return res.status(401).json({ error: 'This account uses Google Sign-In. Please sign in with Google.' })
@@ -69,9 +69,9 @@ router.post('/logout', (req, res) => {
 })
 
 // GET /api/user/me
-router.get('/me', (req, res) => {
+router.get('/me', async (req, res) => {
   if (!req.session?.userId) return res.status(401).json({ error: 'Not logged in', code: 'UNAUTHENTICATED' })
-  const user = findUserById(req.session.userId)
+  const user = await findUserById(req.session.userId)
   if (!user) return res.status(401).json({ error: 'Session invalid', code: 'UNAUTHENTICATED' })
   res.json({ id: user.id, name: user.name, email: user.email })
 })
@@ -125,9 +125,9 @@ router.get('/google/callback', async (req, res) => {
     const name  = profile.name || profile.given_name || email
 
     // Find existing user or create one (Google users have no passwordHash)
-    let user = findUserByEmail(email)
+    let user = await findUserByEmail(email)
     if (!user) {
-      user = createUser({ name, email, passwordHash: null, googleId: profile.sub })
+      user = await createUser({ name, email, passwordHash: null, googleId: profile.sub })
     }
 
     req.session.userId = user.id

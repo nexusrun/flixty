@@ -16,3 +16,23 @@ export async function post(igAccountId, pageToken, { imageUrl, caption }) {
   )
   return result
 }
+
+// Impressions, reach, likes, comments, saves for a media object.
+// Requires the instagram_manage_insights scope — throws if the connected
+// token predates that scope, so callers can surface a "reconnect" prompt.
+export async function getMediaMetrics(pageToken, mediaId) {
+  const { data } = await axios.get(`https://graph.facebook.com/v19.0/${mediaId}/insights`, {
+    params: { metric: 'impressions,reach,likes,comments,saved', access_token: pageToken },
+  })
+  const values = {}
+  for (const m of data.data || []) values[m.name] = m.values?.[0]?.value ?? 0
+  return {
+    likes: values.likes ?? 0,
+    comments: values.comments ?? 0,
+    shares: null,
+    views: null,
+    impressions: values.impressions ?? null,
+    saves: values.saved ?? null,
+    raw: values,
+  }
+}

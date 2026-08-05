@@ -1887,18 +1887,19 @@
             <p class="text-on-surface-variant text-sm mt-1">Performance insights across all platforms</p>
           </div>
           <div class="flex gap-2 flex-wrap">
-            <button onclick="setDateRange(this)"
+            <button onclick="setDateRange(this)" data-range="7d"
               class="range-chip active text-xs px-3 py-1.5 rounded-full font-medium transition-all">Last 7 days</button>
-            <button onclick="setDateRange(this)"
+            <button onclick="setDateRange(this)" data-range="30d"
               class="range-chip text-xs px-3 py-1.5 rounded-full font-medium bg-surface-container text-on-surface-variant transition-all hover:bg-surface-container-high">Last
               30 days</button>
-            <button onclick="setDateRange(this)"
+            <button onclick="setDateRange(this)" data-range="90d"
               class="range-chip hidden sm:block text-xs px-3 py-1.5 rounded-full font-medium bg-surface-container text-on-surface-variant transition-all hover:bg-surface-container-high">Last
               90 days</button>
-            <button onclick="setDateRange(this)"
-              class="range-chip hidden sm:block text-xs px-3 py-1.5 rounded-full font-medium bg-surface-container text-on-surface-variant transition-all hover:bg-surface-container-high">Custom</button>
           </div>
         </div>
+
+        <!-- Reconnect banner (Instagram/TikTok analytics need extra OAuth scopes) -->
+        <div id="analytics-reconnect-banner" class="hidden flex flex-col gap-2 mb-6 p-4 rounded-xl" style="background:rgba(255,171,0,0.1);border:1px solid rgba(255,171,0,0.3)"></div>
 
         <!-- Overview stats -->
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
@@ -1949,16 +1950,40 @@
 
         </div>
 
-        <!-- Posts Published Over Time -->
-        <div class="bg-surface-container-lowest rounded-xl p-5 shadow-sm shadow-on-surface/5">
+        <!-- Engagement Over Time -->
+        <div class="bg-surface-container-lowest rounded-xl p-5 shadow-sm shadow-on-surface/5 mb-6">
           <div class="flex items-center justify-between mb-6">
-            <h3 class="font-bold text-on-surface">Posts Published Over Time</h3>
+            <h3 class="font-bold text-on-surface">Engagement Over Time</h3>
             <div class="flex items-center gap-4 text-xs text-on-surface-variant">
               <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-sm inline-block"
-                  style="background:var(--secondary)"></span>Posts</span>
+                  style="background:var(--secondary)"></span>Likes</span>
             </div>
           </div>
           <div id="engagement-chart" class="flex items-end gap-3 h-40"></div>
+        </div>
+
+        <!-- Two-column: Hashtags + AI Insights -->
+        <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+
+          <!-- Hashtag Performance -->
+          <div class="bg-surface-container-lowest rounded-xl p-5 shadow-sm shadow-on-surface/5">
+            <h3 class="font-bold text-on-surface mb-5">Hashtag Performance</h3>
+            <div id="hashtag-performance" class="flex flex-col gap-3"></div>
+          </div>
+
+          <!-- AI Insights -->
+          <div class="bg-surface-container-lowest rounded-xl p-5 shadow-sm shadow-on-surface/5">
+            <div class="flex items-center justify-between mb-5">
+              <h3 class="font-bold text-on-surface flex items-center gap-1.5">
+                <span class="material-symbols-outlined" style="font-size:18px">auto_awesome</span>
+                AI Insights
+              </h3>
+              <button id="insights-refresh-btn" onclick="refreshInsights()"
+                class="text-xs px-3 py-1.5 rounded-full font-medium bg-surface-container text-on-surface-variant transition-all hover:bg-surface-container-high">Regenerate</button>
+            </div>
+            <div id="ai-insights-content" class="text-sm text-on-surface-variant"></div>
+          </div>
+
         </div>
       </div>
 
@@ -2934,6 +2959,8 @@
         }
       });
       btn.classList.add('active');
+      analyticsRange = btn.dataset.range || '7d';
+      loadAnalyticsData();
     }
 
     // OAuth connection status — polls /auth/status and lights up sidebar dots + live view
@@ -3625,47 +3652,33 @@
       }
     }
 
-    // ---- 8. Analytics Stats ----
+    // ---- 8. Analytics Overview (real engagement data from /api/analytics/*) ----
 
-    function renderAnalyticsStats(posts, scheduled) {
-      var now = Date.now();
-      var weekMs = 7 * 24 * 60 * 60 * 1000;
-      var uniquePlatforms = new Set();
-      posts.forEach(function (p) { (p.platforms || []).forEach(function (pl) { uniquePlatforms.add(pl); }); });
-      var thisWeek = posts.filter(function (p) {
-        return p.publishedAt && (now - new Date(p.publishedAt).getTime()) <= weekMs;
-      }).length;
+    var analyticsRange = '7d';
 
+    function renderAnalyticsOverview(overview) {
       var el;
-      el = document.getElementById('ana-published'); if (el) el.textContent = String(posts.length);
-      el = document.getElementById('ana-scheduled'); if (el) el.textContent = String(scheduled.length);
-      el = document.getElementById('ana-platforms'); if (el) el.textContent = String(uniquePlatforms.size);
-      el = document.getElementById('ana-this-week'); if (el) el.textContent = String(thisWeek);
+      el = document.getElementById('ana-published'); if (el) el.textContent = String(overview.postsPublished);
+      el = document.getElementById('ana-scheduled'); if (el) el.textContent = String(overview.scheduled);
+      el = document.getElementById('ana-platforms'); if (el) el.textContent = String(overview.platformsUsed);
+      el = document.getElementById('ana-this-week'); if (el) el.textContent = String(overview.thisWeek);
     }
 
-    // ---- 9. Platform Breakdown ----
+    // ---- 9. Platform Breakdown (by total engagement, not just post count) ----
 
-    function renderPlatformBreakdown(posts) {
+    function renderPlatformBreakdown(platformBreakdown) {
       var container = document.getElementById('platform-breakdown');
       if (!container) return;
+      container.innerHTML = '';
 
-      var counts = {};
-      posts.forEach(function (p) {
-        (p.platforms || []).forEach(function (pl) {
-          counts[pl] = (counts[pl] || 0) + 1;
-        });
-      });
-
-      var sorted = Object.keys(counts).sort(function (a, b) { return counts[b] - counts[a]; });
-      if (sorted.length === 0) {
+      if (!platformBreakdown || platformBreakdown.length === 0) {
         var p = document.createElement('p');
         p.className = 'text-xs text-on-surface-variant';
-        p.textContent = 'No platform data yet.';
+        p.textContent = 'No engagement data yet — check back after your posts have had time to collect metrics.';
         container.appendChild(p);
         return;
       }
 
-      var maxCount = counts[sorted[0]];
       var barStyleMap = {
         x: 'background:#000000',
         linkedin: 'background:#0a66c2',
@@ -3675,28 +3688,29 @@
         youtube: 'background:#ff0000'
       };
 
-      sorted.forEach(function (pl) {
-        var count = counts[pl];
-        var pct = Math.round((count / maxCount) * 100);
+      var maxEngagement = Math.max.apply(null, platformBreakdown.map(function (p) { return p.likes + p.comments + p.shares; }));
+
+      platformBreakdown.forEach(function (p) {
+        var engagement = p.likes + p.comments + p.shares;
+        var pct = maxEngagement > 0 ? Math.round((engagement / maxEngagement) * 100) : 0;
 
         var row = document.createElement('div');
 
         var header = document.createElement('div');
         header.className = 'flex items-center justify-between text-xs mb-1.5';
 
-        // Left: icon + label — icon uses DOM methods, label uses textContent
         var left = document.createElement('div');
         left.className = 'flex items-center gap-2';
-        left.appendChild(makePlatformIconDiv(pl, 'w-5 h-5'));
+        left.appendChild(makePlatformIconDiv(p.platform, 'w-5 h-5'));
 
         var nameSpan = document.createElement('span');
         nameSpan.className = 'font-medium text-on-surface';
-        nameSpan.textContent = platformLabel(pl);
+        nameSpan.textContent = platformLabel(p.platform);
         left.appendChild(nameSpan);
 
         var right = document.createElement('span');
         right.className = 'text-on-surface-variant';
-        right.textContent = count + ' post' + (count !== 1 ? 's' : '');
+        right.textContent = engagement.toLocaleString() + ' engagements · ' + p.posts + ' post' + (p.posts !== 1 ? 's' : '');
 
         header.appendChild(left);
         header.appendChild(right);
@@ -3705,7 +3719,7 @@
         track.className = 'h-2 bg-surface-container-high rounded-full overflow-hidden';
         var bar = document.createElement('div');
         bar.className = 'analytics-bar';
-        bar.setAttribute('style', (barStyleMap[pl] || 'background:var(--secondary)') + ';width:' + pct + '%');
+        bar.setAttribute('style', (barStyleMap[p.platform] || 'background:var(--secondary)') + ';width:' + pct + '%');
         track.appendChild(bar);
 
         row.appendChild(header);
@@ -3714,27 +3728,22 @@
       });
     }
 
-    // ---- 10. Top Posts ----
+    // ---- 10. Top Posts (real engagement leaderboard) ----
 
-    function renderTopPosts(posts) {
+    function renderTopPosts(list) {
       var container = document.getElementById('top-posts-list');
       if (!container) return;
+      container.innerHTML = '';
 
-      if (!posts || posts.length === 0) {
+      if (!list || list.length === 0) {
         var p = document.createElement('p');
         p.className = 'text-xs text-on-surface-variant';
-        p.textContent = 'No posts published yet.';
+        p.textContent = 'No posts with engagement data yet.';
         container.appendChild(p);
         return;
       }
 
-      var sorted = posts.slice().sort(function (a, b) {
-        return new Date(b.publishedAt || b.createdAt) - new Date(a.publishedAt || a.createdAt);
-      }).slice(0, 3);
-
-      sorted.forEach(function (post, idx) {
-        var platforms = post.platforms || [];
-        var firstPlatform = platforms[0] || 'x';
+      list.slice(0, 5).forEach(function (post, idx) {
         var rankBg = idx === 0 ? 'bg-secondary-container text-on-secondary-container' : 'bg-surface-container text-on-surface-variant';
 
         var row = document.createElement('div');
@@ -3749,7 +3758,7 @@
 
         var titleRow = document.createElement('div');
         titleRow.className = 'flex items-center gap-1.5 mb-0.5';
-        titleRow.appendChild(makePlatformIconDiv(firstPlatform, 'w-4 h-4'));
+        titleRow.appendChild(makePlatformIconDiv(post.platform, 'w-4 h-4'));
 
         var titleText = document.createElement('p');
         titleText.className = 'text-sm font-semibold text-on-surface';
@@ -3759,14 +3768,14 @@
         var meta = document.createElement('div');
         meta.className = 'flex items-center gap-3 text-xs text-on-surface-variant mt-1';
 
-        var platSpan = document.createElement('span');
-        platSpan.textContent = platforms.map(platformLabel).join(', ');
+        var engSpan = document.createElement('span');
+        engSpan.textContent = post.engagement.toLocaleString() + ' engagements';
 
         var agoSpan = document.createElement('span');
         agoSpan.className = 'ml-auto';
-        agoSpan.textContent = timeAgo(post.publishedAt || post.createdAt);
+        agoSpan.textContent = timeAgo(post.publishedAt);
 
-        meta.appendChild(platSpan);
+        meta.appendChild(engSpan);
         meta.appendChild(agoSpan);
 
         content.appendChild(titleRow);
@@ -3777,37 +3786,37 @@
       });
     }
 
-    // ---- 11. Posts Published chart ----
+    // ---- 11. Engagement Over Time chart ----
 
-    function renderEngagementChart(posts) {
+    function renderEngagementChart(timeseries) {
       var container = document.getElementById('engagement-chart');
       if (!container) return;
+      container.innerHTML = '';
 
       var dayLabels = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
       var today = new Date();
       today.setHours(0, 0, 0, 0);
 
-      var dayCounts = [];
-      for (var i = 6; i >= 0; i--) {
+      var days = [];
+      var byDate = {};
+      (timeseries || []).forEach(function (row) { byDate[row.date] = row.value; });
+
+      var spanDays = analyticsRange === '90d' ? 90 : (analyticsRange === '30d' ? 30 : 7);
+      var step = Math.max(1, Math.ceil(spanDays / 14)); // cap bars at ~14 for readability
+
+      for (var i = spanDays - 1; i >= 0; i -= step) {
         var d = new Date(today);
         d.setDate(d.getDate() - i);
-        dayCounts.push({ date: d, count: 0, label: dayLabels[d.getDay()] });
+        var key = d.toISOString().slice(0, 10);
+        days.push({ date: d, value: byDate[key] || 0, label: spanDays <= 7 ? dayLabels[d.getDay()] : (d.getMonth() + 1) + '/' + d.getDate() });
       }
 
-      posts.forEach(function (post) {
-        var ts = new Date(post.publishedAt || post.createdAt);
-        ts.setHours(0, 0, 0, 0);
-        dayCounts.forEach(function (day) {
-          if (day.date.getTime() === ts.getTime()) day.count++;
-        });
-      });
-
-      var maxCount = Math.max.apply(null, dayCounts.map(function (d) { return d.count; }));
+      var maxValue = Math.max.apply(null, days.map(function (d) { return d.value; }));
       var barMaxPx = 120;
 
-      dayCounts.forEach(function (day) {
-        var pct = maxCount > 0 ? day.count / maxCount : 0;
-        var barPx = Math.max(6, Math.round(pct * barMaxPx));
+      days.forEach(function (day) {
+        var pct = maxValue > 0 ? day.value / maxValue : 0;
+        var barPx = Math.max(4, Math.round(pct * barMaxPx));
 
         var col = document.createElement('div');
         col.className = 'flex-1 flex flex-col items-center gap-1';
@@ -3820,7 +3829,7 @@
         bar.className = 'w-full rounded-t-sm';
         bar.style.height = barPx + 'px';
         bar.style.background = 'var(--secondary)';
-        bar.title = day.count + ' post' + (day.count !== 1 ? 's' : '');
+        bar.title = day.value.toLocaleString() + ' likes';
 
         barWrap.appendChild(bar);
 
@@ -3832,6 +3841,152 @@
         col.appendChild(labelEl);
         container.appendChild(col);
       });
+    }
+
+    // ---- 12. Hashtag Performance ----
+
+    function renderHashtagTable(list) {
+      var container = document.getElementById('hashtag-performance');
+      if (!container) return;
+      container.innerHTML = '';
+
+      if (!list || list.length === 0) {
+        var p = document.createElement('p');
+        p.className = 'text-xs text-on-surface-variant';
+        p.textContent = 'No hashtag data yet — hashtags in your post text will show up here once they have engagement metrics.';
+        container.appendChild(p);
+        return;
+      }
+
+      list.slice(0, 8).forEach(function (t) {
+        var row = document.createElement('div');
+        row.className = 'flex items-center justify-between text-sm py-1.5';
+
+        var left = document.createElement('div');
+        left.className = 'flex flex-col';
+        var tag = document.createElement('span');
+        tag.className = 'font-medium text-on-surface';
+        tag.textContent = t.hashtag;
+        var uses = document.createElement('span');
+        uses.className = 'text-xs text-on-surface-variant';
+        uses.textContent = 'used ' + t.uses + ' time' + (t.uses !== 1 ? 's' : '');
+        left.appendChild(tag);
+        left.appendChild(uses);
+
+        var right = document.createElement('span');
+        right.className = 'text-xs font-semibold text-on-surface';
+        right.textContent = t.avgEngagement.toLocaleString() + ' avg engagements';
+
+        row.appendChild(left);
+        row.appendChild(right);
+        container.appendChild(row);
+      });
+    }
+
+    // ---- 13. AI Insights ----
+
+    function renderInsights(data) {
+      var container = document.getElementById('ai-insights-content');
+      if (!container) return;
+      container.innerHTML = '';
+
+      if (!data || !data.available) {
+        var p = document.createElement('p');
+        p.textContent = (data && data.reason) || 'No insights yet.';
+        container.appendChild(p);
+        return;
+      }
+
+      data.summary.split('\n').filter(Boolean).forEach(function (line) {
+        var row = document.createElement('div');
+        row.className = 'flex items-start gap-2 mb-2';
+        var dot = document.createElement('span');
+        dot.className = 'material-symbols-outlined shrink-0';
+        dot.style.fontSize = '16px';
+        dot.style.marginTop = '2px';
+        dot.style.color = 'var(--secondary)';
+        dot.textContent = 'insights';
+        var text = document.createElement('span');
+        text.className = 'text-on-surface';
+        text.textContent = line.replace(/^[-•]\s*/, '');
+        row.appendChild(dot);
+        row.appendChild(text);
+        container.appendChild(row);
+      });
+    }
+
+    async function refreshInsights() {
+      var btn = document.getElementById('insights-refresh-btn');
+      if (btn) { btn.disabled = true; btn.textContent = 'Generating…'; }
+      try {
+        var res = await fetch(BACKEND + '/api/analytics/insights/refresh', { method: 'POST', credentials: 'include' });
+        var data = await res.json();
+        if (!res.ok) { showToast(data.error || 'Could not regenerate insights'); return; }
+        renderInsights(data);
+      } catch (e) {
+        showToast('Cannot reach backend');
+      } finally {
+        if (btn) { btn.disabled = false; btn.textContent = 'Regenerate'; }
+      }
+    }
+
+    // ---- 14. Reconnect banner — Instagram/TikTok analytics need scopes beyond publish-only ----
+
+    function renderReconnectBanner(status) {
+      var container = document.getElementById('analytics-reconnect-banner');
+      if (!container) return;
+      container.innerHTML = '';
+
+      var needsReconnect = [];
+      if (status.instagram && status.instagram.connected) needsReconnect.push({ platform: 'instagram', label: 'Instagram' });
+      if (status.tiktok && status.tiktok.connected) needsReconnect.push({ platform: 'tiktok', label: 'TikTok' });
+
+      if (needsReconnect.length === 0) { container.classList.add('hidden'); return; }
+      container.classList.remove('hidden');
+
+      var text = document.createElement('p');
+      text.className = 'text-sm text-on-surface';
+      text.textContent = needsReconnect.map(function (n) { return n.label; }).join(' and ') +
+        ' analytics require reconnecting with an additional permission. Reconnect below to start collecting real metrics.';
+      container.appendChild(text);
+
+      var btnRow = document.createElement('div');
+      btnRow.className = 'flex gap-2';
+      needsReconnect.forEach(function (n) {
+        var btn = document.createElement('button');
+        btn.className = 'text-xs px-3 py-1.5 rounded-full font-medium bg-surface-container-lowest text-on-surface transition-all hover:bg-surface-container-high';
+        btn.textContent = 'Reconnect ' + n.label;
+        btn.onclick = function () { connectPlatform(n.platform); };
+        btnRow.appendChild(btn);
+      });
+      container.appendChild(btnRow);
+    }
+
+    // ---- 15. Load all analytics data for the current range ----
+
+    async function loadAnalyticsData() {
+      try {
+        var results = await Promise.all([
+          fetch(BACKEND + '/api/analytics/overview?range=' + analyticsRange, { credentials: 'include' }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; }),
+          fetch(BACKEND + '/api/analytics/posts?range=' + analyticsRange, { credentials: 'include' }).then(function (r) { return r.ok ? r.json() : []; }).catch(function () { return []; }),
+          fetch(BACKEND + '/api/analytics/hashtags?range=' + analyticsRange, { credentials: 'include' }).then(function (r) { return r.ok ? r.json() : []; }).catch(function () { return []; }),
+          fetch(BACKEND + '/api/analytics/timeseries?range=' + analyticsRange + '&metric=likes', { credentials: 'include' }).then(function (r) { return r.ok ? r.json() : []; }).catch(function () { return []; }),
+          fetch(BACKEND + '/api/analytics/insights', { credentials: 'include' }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; }),
+          fetch(BACKEND + '/auth/status', { credentials: 'include' }).then(function (r) { return r.ok ? r.json() : {}; }).catch(function () { return {}; })
+        ]);
+
+        if (results[0]) {
+          renderAnalyticsOverview(results[0]);
+          renderPlatformBreakdown(results[0].platformBreakdown);
+        }
+        renderTopPosts(results[1]);
+        renderHashtagTable(results[2]);
+        renderEngagementChart(results[3]);
+        renderInsights(results[4]);
+        renderReconnectBanner(results[5] || {});
+      } catch (e) {
+        // Not logged in / backend unreachable — leave empty states
+      }
     }
 
     // ---- Main entry point ----
@@ -3920,11 +4075,8 @@
       // Calendar
       initCalendar(scheduled);
 
-      // Analytics sections
-      renderAnalyticsStats(posts, scheduled);
-      renderPlatformBreakdown(posts);
-      renderTopPosts(posts);
-      renderEngagementChart(posts);
+      // Analytics sections — real engagement data, independent of the local posts array
+      loadAnalyticsData();
     }
 
     async function aiSuggestHashtags() {

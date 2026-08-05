@@ -57,3 +57,21 @@ export async function postTweet(accessToken, text) {
   )
   return data
 }
+
+// Public engagement metrics for a tweet: likes, retweets, replies, quotes, impressions
+export async function getPostMetrics(accessToken, tweetId) {
+  const { data } = await axios.get(
+    `https://api.twitter.com/2/tweets/${tweetId}?tweet.fields=public_metrics`,
+    { headers: { Authorization: `Bearer ${accessToken}` } }
+  )
+  const m = data.data?.public_metrics || {}
+  return {
+    likes: m.like_count ?? 0,
+    comments: m.reply_count ?? 0,
+    shares: (m.retweet_count ?? 0) + (m.quote_count ?? 0),
+    views: null,
+    impressions: m.impression_count ?? null,
+    saves: m.bookmark_count ?? null,
+    raw: m,
+  }
+}

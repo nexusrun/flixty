@@ -10,8 +10,11 @@ import postRoutes from './routes/posts.js'
 import aiRoutes from './routes/ai.js'
 import liveRoutes from './routes/live.js'
 import userRoutes from './routes/user.js'
+import analyticsRoutes from './routes/analytics.js'
 import { requireAuth } from './lib/auth.js'
 import { startScheduler } from './lib/scheduler.js'
+import { runMigrations } from './lib/db/migrate.js'
+import { startMetricsCollector } from './lib/analytics/collector.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const PORT = process.env.PORT || 3000
@@ -64,13 +67,24 @@ app.use('/auth', authRoutes)
 app.use('/api', postRoutes)
 app.use('/api/ai', requireAuth, aiRoutes)
 app.use('/api/live', requireAuth, liveRoutes)
+app.use('/api/analytics', requireAuth, analyticsRoutes)
 
 app.get('/health', (_req, res) => res.json({ ok: true, time: new Date().toISOString() }))
 
-app.listen(PORT, () => {
-  console.log(`\n🚀  Flixty backend → http://localhost:${PORT}`)
-  console.log(`🔑  OAuth callbacks use BASE_URL=${process.env.BASE_URL || `http://localhost:${PORT}`}`)
-  console.log(`📡  Connect platforms at /auth/{x,linkedin,facebook,youtube,tiktok}\n`)
-})
+async function start() {
+  await runMigrations()
 
-startScheduler()
+  app.listen(PORT, () => {
+    console.log(`\n🚀  Flixty backend → http://localhost:${PORT}`)
+    console.log(`🔑  OAuth callbacks use BASE_URL=${process.env.BASE_URL || `http://localhost:${PORT}`}`)
+    console.log(`📡  Connect platforms at /auth/{x,linkedin,facebook,youtube,tiktok}\n`)
+  })
+
+  startScheduler()
+  startMetricsCollector()
+}
+
+start().catch(e => {
+  console.error('[startup] fatal:', e.message)
+  process.exit(1)
+})

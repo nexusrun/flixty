@@ -77,6 +77,24 @@ export async function ensureFreshToken(storedTok) {
   }
 }
 
+// Public view/like/comment counts for a video
+export async function getVideoMetrics(accessToken, videoId) {
+  const { data } = await axios.get(
+    `https://www.googleapis.com/youtube/v3/videos?part=statistics&id=${videoId}`,
+    { headers: { Authorization: `Bearer ${accessToken}` } }
+  )
+  const s = data.items?.[0]?.statistics || {}
+  return {
+    likes: s.likeCount != null ? Number(s.likeCount) : 0,
+    comments: s.commentCount != null ? Number(s.commentCount) : 0,
+    shares: null,
+    views: s.viewCount != null ? Number(s.viewCount) : 0,
+    impressions: null,
+    saves: null,
+    raw: s,
+  }
+}
+
 export async function getChannelTitle(accessToken) {
   const { data } = await axios.get(
     'https://www.googleapis.com/youtube/v3/channels?part=snippet&mine=true',
