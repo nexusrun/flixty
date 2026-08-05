@@ -34,6 +34,11 @@ app.use(cors({
   origin: process.env.BASE_URL || 'http://localhost:3000',
   credentials: true
 }))
+// /mcp gets its own higher body limit — inline base64 media in a tool call
+// needs real headroom (base64 inflates ~33% over the raw file), and this has
+// to be registered before the global json() below since body-parser skips
+// re-parsing a request whose body it's already consumed.
+app.use('/mcp', express.json({ limit: '65mb' }))
 app.use(express.json({ limit: '10mb' }))
 app.use(express.urlencoded({ extended: true }))
 app.use(session({
