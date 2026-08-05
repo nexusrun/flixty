@@ -106,14 +106,28 @@ export async function postVideoToPage(pageToken, pageId, message, filePath) {
   }
 }
 
-// Reactions, comments, shares and post_impressions for a Page post
+// Reactions, comments, shares and post_impressions for a Page post.
+// `shares` isn't a valid field on video objects (only regular feed posts) —
+// the Graph API rejects the *whole* request if any requested field doesn't
+// apply to that node type, so shares/insights are fetched separately and
+// tolerated as best-effort rather than bundled into one all-or-nothing call.
 export async function getPostMetrics(pageToken, postId) {
   const { data } = await axios.get(`https://graph.facebook.com/v19.0/${postId}`, {
     params: {
-      fields: 'reactions.summary(true).limit(0),comments.summary(true).limit(0),shares',
+      fields: 'reactions.summary(true).limit(0),comments.summary(true).limit(0)',
       access_token: pageToken,
     },
   })
+
+  let shares = 0
+  try {
+    const { data: sharesData } = await axios.get(`https://graph.facebook.com/v19.0/${postId}`, {
+      params: { fields: 'shares', access_token: pageToken },
+    })
+    shares = sharesData.shares?.count ?? 0
+  } catch {
+    // not a shareable object type (e.g. a video) — leave at 0
+  }
 
   let impressions = null
   try {
@@ -122,13 +136,13 @@ export async function getPostMetrics(pageToken, postId) {
     })
     impressions = insights.data?.[0]?.values?.[0]?.value ?? null
   } catch {
-    // insights unavailable (e.g. scope not granted) — leave impressions null
+    // insights unavailable (e.g. scope not granted, or a video needs different metrics) — leave impressions null
   }
 
   return {
     likes: data.reactions?.summary?.total_count ?? 0,
     comments: data.comments?.summary?.total_count ?? 0,
-    shares: data.shares?.count ?? 0,
+    shares,
     views: null,
     impressions,
     saves: null,
