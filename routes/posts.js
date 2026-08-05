@@ -26,7 +26,7 @@ const router = Router()
 router.post('/publish', requireAuth, upload.single('media'), async (req, res) => {
   const { text, imageUrl } = req.body
   const platforms = JSON.parse(req.body.platforms || '[]')
-  const tokens = await getTokens()
+  const tokens = await getTokens(req.session.userId)
   const results = {}, errors = {}
 
   // If a file was uploaded, build a public URL (requires BASE_URL to be publicly accessible)
@@ -62,7 +62,7 @@ router.post('/publish', requireAuth, upload.single('media'), async (req, res) =>
         if (!req.file) { errors.youtube = 'YouTube requires a video file — attach one before publishing'; return }
         if (!req.file.mimetype.startsWith('video/')) { errors.youtube = `YouTube only supports video files — got ${req.file.mimetype}`; return }
         const { access_token, refreshed, newTok } = await youtube.ensureFreshToken(tok)
-        if (refreshed) await saveToken('youtube', newTok)
+        if (refreshed) await saveToken(req.session.userId, 'youtube', newTok)
         const title    = (req.body.campaignName || text.split('\n')[0] || 'Untitled').slice(0, 100)
         const mimeType = req.file.mimetype
         results.youtube = await youtube.uploadVideo(access_token, req.file.path, { title, description: text, mimeType })
@@ -75,7 +75,7 @@ router.post('/publish', requireAuth, upload.single('media'), async (req, res) =>
     }
   }))
 
-  const post = await savePost({ text, platforms, mediaUrl, results, errors })
+  const post = await savePost(req.session.userId, { text, platforms, mediaUrl, results, errors })
   res.json({ ok: Object.keys(results).length > 0, results, errors, post })
 })
 
@@ -85,16 +85,16 @@ router.post('/schedule', requireAuth, upload.single('media'), async (req, res) =
   if (!scheduledAt) return res.status(400).json({ error: 'scheduledAt required (ISO 8601)' })
   const videoPath  = req.file ? req.file.path     : null
   const mimeType   = req.file ? req.file.mimetype  : null
-  const item = await saveScheduled({ text, platforms, scheduledAt, imageUrl, campaignName, videoPath, mimeType })
+  const item = await saveScheduled(req.session.userId, { text, platforms, scheduledAt, imageUrl, campaignName, videoPath, mimeType })
   res.json({ ok: true, scheduled: item })
 })
 
 router.delete('/scheduled/:id', requireAuth, async (req, res) => {
-  await removeScheduled(Number(req.params.id))
+  await removeScheduled(req.session.userId, Number(req.params.id))
   res.json({ ok: true })
 })
 
-router.get('/posts',     async (_req, res) => res.json(await getPosts()))
-router.get('/scheduled', async (_req, res) => res.json(await getScheduled()))
+router.get('/posts',     requireAuth, async (req, res) => res.json(await getPosts(req.session.userId)))
+router.get('/scheduled', requireAuth, async (req, res) => res.json(await getScheduled(req.session.userId)))
 
 export default router

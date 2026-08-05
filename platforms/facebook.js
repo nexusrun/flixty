@@ -37,6 +37,16 @@ export async function exchangeCode(code) {
   return long
 }
 
+// The Facebook user's numeric ID — stored alongside the token so the
+// data-deletion webhook (which has no session, only Facebook's own user_id)
+// can look up which of our users to delete data for.
+export async function getMe(userToken) {
+  const { data } = await axios.get('https://graph.facebook.com/v19.0/me', {
+    params: { access_token: userToken, fields: 'id' }
+  })
+  return data.id
+}
+
 export async function getPages(userToken) {
   const { data } = await axios.get('https://graph.facebook.com/v19.0/me/accounts', {
     params: { access_token: userToken, fields: 'id,name,access_token,tasks' }

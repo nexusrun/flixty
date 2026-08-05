@@ -22,14 +22,15 @@ function extractHashtags(text) {
 // ── Overview ──
 
 router.get('/overview', async (req, res) => {
+  const userId = req.session.userId
   const since = sinceFor(req.query.range)
 
   const [{ rows: postCounts }, { rows: scheduledCounts }] = await Promise.all([
-    query('SELECT count(*)::int AS n FROM posts WHERE published_at >= $1', [since]),
-    query('SELECT count(*)::int AS n FROM scheduled_posts'),
+    query('SELECT count(*)::int AS n FROM posts WHERE user_id = $1 AND published_at >= $2', [userId, since]),
+    query('SELECT count(*)::int AS n FROM scheduled_posts WHERE user_id = $1', [userId]),
   ])
 
-  const snapshots = await getLatestSnapshotsSince(since.toISOString())
+  const snapshots = await getLatestSnapshotsSince(userId, since.toISOString())
 
   const byPlatform = {}
   let totalEngagement = 0
@@ -78,7 +79,7 @@ router.get('/overview', async (req, res) => {
 
 router.get('/posts', async (req, res) => {
   const since = sinceFor(req.query.range)
-  let snapshots = await getLatestSnapshotsSince(since.toISOString())
+  let snapshots = await getLatestSnapshotsSince(req.session.userId, since.toISOString())
 
   if (req.query.platform) snapshots = snapshots.filter(s => s.platform === req.query.platform)
 
@@ -105,7 +106,7 @@ router.get('/posts', async (req, res) => {
 
 router.get('/hashtags', async (req, res) => {
   const since = sinceFor(req.query.range)
-  const snapshots = await getLatestSnapshotsSince(since.toISOString())
+  const snapshots = await getLatestSnapshotsSince(req.session.userId, since.toISOString())
 
   const byTag = {}
   for (const s of snapshots) {
@@ -131,7 +132,7 @@ router.get('/hashtags', async (req, res) => {
 router.get('/timeseries', async (req, res) => {
   const since = sinceFor(req.query.range)
   const metric = ['likes', 'comments', 'shares', 'views'].includes(req.query.metric) ? req.query.metric : 'likes'
-  const rows = await getTimeseriesSince(since.toISOString())
+  const rows = await getTimeseriesSince(req.session.userId, since.toISOString())
 
   const byDay = {}
   for (const r of rows) {
@@ -148,8 +149,8 @@ router.get('/timeseries', async (req, res) => {
 const MIN_POSTS_FOR_INSIGHT = 10
 const REFRESH_COOLDOWN_MS = 60 * 60 * 1000 // 1 hour
 
-router.get('/insights', async (_req, res) => {
-  const insight = await getLatestInsight()
+router.get('/insights', async (req, res) => {
+  const insight = await getLatestInsight(req.session.userId)
   if (!insight) return res.json({ available: false, reason: 'No insights generated yet.' })
   res.json({
     available: true,
@@ -160,14 +161,15 @@ router.get('/insights', async (_req, res) => {
   })
 })
 
-router.post('/insights/refresh', async (_req, res) => {
-  const latest = await getLatestInsight()
+router.post('/insights/refresh', async (req, res) => {
+  const userId = req.session.userId
+  const latest = await getLatestInsight(userId)
   if (latest && Date.now() - new Date(latest.generated_at).getTime() < REFRESH_COOLDOWN_MS) {
     return res.status(429).json({ error: 'Insights can be regenerated once per hour.' })
   }
 
   const since = sinceFor('30d')
-  const snapshots = await getLatestSnapshotsSince(since.toISOString())
+  const snapshots = await getLatestSnapshotsSince(userId, since.toISOString())
 
   const byPost = new Map()
   for (const s of snapshots) {
@@ -210,7 +212,7 @@ Write 3-5 short, concrete, plain-English observations about what makes the top p
   })
 
   const summary = response.content.find(b => b.type === 'text')?.text?.trim() || 'No insight generated.'
-  const saved = await saveInsight({ periodStart: since, periodEnd: new Date(), summary, raw: { top, bottom } })
+  const saved = await saveInsight(userId, { periodStart: since, periodEnd: new Date(), summary, raw: { top, bottom } })
 
   res.json({ available: true, summary: saved.summary, generatedAt: saved.generated_at, periodStart: saved.period_start, periodEnd: saved.period_end })
 })

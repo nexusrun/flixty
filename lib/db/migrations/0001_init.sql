@@ -10,13 +10,16 @@ CREATE TABLE users (
 );
 
 CREATE TABLE oauth_tokens (
-  platform   TEXT PRIMARY KEY,
+  user_id    BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  platform   TEXT NOT NULL,
   data       JSONB NOT NULL,
-  saved_at   TIMESTAMPTZ NOT NULL DEFAULT now()
+  saved_at   TIMESTAMPTZ NOT NULL DEFAULT now(),
+  PRIMARY KEY (user_id, platform)
 );
 
 CREATE TABLE posts (
   id             BIGSERIAL PRIMARY KEY,
+  user_id        BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   text           TEXT NOT NULL,
   platforms      TEXT[] NOT NULL DEFAULT '{}',
   media_url      TEXT,
@@ -26,11 +29,13 @@ CREATE TABLE posts (
   created_at     TIMESTAMPTZ NOT NULL DEFAULT now(),
   published_at   TIMESTAMPTZ
 );
+CREATE INDEX posts_user_id_idx ON posts (user_id);
 CREATE INDEX posts_created_at_idx ON posts (created_at DESC);
 CREATE INDEX posts_published_at_idx ON posts (published_at DESC);
 
 CREATE TABLE scheduled_posts (
   id             BIGSERIAL PRIMARY KEY,
+  user_id        BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   text           TEXT NOT NULL,
   platforms      TEXT[] NOT NULL DEFAULT '{}',
   scheduled_at   TIMESTAMPTZ NOT NULL,
@@ -40,10 +45,12 @@ CREATE TABLE scheduled_posts (
   mime_type      TEXT,
   created_at     TIMESTAMPTZ NOT NULL DEFAULT now()
 );
+CREATE INDEX scheduled_posts_user_id_idx ON scheduled_posts (user_id);
 CREATE INDEX scheduled_posts_scheduled_at_idx ON scheduled_posts (scheduled_at);
 
 CREATE TABLE live_sessions (
   id             BIGSERIAL PRIMARY KEY,
+  user_id        BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   title          TEXT,
   description    TEXT,
   platforms      TEXT[] NOT NULL DEFAULT '{}',
@@ -53,6 +60,7 @@ CREATE TABLE live_sessions (
   started_at     TIMESTAMPTZ NOT NULL DEFAULT now(),
   ended_at       TIMESTAMPTZ
 );
+CREATE INDEX live_sessions_user_id_idx ON live_sessions (user_id);
 
 -- Analytics: per-post-per-platform tracking + time-series snapshots
 
@@ -85,10 +93,11 @@ CREATE INDEX metric_snapshots_post_metric_captured_idx ON metric_snapshots (post
 
 CREATE TABLE analytics_insights (
   id             BIGSERIAL PRIMARY KEY,
+  user_id        BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   generated_at   TIMESTAMPTZ NOT NULL DEFAULT now(),
   period_start   TIMESTAMPTZ NOT NULL,
   period_end     TIMESTAMPTZ NOT NULL,
   summary        TEXT NOT NULL,
   raw            JSONB NOT NULL DEFAULT '{}'
 );
-CREATE INDEX analytics_insights_generated_at_idx ON analytics_insights (generated_at DESC);
+CREATE INDEX analytics_insights_user_generated_idx ON analytics_insights (user_id, generated_at DESC);

@@ -5,7 +5,7 @@ import * as linkedin from '../platforms/linkedin.js'
 import * as facebook from '../platforms/facebook.js'
 import * as youtube from '../platforms/youtube.js'
 import * as tiktok from '../platforms/tiktok.js'
-import { saveToken, removeToken, getTokens } from '../lib/store.js'
+import { saveToken, removeToken, getTokens, findUserIdByFacebookId } from '../lib/store.js'
 import { requireAuth } from '../lib/auth.js'
 
 const router = Router()
@@ -16,9 +16,9 @@ const SUCCESS_HTML = `<html><body><script>
 
 const fail = (res, msg) => res.status(400).send(`<p>Error: ${msg}</p>`)
 
-// Status — which platforms are connected + display names
-router.get('/status', async (_req, res) => {
-  const tokens = await getTokens()
+// Status — which platforms are connected + display names, for the logged-in user
+router.get('/status', requireAuth, async (req, res) => {
+  const tokens = await getTokens(req.session.userId)
   const status = {}
   for (const [p, d] of Object.entries(tokens)) {
     status[p] = { connected: true, savedAt: d.savedAt, displayName: d.displayName || null, username: d.username || null, pageName: d.pageName || null }
@@ -33,15 +33,16 @@ router.get('/x', requireAuth, (req, res) => {
   res.redirect(twitter.getAuthUrl(state))
 })
 router.get('/x/callback', async (req, res) => {
+  if (!req.session.userId) return fail(res, 'Session expired — please log in and try connecting again')
   if (req.query.state !== req.session.xState) return fail(res, 'State mismatch')
   try {
     const tok = await twitter.exchangeCode(req.query.code, req.query.state)
     const user = await twitter.getUser(tok.access_token)
-    await saveToken('x', { ...tok, displayName: user.name, username: user.username })
+    await saveToken(req.session.userId, 'x', { ...tok, displayName: user.name, username: user.username })
     res.send(SUCCESS_HTML)
   } catch (e) { fail(res, e.response?.data?.error_description || e.message) }
 })
-router.delete('/x', requireAuth, async (_req, res) => { await removeToken('x'); res.json({ ok: true }) })
+router.delete('/x', requireAuth, async (req, res) => { await removeToken(req.session.userId, 'x'); res.json({ ok: true }) })
 
 // ── LinkedIn ──
 router.get('/linkedin', requireAuth, (req, res) => {
@@ -50,15 +51,16 @@ router.get('/linkedin', requireAuth, (req, res) => {
   res.redirect(linkedin.getAuthUrl(state))
 })
 router.get('/linkedin/callback', async (req, res) => {
+  if (!req.session.userId) return fail(res, 'Session expired — please log in and try connecting again')
   if (req.query.state !== req.session.liState) return fail(res, 'State mismatch')
   try {
     const tok = await linkedin.exchangeCode(req.query.code)
     const profile = await linkedin.getProfile(tok.access_token)
-    await saveToken('linkedin', { ...tok, personId: profile.sub, displayName: profile.name || null, username: profile.email || null })
+    await saveToken(req.session.userId, 'linkedin', { ...tok, personId: profile.sub, displayName: profile.name || null, username: profile.email || null })
     res.send(SUCCESS_HTML)
   } catch (e) { fail(res, e.response?.data?.message || e.message) }
 })
-router.delete('/linkedin', requireAuth, async (_req, res) => { await removeToken('linkedin'); res.json({ ok: true }) })
+router.delete('/linkedin', requireAuth, async (req, res) => { await removeToken(req.session.userId, 'linkedin'); res.json({ ok: true }) })
 
 // ── Facebook + Instagram (single OAuth flow) ──
 router.get('/facebook', requireAuth, (req, res) => {
@@ -67,23 +69,31 @@ router.get('/facebook', requireAuth, (req, res) => {
   res.redirect(facebook.getAuthUrl(state))
 })
 router.get('/facebook/callback', async (req, res) => {
+  if (!req.session.userId) return fail(res, 'Session expired — please log in and try connecting again')
   if (req.query.state !== req.session.fbState) return fail(res, 'State mismatch')
   try {
     const tok = await facebook.exchangeCode(req.query.code)
-    const pages = await facebook.getPages(tok.access_token)
+    const [pages, fbUserId] = await Promise.all([
+      facebook.getPages(tok.access_token),
+      facebook.getMe(tok.access_token),
+    ])
     console.log('[facebook] pages response:', JSON.stringify(pages))
     if (!pages.length) throw new Error(
       'No Facebook Pages found. Make sure: (1) you have a Facebook Page, ' +
       '(2) your app has pages_show_list scope, (3) you are an Admin of the Page.'
     )
     const page = pages[0]
-    await saveToken('facebook', { userToken: tok.access_token, pageToken: page.access_token, pageId: page.id, pageName: page.name })
+    await saveToken(req.session.userId, 'facebook', { userToken: tok.access_token, pageToken: page.access_token, pageId: page.id, pageName: page.name, fbUserId })
     const igId = await facebook.getInstagramAccountId(page.id, page.access_token)
-    if (igId) await saveToken('instagram', { pageToken: page.access_token, igAccountId: igId, pageId: page.id })
+    if (igId) await saveToken(req.session.userId, 'instagram', { pageToken: page.access_token, igAccountId: igId, pageId: page.id })
     res.send(SUCCESS_HTML)
   } catch (e) { fail(res, e.response?.data?.error?.message || e.message) }
 })
-router.delete('/facebook', requireAuth, async (_req, res) => { await removeToken('facebook'); await removeToken('instagram'); res.json({ ok: true }) })
+router.delete('/facebook', requireAuth, async (req, res) => {
+  await removeToken(req.session.userId, 'facebook')
+  await removeToken(req.session.userId, 'instagram')
+  res.json({ ok: true })
+})
 
 // ── TikTok ──
 router.get('/tiktok', requireAuth, (req, res) => {
@@ -92,15 +102,16 @@ router.get('/tiktok', requireAuth, (req, res) => {
   res.redirect(tiktok.getAuthUrl(state))
 })
 router.get('/tiktok/callback', async (req, res) => {
+  if (!req.session.userId) return fail(res, 'Session expired — please log in and try connecting again')
   if (req.query.state !== req.session.ttState) return fail(res, 'State mismatch')
   try {
     const tok  = await tiktok.exchangeCode(req.query.code, req.query.state)
     const user = await tiktok.getUserInfo(tok.access_token)
-    await saveToken('tiktok', { ...tok, displayName: user.display_name, openId: user.open_id })
+    await saveToken(req.session.userId, 'tiktok', { ...tok, displayName: user.display_name, openId: user.open_id })
     res.send(SUCCESS_HTML)
   } catch (e) { fail(res, e.response?.data?.message || e.message) }
 })
-router.delete('/tiktok', requireAuth, async (_req, res) => { await removeToken('tiktok'); res.json({ ok: true }) })
+router.delete('/tiktok', requireAuth, async (req, res) => { await removeToken(req.session.userId, 'tiktok'); res.json({ ok: true }) })
 
 // ── YouTube (Google OAuth) ──
 router.get('/youtube', requireAuth, (req, res) => {
@@ -109,20 +120,22 @@ router.get('/youtube', requireAuth, (req, res) => {
   res.redirect(youtube.getAuthUrl(state))
 })
 router.get('/youtube/callback', async (req, res) => {
+  if (!req.session.userId) return fail(res, 'Session expired — please log in and try connecting again')
   if (req.query.state !== req.session.ytState) return fail(res, 'State mismatch')
   try {
     const tok = await youtube.exchangeCode(req.query.code)
     const channelTitle = await youtube.getChannelTitle(tok.access_token)
-    await saveToken('youtube', { ...tok, channelTitle })
+    await saveToken(req.session.userId, 'youtube', { ...tok, channelTitle })
     res.send(SUCCESS_HTML)
   } catch (e) { fail(res, e.response?.data?.error_description || e.message) }
 })
-router.delete('/youtube', requireAuth, async (_req, res) => { await removeToken('youtube'); res.json({ ok: true }) })
+router.delete('/youtube', requireAuth, async (req, res) => { await removeToken(req.session.userId, 'youtube'); res.json({ ok: true }) })
 
 // ── Facebook Data Deletion Callback ──
 // Required by Facebook for apps using Facebook Login.
-// Facebook sends a signed_request; we delete all stored Facebook/Instagram data
-// and return a confirmation URL the user can visit to verify deletion.
+// Facebook sends a signed_request identifying its own user_id — no session
+// context here, so we look up which of our users connected that Facebook
+// account and delete only that user's Facebook/Instagram data.
 router.post('/facebook/data-deletion', async (req, res) => {
   try {
     const signedRequest = req.body.signed_request
@@ -139,9 +152,11 @@ router.post('/facebook/data-deletion', async (req, res) => {
 
     if (encodedSig !== expectedSig) return res.status(403).json({ error: 'Invalid signature' })
 
-    // Delete all Facebook and Instagram data for this user
-    await removeToken('facebook')
-    await removeToken('instagram')
+    const userId = await findUserIdByFacebookId(String(data.user_id))
+    if (userId) {
+      await removeToken(userId, 'facebook')
+      await removeToken(userId, 'instagram')
+    }
 
     const confirmationCode = `del_${data.user_id}_${Date.now()}`
     res.json({

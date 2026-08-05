@@ -8,7 +8,7 @@ const router = Router()
 // POST /api/live/start  { platforms: ['youtube','facebook'], title, description }
 router.post('/start', async (req, res) => {
   const { platforms = [], title = 'Live Stream', description = '' } = req.body
-  const tokens = await getTokens()
+  const tokens = await getTokens(req.session.userId)
   const results = {}, errors = {}
 
   await Promise.allSettled(platforms.map(async platform => {
@@ -17,7 +17,7 @@ router.post('/start', async (req, res) => {
         const tok = tokens.youtube
         if (!tok) throw new Error('YouTube not connected')
         const { access_token, refreshed, newTok } = await youtube.ensureFreshToken(tok)
-        if (refreshed) await saveToken('youtube', newTok)
+        if (refreshed) await saveToken(req.session.userId, 'youtube', newTok)
 
         const broadcast = await youtube.createLiveBroadcast(access_token, title)
         const stream    = await youtube.createLiveStream(access_token, title)
@@ -58,17 +58,17 @@ router.post('/start', async (req, res) => {
     }
   }))
 
-  const entry = await saveLive({ title, description, platforms, results, errors })
+  const entry = await saveLive(req.session.userId, { title, description, platforms, results, errors })
   res.json({ ok: Object.keys(results).length > 0, results, errors, live: entry })
 })
 
 // POST /api/live/:id/end
 router.post('/:id/end', async (req, res) => {
-  const lives = await getLives()
+  const lives = await getLives(req.session.userId)
   const live  = lives.find(l => l.id === Number(req.params.id))
   if (!live) return res.status(404).json({ error: 'Live stream not found' })
 
-  const tokens = await getTokens()
+  const tokens = await getTokens(req.session.userId)
   const results = {}, errors = {}
 
   if (live.results?.youtube) {
@@ -76,7 +76,7 @@ router.post('/:id/end', async (req, res) => {
       const tok = tokens.youtube
       if (!tok) throw new Error('YouTube not connected')
       const { access_token, refreshed, newTok } = await youtube.ensureFreshToken(tok)
-      if (refreshed) await saveToken('youtube', newTok)
+      if (refreshed) await saveToken(req.session.userId, 'youtube', newTok)
       await youtube.transitionBroadcast(access_token, live.results.youtube.broadcastId, 'complete')
       results.youtube = { ended: true }
     } catch (e) { errors.youtube = e.response?.data?.error?.message || e.message }
@@ -91,24 +91,24 @@ router.post('/:id/end', async (req, res) => {
     } catch (e) { errors.facebook = e.response?.data?.error?.message || e.message }
   }
 
-  await updateLive(live.id, { endedAt: new Date().toISOString(), status: 'ended' })
+  await updateLive(req.session.userId, live.id, { endedAt: new Date().toISOString(), status: 'ended' })
   res.json({ ok: true, results, errors })
 })
 
 // GET /api/live/:id/status
 router.get('/:id/status', async (req, res) => {
-  const lives = await getLives()
+  const lives = await getLives(req.session.userId)
   const live  = lives.find(l => l.id === Number(req.params.id))
   if (!live) return res.status(404).json({ error: 'Not found' })
 
-  const tokens = await getTokens()
+  const tokens = await getTokens(req.session.userId)
   const status = {}
 
   if (live.results?.youtube) {
     try {
       const tok = tokens.youtube
       const { access_token, refreshed, newTok } = await youtube.ensureFreshToken(tok)
-      if (refreshed) await saveToken('youtube', newTok)
+      if (refreshed) await saveToken(req.session.userId, 'youtube', newTok)
       const b = await youtube.getBroadcastStatus(access_token, live.results.youtube.broadcastId)
       status.youtube = {
         lifecycleStatus: b?.status?.lifeCycleStatus || 'unknown',
@@ -129,6 +129,6 @@ router.get('/:id/status', async (req, res) => {
 })
 
 // GET /api/live
-router.get('/', async (_req, res) => res.json(await getLives()))
+router.get('/', async (req, res) => res.json(await getLives(req.session.userId)))
 
 export default router
