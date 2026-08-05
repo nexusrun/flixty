@@ -89,8 +89,32 @@ app.use(mcpRoutes)
 
 app.get('/health', (_req, res) => res.json({ ok: true, time: new Date().toISOString() }))
 
+// The database isn't always ready the instant this process starts — e.g. a
+// freshly (re)provisioned companion Postgres can still be finishing its own
+// startup/credential setup for a stretch after the app container is already
+// running. Retrying with backoff in-process handles that transient window
+// directly instead of crashing on the first attempt and hoping the
+// platform's container-restart policy happens to retry at the right moment.
+async function runMigrationsWithRetry() {
+  const maxAttempts = 20
+  const baseDelayMs = 2000
+  const maxDelayMs = 30000
+
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      await runMigrations()
+      return
+    } catch (e) {
+      if (attempt === maxAttempts) throw e
+      const delay = Math.min(baseDelayMs * 2 ** (attempt - 1), maxDelayMs)
+      console.warn(`[startup] database not ready (attempt ${attempt}/${maxAttempts}): ${e.message} — retrying in ${delay / 1000}s`)
+      await new Promise(resolve => setTimeout(resolve, delay))
+    }
+  }
+}
+
 async function start() {
-  await runMigrations()
+  await runMigrationsWithRetry()
 
   app.listen(PORT, () => {
     console.log(`\n🚀  Flixty backend → http://localhost:${PORT}`)
