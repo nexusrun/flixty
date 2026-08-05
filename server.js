@@ -61,7 +61,12 @@ app.get('/', (req, res) => {
 app.use(express.static(path.join(__dirname, 'public')))
 
 // Serve uploaded files publicly
-app.use('/uploads', express.static(path.join(__dirname, 'data/uploads')))
+// nosniff is defense-in-depth on top of the media allowlist in lib/mcp/media.js
+// (which is what actually stops an .html/.svg file from ever landing here) —
+// it stops a browser from re-guessing a served file's type from its content.
+app.use('/uploads', express.static(path.join(__dirname, 'data/uploads'), {
+  setHeaders: (res) => res.set('X-Content-Type-Options', 'nosniff'),
+}))
 
 // User auth routes — public (no requireAuth)
 app.use('/api/user', userRoutes)
