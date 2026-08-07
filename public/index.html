@@ -2163,6 +2163,52 @@
     </div>
   </div>
 
+  <!-- SCHEDULED POST DETAIL / EDIT MODAL -->
+  <div id="scheduled-detail-modal" class="hidden fixed inset-0 z-[100] flex items-center justify-center">
+    <div class="absolute inset-0 bg-on-surface/30 backdrop-blur-sm" onclick="closeScheduledDetailModal()"></div>
+    <div class="relative bg-surface-container-lowest rounded-2xl p-6 shadow-2xl w-full max-w-sm mx-4 z-10">
+      <div class="flex items-center justify-between mb-5">
+        <h2 class="font-black text-on-surface text-lg tracking-tight">Scheduled Post</h2>
+        <button onclick="closeScheduledDetailModal()"
+          class="w-7 h-7 flex items-center justify-center rounded-xl hover:bg-surface-container transition-colors text-on-surface-variant">
+          <span class="material-symbols-outlined" style="font-size:18px">close</span>
+        </button>
+      </div>
+      <div class="flex flex-col gap-4">
+        <div>
+          <label class="text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-1.5 block">Text</label>
+          <textarea id="sd-text" rows="4"
+            class="w-full bg-surface-container-low rounded-xl px-4 py-2.5 text-sm text-on-surface border-none resize-none"></textarea>
+        </div>
+        <div>
+          <label class="text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-1.5 block">Platforms</label>
+          <div id="sd-platforms" class="flex flex-wrap gap-2"></div>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-1.5 block">Date</label>
+            <input type="date" id="sd-date"
+              class="w-full bg-surface-container-low rounded-xl px-4 py-2.5 text-sm text-on-surface border-none" />
+          </div>
+          <div>
+            <label class="text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-1.5 block">Time</label>
+            <input type="time" id="sd-time"
+              class="w-full bg-surface-container-low rounded-xl px-4 py-2.5 text-sm text-on-surface border-none" />
+          </div>
+        </div>
+      </div>
+      <div class="flex gap-2 mt-6">
+        <button onclick="deleteScheduledDetail()"
+          class="px-4 py-2.5 rounded-xl text-sm font-semibold text-error hover:opacity-80 transition-all active:scale-95"
+          style="background:rgba(255,77,109,0.12)">Delete</button>
+        <button onclick="closeScheduledDetailModal()"
+          class="flex-1 py-2.5 rounded-xl text-sm font-semibold bg-surface-container text-on-surface hover:bg-surface-container-high transition-all active:scale-95">Cancel</button>
+        <button id="sd-save-btn" onclick="saveScheduledDetail()"
+          class="flex-1 py-2.5 rounded-xl text-sm font-semibold btn-primary shadow-lg transition-all active:scale-95">Save</button>
+      </div>
+    </div>
+  </div>
+
   <!-- TOAST -->
   <div id="toast"
     class="toast-hidden fixed bottom-6 right-6 z-[200] flex items-center gap-3 bg-on-surface text-surface-container-lowest px-4 py-3 rounded-xl shadow-xl">
@@ -2869,14 +2915,30 @@
       if (modal) modal.classList.add('hidden');
     }
 
+    var isScheduling = false;
+
     async function confirmSchedule() {
       if (!_currentUser) { showAuthModal(confirmSchedule); return }
+      if (isScheduling) return; // blocks a double-click firing a second request while the first is still in flight
       const text = document.getElementById('post-textarea').value.trim()
       if (!text) { showToast('Write something first!'); return }
+      if (!activePlatforms.size) { showToast('Select at least one platform'); return }
 
       const dateEl = document.querySelector('#schedule-modal input[type="date"]')
       const timeEl = document.querySelector('#schedule-modal input[type="time"]')
       const scheduledAt = new Date(`${dateEl.value}T${timeEl.value}`).toISOString()
+
+      var platformNames = [...activePlatforms].map(platformLabel).join(', ')
+      var preview = text.length > 80 ? text.slice(0, 80) + '…' : text
+      var confirmed = confirm(
+        'Schedule this post?\n\n"' + preview + '"\n\nPlatforms: ' + platformNames +
+        '\nWhen: ' + dateEl.value + ' at ' + timeEl.value
+      )
+      if (!confirmed) return
+
+      var confirmBtn = document.querySelector('#schedule-modal .btn-primary')
+      isScheduling = true
+      if (confirmBtn) { confirmBtn.disabled = true; confirmBtn.textContent = 'Scheduling…' }
 
       try {
         const fd = new FormData()
@@ -2890,11 +2952,134 @@
 
         const res = await fetch(`${BACKEND}/api/schedule`, { method: 'POST', body: fd })
         const data = await res.json()
+        if (res.status === 409) {
+          showToast(data.error || 'This post is already scheduled for that time')
+          return
+        }
         closeScheduleModal()
-        showToast(data.ok ? 'Scheduled for ' + dateEl.value + ' ' + timeEl.value : 'Schedule failed')
+        showToast(data.ok ? 'Scheduled for ' + dateEl.value + ' ' + timeEl.value : (data.error || 'Schedule failed'))
+        if (data.ok) refreshScheduledViews()
       } catch (e) {
         showToast('Cannot reach backend. Is it running?')
+      } finally {
+        isScheduling = false
+        if (confirmBtn) { confirmBtn.disabled = false; confirmBtn.textContent = 'Confirm' }
       }
+    }
+
+    // ---- Scheduled post detail / edit / delete ----
+
+    var sdCurrentId = null;
+    var sdPlatforms = new Set();
+    var sdSaving = false;
+    var ALL_PLATFORMS = ['x', 'linkedin', 'facebook', 'instagram', 'tiktok', 'youtube'];
+
+    function renderSdPlatformChips() {
+      var container = document.getElementById('sd-platforms');
+      if (!container) return;
+      container.innerHTML = '';
+      ALL_PLATFORMS.forEach(function (pl) {
+        var active = sdPlatforms.has(pl);
+        var chip = document.createElement('button');
+        chip.type = 'button';
+        chip.className = 'text-xs px-3 py-1.5 rounded-full font-medium transition-all flex items-center gap-1.5';
+        if (active) {
+          chip.style.background = 'var(--secondary)';
+          chip.style.color = 'var(--on-secondary)';
+        } else {
+          chip.className += ' bg-surface-container text-on-surface-variant hover:bg-surface-container-high';
+        }
+        chip.appendChild(makePlatformIconDiv(pl, 'w-3.5 h-3.5'));
+        var label = document.createElement('span');
+        label.textContent = platformLabel(pl);
+        chip.appendChild(label);
+        chip.onclick = function () {
+          if (sdPlatforms.has(pl)) sdPlatforms.delete(pl); else sdPlatforms.add(pl);
+          renderSdPlatformChips();
+        };
+        container.appendChild(chip);
+      });
+    }
+
+    function openScheduledDetail(item) {
+      sdCurrentId = item.id;
+      sdPlatforms = new Set(item.platforms || []);
+      document.getElementById('sd-text').value = item.text || '';
+      var dt = new Date(item.scheduledAt);
+      document.getElementById('sd-date').value = dt.toISOString().slice(0, 10);
+      document.getElementById('sd-time').value = dt.toTimeString().slice(0, 5);
+      renderSdPlatformChips();
+      var modal = document.getElementById('scheduled-detail-modal');
+      if (modal) modal.classList.remove('hidden');
+    }
+
+    function closeScheduledDetailModal() {
+      var modal = document.getElementById('scheduled-detail-modal');
+      if (modal) modal.classList.add('hidden');
+      sdCurrentId = null;
+    }
+
+    async function saveScheduledDetail() {
+      if (sdSaving || sdCurrentId == null) return;
+      var text = document.getElementById('sd-text').value.trim();
+      if (!text) { showToast('Write something first!'); return }
+      if (!sdPlatforms.size) { showToast('Select at least one platform'); return }
+      var date = document.getElementById('sd-date').value;
+      var time = document.getElementById('sd-time').value;
+      var scheduledAt = new Date(date + 'T' + time).toISOString();
+
+      var confirmed = confirm('Save changes to this scheduled post?\n\nWhen: ' + date + ' at ' + time + '\nPlatforms: ' + [...sdPlatforms].map(platformLabel).join(', '));
+      if (!confirmed) return;
+
+      var btn = document.getElementById('sd-save-btn');
+      sdSaving = true;
+      if (btn) { btn.disabled = true; btn.textContent = 'Saving…' }
+
+      try {
+        var res = await fetch(BACKEND + '/api/scheduled/' + sdCurrentId, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ text: text, platforms: [...sdPlatforms], scheduledAt: scheduledAt })
+        });
+        var data = await res.json();
+        if (res.status === 409) { showToast(data.error || 'Duplicate schedule entry'); return }
+        if (!res.ok) { showToast(data.error || 'Could not save changes'); return }
+        showToast('Scheduled post updated');
+        closeScheduledDetailModal();
+        refreshScheduledViews();
+      } catch (e) {
+        showToast('Cannot reach backend');
+      } finally {
+        sdSaving = false;
+        if (btn) { btn.disabled = false; btn.textContent = 'Save' }
+      }
+    }
+
+    async function deleteScheduledDetail() {
+      if (sdCurrentId == null) return;
+      if (!confirm('Delete this scheduled post? This cannot be undone.')) return;
+      try {
+        await fetch(BACKEND + '/api/scheduled/' + sdCurrentId, { method: 'DELETE', credentials: 'include' });
+        showToast('Scheduled post deleted');
+        closeScheduledDetailModal();
+        refreshScheduledViews();
+      } catch (e) {
+        showToast('Cannot reach backend');
+      }
+    }
+
+    // Re-fetches scheduled posts and re-renders every view that shows them —
+    // called after create/edit/delete so the Upcoming widget and Calendar
+    // don't go stale until the next full page load.
+    async function refreshScheduledViews() {
+      try {
+        var res = await fetch(BACKEND + '/api/scheduled', { credentials: 'include' });
+        var scheduled = res.ok ? await res.json() : [];
+        renderUpcoming(scheduled);
+        calScheduled = scheduled;
+        renderCalendar(calYear, calMonth, calScheduled);
+      } catch (e) {}
     }
 
     async function publishNow() {
@@ -3446,6 +3631,7 @@
     function renderUpcoming(scheduled) {
       var container = document.getElementById('upcoming-list');
       if (!container) return;
+      container.innerHTML = '';
 
       if (!scheduled || scheduled.length === 0) {
         var p = document.createElement('p');
@@ -3486,7 +3672,9 @@
         var color = platformColor(firstPlatform);
 
         var row = document.createElement('div');
-        row.className = 'flex items-center gap-3';
+        row.className = 'flex items-center gap-3 cursor-pointer hover:bg-surface-container-low rounded-lg -mx-1 px-1 py-0.5 transition-colors';
+        row.title = 'Click to edit or delete';
+        row.onclick = function () { openScheduledDetail(item); };
 
         var dot = document.createElement('div');
         dot.className = 'w-2 h-2 rounded-full shrink-0';
@@ -3670,13 +3858,15 @@
           var timeStr = dt2.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
 
           var chip = document.createElement('div');
-          chip.className = 'text-[10px] font-medium px-1.5 py-0.5 rounded-lg mb-0.5 truncate';
+          chip.className = 'text-[10px] font-medium px-1.5 py-0.5 rounded-lg mb-0.5 truncate cursor-pointer hover:opacity-80';
+          chip.title = 'Click to edit or delete';
           if (color.indexOf('gradient') !== -1) {
             chip.setAttribute('style', 'background:linear-gradient(45deg,#f09433,#dc2743,#bc1888);color:#fff');
           } else {
             chip.setAttribute('style', 'background:' + color + ';color:#fff');
           }
           chip.textContent = platformLabel(firstPlatform) + ' \u2022 ' + timeStr;
+          chip.onclick = function (e) { e.stopPropagation(); openScheduledDetail(item); };
           cell.appendChild(chip);
         });
 

@@ -2,7 +2,7 @@ import { Router } from 'express'
 import multer from 'multer'
 import path from 'path'
 import { fileURLToPath } from 'url'
-import { savePost, getPosts, saveScheduled, getScheduled, removeScheduled, markPlatformPosted } from '../lib/store.js'
+import { savePost, getPosts, saveScheduled, getScheduled, removeScheduled, updateScheduled, findDuplicateScheduled, markPlatformPosted } from '../lib/store.js'
 import { publishToPlatforms } from '../lib/publish.js'
 import { requireAuth } from '../lib/auth.js'
 
@@ -41,9 +41,32 @@ router.post('/schedule', requireAuth, upload.single('media'), async (req, res) =
   const { text, scheduledAt, imageUrl, campaignName } = req.body
   const platforms = JSON.parse(req.body.platforms || '[]')
   if (!scheduledAt) return res.status(400).json({ error: 'scheduledAt required (ISO 8601)' })
+
+  // Catches the classic double-click-the-schedule-button case — same text,
+  // same instant, same platforms already pending. Scheduling the same
+  // text/time to a *different* set of platforms is a legitimate separate
+  // entry, not a duplicate, so it's still allowed.
+  const dupeId = await findDuplicateScheduled(req.session.userId, { text, scheduledAt, platforms })
+  if (dupeId) return res.status(409).json({ error: 'This exact post is already scheduled for that time on these platforms.', duplicateOf: dupeId })
+
   const videoPath  = req.file ? req.file.path     : null
   const mimeType   = req.file ? req.file.mimetype  : null
   const item = await saveScheduled(req.session.userId, { text, platforms, scheduledAt, imageUrl, campaignName, videoPath, mimeType })
+  res.json({ ok: true, scheduled: item })
+})
+
+router.put('/scheduled/:id', requireAuth, async (req, res) => {
+  const id = Number(req.params.id)
+  const { text, scheduledAt, imageUrl, campaignName, platforms } = req.body
+  if (!text || !scheduledAt || !Array.isArray(platforms) || !platforms.length) {
+    return res.status(400).json({ error: 'text, scheduledAt and platforms are required' })
+  }
+
+  const dupeId = await findDuplicateScheduled(req.session.userId, { text, scheduledAt, platforms }, id)
+  if (dupeId) return res.status(409).json({ error: 'This exact post is already scheduled for that time on these platforms.', duplicateOf: dupeId })
+
+  const item = await updateScheduled(req.session.userId, id, { text, scheduledAt, imageUrl, campaignName, platforms })
+  if (!item) return res.status(404).json({ error: 'Scheduled post not found' })
   res.json({ ok: true, scheduled: item })
 })
 
