@@ -867,7 +867,8 @@
 
         <!-- Stats grid -->
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          <div class="bg-surface-container-lowest rounded-xl p-5 shadow-sm shadow-on-surface/5">
+          <div onclick="switchView('analytics')" title="View in Analytics"
+            class="bg-surface-container-lowest rounded-xl p-5 shadow-sm shadow-on-surface/5 cursor-pointer transition-all hover:bg-surface-container-low hover:-translate-y-0.5">
             <div class="flex items-start justify-between mb-3">
               <div class="w-9 h-9 rounded-xl bg-secondary-container flex items-center justify-center">
                 <span class="material-symbols-outlined text-on-secondary-container"
@@ -877,7 +878,8 @@
             <p id="stat-total-posts" class="text-2xl font-black text-on-surface tracking-tight">—</p>
             <p class="text-xs text-on-surface-variant mt-0.5">Total Posts</p>
           </div>
-          <div class="bg-surface-container-lowest rounded-xl p-5 shadow-sm shadow-on-surface/5">
+          <div onclick="switchView('analytics')" title="View in Analytics"
+            class="bg-surface-container-lowest rounded-xl p-5 shadow-sm shadow-on-surface/5 cursor-pointer transition-all hover:bg-surface-container-low hover:-translate-y-0.5">
             <div class="flex items-start justify-between mb-3">
               <div class="w-9 h-9 rounded-xl bg-secondary-container flex items-center justify-center">
                 <span class="material-symbols-outlined text-on-secondary-container" style="font-size:18px">hub</span>
@@ -886,7 +888,8 @@
             <p id="stat-platforms" class="text-2xl font-black text-on-surface tracking-tight">—</p>
             <p class="text-xs text-on-surface-variant mt-0.5">Platforms Active</p>
           </div>
-          <div class="bg-surface-container-lowest rounded-xl p-5 shadow-sm shadow-on-surface/5">
+          <div onclick="switchView('calendar')" title="View in Calendar"
+            class="bg-surface-container-lowest rounded-xl p-5 shadow-sm shadow-on-surface/5 cursor-pointer transition-all hover:bg-surface-container-low hover:-translate-y-0.5">
             <div class="flex items-start justify-between mb-3">
               <div class="w-9 h-9 rounded-xl bg-secondary-container flex items-center justify-center">
                 <span class="material-symbols-outlined text-on-secondary-container"
@@ -898,7 +901,8 @@
             <p id="stat-scheduled" class="text-2xl font-black text-on-surface tracking-tight">—</p>
             <p class="text-xs text-on-surface-variant mt-0.5">Scheduled Posts</p>
           </div>
-          <div class="bg-surface-container-lowest rounded-xl p-5 shadow-sm shadow-on-surface/5">
+          <div onclick="switchView('analytics')" title="View in Analytics"
+            class="bg-surface-container-lowest rounded-xl p-5 shadow-sm shadow-on-surface/5 cursor-pointer transition-all hover:bg-surface-container-low hover:-translate-y-0.5">
             <div class="flex items-start justify-between mb-3">
               <div class="w-9 h-9 rounded-xl bg-secondary-container flex items-center justify-center">
                 <span class="material-symbols-outlined text-on-secondary-container" style="font-size:18px">today</span>
@@ -916,7 +920,7 @@
           <div>
             <div class="flex items-center justify-between mb-4">
               <h2 class="font-bold text-on-surface">Recent Posts</h2>
-              <button class="text-xs text-secondary font-medium hover:underline">View all</button>
+              <button onclick="switchView('analytics')" class="text-xs text-secondary font-medium hover:underline">View all</button>
             </div>
             <div id="recent-posts-list"></div>
           </div>
@@ -926,7 +930,8 @@
 
             <!-- Upcoming -->
             <div class="bg-surface-container-lowest rounded-xl p-5 shadow-sm shadow-on-surface/5">
-              <div class="flex items-center justify-between mb-4">
+              <div onclick="switchView('calendar')" title="View in Calendar"
+                class="flex items-center justify-between mb-4 cursor-pointer -m-1 p-1 rounded-lg transition-all hover:bg-surface-container-low">
                 <h3 class="font-bold text-on-surface text-sm">Upcoming</h3>
                 <span class="material-symbols-outlined text-on-surface-variant"
                   style="font-size:18px">calendar_month</span>
@@ -952,7 +957,8 @@
             </div>
 
             <!-- Top Hashtags (glassmorphism) -->
-            <div class="bg-surface-container-low/50 backdrop-blur-md rounded-xl p-5 shadow-sm shadow-on-surface/5">
+            <div onclick="switchView('analytics')" title="View in Analytics"
+              class="bg-surface-container-low/50 backdrop-blur-md rounded-xl p-5 shadow-sm shadow-on-surface/5 cursor-pointer transition-all hover:bg-surface-container-low">
               <div class="flex items-center justify-between mb-4">
                 <h3 class="font-bold text-on-surface text-sm">Top Hashtags</h3>
                 <span class="text-xs text-on-surface-variant">All posts</span>
@@ -3161,22 +3167,14 @@
       }
     }
 
-    // X and TikTok have no working API path (X needs paid access, TikTok needs
-    // app approval) — instead the backend hands back a link to the platform's
-    // own web posting interface for the user to finish manually.
+    // X has no working API path (needs paid access) — the backend hands back
+    // a link to X's own web compose interface for the user to finish
+    // manually. TikTok posts through the real API now (sandbox mode), so it
+    // no longer goes through this path.
     function openWebPublishActions(results) {
       if (!results) return
       if (results.x && results.x.pending && results.x.url) {
         window.open(results.x.url, '_blank')
-      }
-      if (results.tiktok && results.tiktok.pending && results.tiktok.url) {
-        window.open(results.tiktok.url, '_blank')
-        if (results.tiktok.caption && navigator.clipboard && navigator.clipboard.writeText) {
-          navigator.clipboard.writeText(results.tiktok.caption).catch(function () {})
-        }
-        var msg = 'TikTok upload page opened — caption copied, paste it in.'
-        if (results.tiktok.downloadUrl) msg += ' Video: ' + results.tiktok.downloadUrl
-        showToast(msg)
       }
     }
 
@@ -3662,10 +3660,11 @@
         contentDiv.appendChild(headerRow);
         contentDiv.appendChild(chipsRow);
 
-        // X/TikTok posts made via the web-intent flow need the user to finish
-        // manually on the platform's own site — show a "finish posting" prompt
-        // for each platform still marked pending.
-        ['x', 'tiktok'].forEach(function (pl) {
+        // X posts made via the web-intent flow need the user to finish
+        // manually on X's own site — show a "finish posting" prompt while
+        // still marked pending. (TikTok posts through the real API now, so
+        // it never carries a pending flag.)
+        ['x'].forEach(function (pl) {
           var action = post.results && post.results[pl];
           if (!action || !action.pending) return;
 
