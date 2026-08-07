@@ -155,6 +155,24 @@ export async function uploadVideo(accessToken, filePath, { title, description, t
   return uploadData
 }
 
+// Sets a custom thumbnail for an already-uploaded video. Requires the
+// channel to be phone-verified — YouTube rejects this call outright for
+// unverified channels, so callers should treat failure here as soft (the
+// video itself already published fine) rather than failing the whole post.
+export async function setThumbnail(accessToken, videoId, filePath, mimeType = 'image/jpeg') {
+  filePath = safeUploadPath(filePath)
+  const stat = fs.statSync(filePath)
+  const { data } = await axios.post(
+    `https://www.googleapis.com/upload/youtube/v3/thumbnails/set?videoId=${videoId}`,
+    fs.createReadStream(filePath),
+    {
+      headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type': mimeType, 'Content-Length': stat.size },
+      maxBodyLength: Infinity,
+    }
+  )
+  return data
+}
+
 // ── Live Streaming ──
 // Requires 'https://www.googleapis.com/auth/youtube' scope (broader than current upload-only scope).
 // Users must reconnect YouTube after the scope update.

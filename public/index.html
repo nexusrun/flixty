@@ -1167,6 +1167,25 @@
               <input type="file" id="file-input" class="hidden" accept="image/*,video/*" multiple
                 onchange="handleFileUpload(this)" />
               <div id="media-previews" class="flex flex-wrap gap-3 mt-3"></div>
+
+              <div class="mt-4 pt-4" style="border-top:1px solid var(--outline-variant)">
+                <label
+                  class="text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-2 block">Thumbnail
+                  <span class="normal-case font-normal text-on-surface-variant/70">(optional — used as the custom YouTube thumbnail for video posts)</span></label>
+                <div class="flex items-center gap-3">
+                  <div id="thumbnail-preview-wrap" class="hidden relative rounded-xl overflow-hidden shrink-0" style="width:56px;height:56px">
+                    <img id="thumbnail-preview-img" class="w-full h-full object-cover" alt="Thumbnail preview" />
+                    <button type="button" onclick="removeThumbnail()"
+                      class="absolute top-0.5 right-0.5 w-4 h-4 rounded-full flex items-center justify-center"
+                      style="background:rgba(0,0,0,0.6);color:#fff;font-size:11px" aria-label="Remove thumbnail">×</button>
+                  </div>
+                  <button type="button" onclick="document.getElementById('thumbnail-input').click()"
+                    class="text-xs px-3 py-2 rounded-xl font-medium bg-surface-container text-on-surface-variant hover:bg-surface-container-high transition-all">Choose
+                    thumbnail image</button>
+                  <span id="thumbnail-filename" class="text-xs text-on-surface-variant truncate"></span>
+                </div>
+                <input type="file" id="thumbnail-input" class="hidden" accept="image/*" onchange="handleThumbnailUpload(this)" />
+              </div>
             </div>
 
             <!-- Audience & Targeting -->
@@ -2762,6 +2781,26 @@
       processFiles(Array.from(event.dataTransfer.files));
     }
 
+    function handleThumbnailUpload(input) {
+      var file = input.files[0];
+      if (!file) return;
+      if (!file.type.startsWith('image/')) { showToast('Thumbnail must be an image'); input.value = ''; return; }
+
+      var wrap = document.getElementById('thumbnail-preview-wrap');
+      var img = document.getElementById('thumbnail-preview-img');
+      var nameEl = document.getElementById('thumbnail-filename');
+      img.src = URL.createObjectURL(file);
+      wrap.classList.remove('hidden');
+      nameEl.textContent = file.name;
+    }
+
+    function removeThumbnail() {
+      var input = document.getElementById('thumbnail-input');
+      input.value = '';
+      document.getElementById('thumbnail-preview-wrap').classList.add('hidden');
+      document.getElementById('thumbnail-filename').textContent = '';
+    }
+
     function processFiles(files) {
       var container = document.getElementById('media-previews');
       files.forEach(function (file) {
@@ -2949,6 +2988,8 @@
         if (campaignInput && campaignInput.value.trim()) fd.append('campaignName', campaignInput.value.trim())
         const fileInput = document.getElementById('file-input')
         if (fileInput.files[0]) fd.append('media', fileInput.files[0])
+        const thumbInput = document.getElementById('thumbnail-input')
+        if (thumbInput && thumbInput.files[0]) fd.append('thumbnail', thumbInput.files[0])
 
         const res = await fetch(`${BACKEND}/api/schedule`, { method: 'POST', body: fd })
         const data = await res.json()
@@ -3101,6 +3142,8 @@
         if (titleVal) fd.append('campaignName', titleVal)
         const fileInput = document.getElementById('file-input')
         if (fileInput.files[0]) fd.append('media', fileInput.files[0])
+        const thumbInput = document.getElementById('thumbnail-input')
+        if (thumbInput && thumbInput.files[0]) fd.append('thumbnail', thumbInput.files[0])
 
         const res = await fetch(`${BACKEND}/api/publish`, { method: 'POST', body: fd })
         const data = await res.json()
@@ -3437,6 +3480,42 @@
     }
 
     // Build the colored icon wrapper div for a platform
+    var VIDEO_EXT_RE = /\.(mp4|mov|webm|m4v|avi|mkv)(\?|$)/i;
+
+    // A post's thumbnail (custom-uploaded, video posts) takes priority over
+    // its main media — the main media URL is only usable directly if it's an
+    // image (a video URL can't be rendered as an <img>).
+    function postThumbnailUrl(post) {
+      if (post.thumbnailUrl) return post.thumbnailUrl;
+      if (post.mediaUrl && !VIDEO_EXT_RE.test(post.mediaUrl)) return post.mediaUrl;
+      return null;
+    }
+
+    // Scheduled posts (not yet published) store the thumbnail/video as a raw
+    // server-side file path rather than a public URL — /uploads/<basename>
+    // is where multer actually saved it, so that's derived here instead.
+    function scheduledThumbnailUrl(item) {
+      if (item.thumbnailPath) return '/uploads/' + item.thumbnailPath.split('/').pop();
+      if (item.imageUrl && !VIDEO_EXT_RE.test(item.imageUrl)) return item.imageUrl;
+      return null;
+    }
+
+    // Same as makePlatformIconDiv, but shows the post's real thumbnail image
+    // when one is available, falling back to the platform icon otherwise.
+    function makeThumbnailOrIconDiv(post, platform, sizeClass) {
+      var url = postThumbnailUrl(post);
+      if (!url) return makePlatformIconDiv(platform, sizeClass);
+      var sz = sizeClass || 'w-8 h-8';
+      var div = document.createElement('div');
+      div.className = sz + ' rounded-xl overflow-hidden shrink-0 bg-surface-container';
+      var img = document.createElement('img');
+      img.src = url;
+      img.className = 'w-full h-full object-cover';
+      img.alt = 'Post thumbnail';
+      div.appendChild(img);
+      return div;
+    }
+
     function makePlatformIconDiv(platform, sizeClass) {
       var sz = sizeClass || 'w-8 h-8';
       var div = document.createElement('div');
@@ -3546,7 +3625,7 @@
         var card = document.createElement('div');
         card.className = 'bg-surface-container-lowest rounded-xl p-4 shadow-sm shadow-on-surface/5';
 
-        var iconDiv = makePlatformIconDiv(firstPlatform, 'w-8 h-8');
+        var iconDiv = makeThumbnailOrIconDiv(post, firstPlatform, 'w-8 h-8');
 
         var contentDiv = document.createElement('div');
         contentDiv.className = 'flex-1 min-w-0';
@@ -3676,9 +3755,21 @@
         row.title = 'Click to edit or delete';
         row.onclick = function () { openScheduledDetail(item); };
 
-        var dot = document.createElement('div');
-        dot.className = 'w-2 h-2 rounded-full shrink-0';
-        dot.setAttribute('style', 'background:' + (color.indexOf('gradient') !== -1 ? 'linear-gradient(45deg,#f09433,#bc1888)' : color));
+        var thumbUrl = scheduledThumbnailUrl(item);
+        var dot;
+        if (thumbUrl) {
+          dot = document.createElement('div');
+          dot.className = 'w-6 h-6 rounded-lg overflow-hidden shrink-0 bg-surface-container';
+          var thumbImg = document.createElement('img');
+          thumbImg.src = thumbUrl;
+          thumbImg.className = 'w-full h-full object-cover';
+          thumbImg.alt = 'Scheduled post thumbnail';
+          dot.appendChild(thumbImg);
+        } else {
+          dot = document.createElement('div');
+          dot.className = 'w-2 h-2 rounded-full shrink-0';
+          dot.setAttribute('style', 'background:' + (color.indexOf('gradient') !== -1 ? 'linear-gradient(45deg,#f09433,#bc1888)' : color));
+        }
 
         var info = document.createElement('div');
         info.className = 'flex-1 min-w-0';

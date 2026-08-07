@@ -14,33 +14,43 @@ const upload = multer({
   }),
   limits: { fileSize: 100 * 1024 * 1024 }
 })
+// `media` is the primary attachment (image or video); `thumbnail` is a
+// separate, optional cover image — currently only meaningful for YouTube,
+// which has its own distinct thumbnail-upload API.
+const uploadWithThumbnail = upload.fields([{ name: 'media', maxCount: 1 }, { name: 'thumbnail', maxCount: 1 }])
 
 const router = Router()
 
-router.post('/publish', requireAuth, upload.single('media'), async (req, res) => {
+router.post('/publish', requireAuth, uploadWithThumbnail, async (req, res) => {
   const { text, imageUrl } = req.body
   const platforms = JSON.parse(req.body.platforms || '[]')
+  const mediaFile = req.files?.media?.[0]
+  const thumbFile = req.files?.thumbnail?.[0]
 
   // If a file was uploaded, build a public URL (requires BASE_URL to be publicly accessible)
-  const mediaUrl = req.file
-    ? `${process.env.BASE_URL}/uploads/${req.file.filename}`
+  const mediaUrl = mediaFile
+    ? `${process.env.BASE_URL}/uploads/${mediaFile.filename}`
     : imageUrl || null
-  const media = (req.file || mediaUrl)
-    ? { url: mediaUrl, filePath: req.file?.path, mimeType: req.file?.mimetype }
+  const media = (mediaFile || mediaUrl)
+    ? { url: mediaUrl, filePath: mediaFile?.path, mimeType: mediaFile?.mimetype }
     : null
+  const thumbnailUrl = thumbFile ? `${process.env.BASE_URL}/uploads/${thumbFile.filename}` : null
+  const thumbnail = thumbFile ? { filePath: thumbFile.path, mimeType: thumbFile.mimetype } : null
 
   const { results, errors } = await publishToPlatforms(req.session.userId, {
-    text, platforms, media, campaignName: req.body.campaignName,
+    text, platforms, media, thumbnail, campaignName: req.body.campaignName,
   })
 
-  const post = await savePost(req.session.userId, { text, platforms, mediaUrl, results, errors })
+  const post = await savePost(req.session.userId, { text, platforms, mediaUrl, thumbnailUrl, results, errors })
   res.json({ ok: Object.keys(results).length > 0, results, errors, post })
 })
 
-router.post('/schedule', requireAuth, upload.single('media'), async (req, res) => {
+router.post('/schedule', requireAuth, uploadWithThumbnail, async (req, res) => {
   const { text, scheduledAt, imageUrl, campaignName } = req.body
   const platforms = JSON.parse(req.body.platforms || '[]')
   if (!scheduledAt) return res.status(400).json({ error: 'scheduledAt required (ISO 8601)' })
+  const mediaFile = req.files?.media?.[0]
+  const thumbFile = req.files?.thumbnail?.[0]
 
   // Catches the classic double-click-the-schedule-button case — same text,
   // same instant, same platforms already pending. Scheduling the same
@@ -49,9 +59,10 @@ router.post('/schedule', requireAuth, upload.single('media'), async (req, res) =
   const dupeId = await findDuplicateScheduled(req.session.userId, { text, scheduledAt, platforms })
   if (dupeId) return res.status(409).json({ error: 'This exact post is already scheduled for that time on these platforms.', duplicateOf: dupeId })
 
-  const videoPath  = req.file ? req.file.path     : null
-  const mimeType   = req.file ? req.file.mimetype  : null
-  const item = await saveScheduled(req.session.userId, { text, platforms, scheduledAt, imageUrl, campaignName, videoPath, mimeType })
+  const videoPath  = mediaFile ? mediaFile.path     : null
+  const mimeType   = mediaFile ? mediaFile.mimetype  : null
+  const thumbnailPath = thumbFile ? thumbFile.path : null
+  const item = await saveScheduled(req.session.userId, { text, platforms, scheduledAt, imageUrl, campaignName, videoPath, mimeType, thumbnailPath })
   res.json({ ok: true, scheduled: item })
 })
 
