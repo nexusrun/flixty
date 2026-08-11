@@ -1,5 +1,5 @@
 nexus deploy source --repo https://github.com/saifelyzal/flixty.git \
---name flixty1 \
+--name flixty \
 --provider docker \
 --no-health-check no \
 --json \

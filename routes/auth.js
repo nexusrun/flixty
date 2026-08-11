@@ -21,7 +21,15 @@ router.get('/status', requireAuth, async (req, res) => {
   const tokens = await getTokens(req.session.userId)
   const status = {}
   for (const [p, d] of Object.entries(tokens)) {
-    status[p] = { connected: true, savedAt: d.savedAt, displayName: d.displayName || null, username: d.username || null, pageName: d.pageName || null }
+    status[p] = {
+      connected: true,
+      savedAt: d.savedAt,
+      displayName: d.displayName || null,
+      username: d.username || null,
+      pageName: d.pageName || null,
+      activeAccountId: d.activeAccountId || null,
+      accounts: (d.accounts || []).map(a => ({ id: a.id, name: a.name, type: a.type, pageId: a.pageId || null, pageName: a.pageName || null })),
+    }
   }
   res.json(status)
 })
@@ -56,11 +64,41 @@ router.get('/linkedin/callback', async (req, res) => {
   try {
     const tok = await linkedin.exchangeCode(req.query.code)
     const profile = await linkedin.getProfile(tok.access_token)
-    await saveToken(req.session.userId, 'linkedin', { ...tok, personId: profile.sub, displayName: profile.name || null, username: profile.email || null })
+    const organizations = await linkedin.getOrganizations(tok.access_token)
+    const accounts = [
+      { id: String(profile.sub), name: profile.name || 'Personal LinkedIn', type: 'person' },
+      ...organizations,
+    ]
+    await saveToken(req.session.userId, 'linkedin', { ...tok, personId: profile.sub, displayName: profile.name || null, username: profile.email || null, accounts, activeAccountId: String(profile.sub) })
     res.send(SUCCESS_HTML)
   } catch (e) { fail(res, e.response?.data?.message || e.message) }
 })
 router.delete('/linkedin', requireAuth, async (req, res) => { await removeToken(req.session.userId, 'linkedin'); res.json({ ok: true }) })
+
+// Select which connected identity should receive future posts. Tokens remain
+// server-side; the client sends only an account id from /auth/status.
+router.patch('/select', requireAuth, async (req, res) => {
+  const { platform, accountId } = req.body || {}
+  if (!['linkedin', 'facebook', 'instagram'].includes(platform) || !accountId) {
+    return res.status(400).json({ error: 'platform and accountId are required' })
+  }
+  const tokens = await getTokens(req.session.userId)
+  const token = tokens[platform]
+  const account = token?.accounts?.find(a => String(a.id) === String(accountId))
+  if (!account) return res.status(404).json({ error: 'Account is not connected' })
+
+  const next = { ...token, activeAccountId: String(account.id) }
+  if (platform === 'linkedin') {
+    next.personId = account.type === 'person' ? account.id : next.personId
+    next.displayName = account.name
+  } else if (platform === 'facebook') {
+    next.pageId = account.id; next.pageName = account.name; next.pageToken = account.pageToken
+  } else {
+    next.igAccountId = account.id; next.pageId = account.pageId; next.pageName = account.pageName; next.pageToken = account.pageToken
+  }
+  await saveToken(req.session.userId, platform, next)
+  res.json({ ok: true, platform, activeAccountId: String(account.id), account: { id: account.id, name: account.name, type: account.type } })
+})
 
 // ── Facebook + Instagram (single OAuth flow) ──
 router.get('/facebook', requireAuth, (req, res) => {
@@ -83,17 +121,20 @@ router.get('/facebook/callback', async (req, res) => {
       '(2) your app has pages_show_list scope, (3) you are an Admin of the Page.'
     )
     const page = pages[0]
-    await saveToken(req.session.userId, 'facebook', { userToken: tok.access_token, pageToken: page.access_token, pageId: page.id, pageName: page.name, fbUserId })
+    const pageAccounts = pages.map(p => ({ id: String(p.id), name: p.name, type: 'page', pageToken: p.access_token }))
+    await saveToken(req.session.userId, 'facebook', { userToken: tok.access_token, pageToken: page.access_token, pageId: page.id, pageName: page.name, fbUserId, accounts: pageAccounts, activeAccountId: String(page.id) })
 
     // The linked Instagram Business Account can be on any of the user's
     // pages, not necessarily the first one — check them all rather than
     // only ever looking at pages[0].
+    const instagramAccounts = []
     for (const p of pages) {
       const igId = await facebook.getInstagramAccountId(p.id, p.access_token)
-      if (igId) {
-        await saveToken(req.session.userId, 'instagram', { pageToken: p.access_token, igAccountId: igId, pageId: p.id })
-        break
-      }
+      if (igId) instagramAccounts.push({ id: String(igId), name: `${p.name} Instagram`, type: 'instagram', pageId: String(p.id), pageName: p.name, pageToken: p.access_token })
+    }
+    if (instagramAccounts.length) {
+      const ig = instagramAccounts[0]
+      await saveToken(req.session.userId, 'instagram', { pageToken: ig.pageToken, igAccountId: ig.id, pageId: ig.pageId, pageName: ig.pageName, accounts: instagramAccounts, activeAccountId: ig.id })
     }
     res.send(SUCCESS_HTML)
   } catch (e) { fail(res, e.response?.data?.error?.message || e.message) }

@@ -73,6 +73,8 @@ const router = Router()
 router.post('/publish', requireAuth, uploadWithThumbnail, async (req, res) => {
   const { text } = req.body
   const platforms = JSON.parse(req.body.platforms || '[]')
+  let accountTargets = {}
+  try { accountTargets = JSON.parse(req.body.accountTargets || '{}') } catch { return res.status(400).json({ error: 'Invalid accountTargets' }) }
 
   let media, mediaUrl, thumbnail, thumbnailUrl
   try {
@@ -82,7 +84,7 @@ router.post('/publish', requireAuth, uploadWithThumbnail, async (req, res) => {
   }
 
   const { results, errors } = await publishToPlatforms(req.session.userId, {
-    text, platforms, media, thumbnail, campaignName: req.body.campaignName,
+    text, platforms, media, thumbnail, campaignName: req.body.campaignName, accountTargets,
   })
 
   const post = await savePost(req.session.userId, { text, platforms, mediaUrl, thumbnailUrl, results, errors })
@@ -92,6 +94,8 @@ router.post('/publish', requireAuth, uploadWithThumbnail, async (req, res) => {
 router.post('/schedule', requireAuth, uploadWithThumbnail, async (req, res) => {
   const { text, scheduledAt, imageUrl, campaignName, mediaFilename } = req.body
   const platforms = JSON.parse(req.body.platforms || '[]')
+  let accountTargets = {}
+  try { accountTargets = JSON.parse(req.body.accountTargets || '{}') } catch { return res.status(400).json({ error: 'Invalid accountTargets' }) }
   if (!scheduledAt) return res.status(400).json({ error: 'scheduledAt required (ISO 8601)' })
   const mediaFile = req.files?.media?.[0]
   const thumbFile = req.files?.thumbnail?.[0]
@@ -113,13 +117,13 @@ router.post('/schedule', requireAuth, uploadWithThumbnail, async (req, res) => {
     mimeType = mimeTypeForFilename(mediaFilename)
   }
   const thumbnailPath = thumbFile ? thumbFile.path : null
-  const item = await saveScheduled(req.session.userId, { text, platforms, scheduledAt, imageUrl, campaignName, videoPath, mimeType, thumbnailPath })
+  const item = await saveScheduled(req.session.userId, { text, platforms, accountTargets, scheduledAt, imageUrl, campaignName, videoPath, mimeType, thumbnailPath })
   res.json({ ok: true, scheduled: item })
 })
 
 router.put('/scheduled/:id', requireAuth, async (req, res) => {
   const id = Number(req.params.id)
-  const { text, scheduledAt, imageUrl, campaignName, platforms } = req.body
+  const { text, scheduledAt, imageUrl, campaignName, platforms, accountTargets = {} } = req.body
   if (!text || !scheduledAt || !Array.isArray(platforms) || !platforms.length) {
     return res.status(400).json({ error: 'text, scheduledAt and platforms are required' })
   }
@@ -127,7 +131,7 @@ router.put('/scheduled/:id', requireAuth, async (req, res) => {
   const dupeId = await findDuplicateScheduled(req.session.userId, { text, scheduledAt, platforms }, id)
   if (dupeId) return res.status(409).json({ error: 'This exact post is already scheduled for that time on these platforms.', duplicateOf: dupeId })
 
-  const item = await updateScheduled(req.session.userId, id, { text, scheduledAt, imageUrl, campaignName, platforms })
+  const item = await updateScheduled(req.session.userId, id, { text, scheduledAt, imageUrl, campaignName, platforms, accountTargets })
   if (!item) return res.status(404).json({ error: 'Scheduled post not found' })
   res.json({ ok: true, scheduled: item })
 })

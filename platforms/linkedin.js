@@ -3,7 +3,7 @@ import axios from 'axios'
 const CLIENT_ID = process.env.LINKEDIN_CLIENT_ID
 const CLIENT_SECRET = process.env.LINKEDIN_CLIENT_SECRET
 const REDIRECT_URI = `${process.env.BASE_URL}/auth/linkedin/callback`
-const SCOPES = ['w_member_social', 'openid', 'profile', 'email']
+const SCOPES = ['w_member_social', 'w_organization_social', 'r_organization_social', 'openid', 'profile', 'email']
 
 export function getAuthUrl(state) {
   const p = new URLSearchParams({
@@ -29,11 +29,35 @@ export async function getProfile(accessToken) {
   return data
 }
 
-export async function postUpdate(accessToken, personId, text) {
+// Requires LinkedIn's organization posting products/scopes. An empty result
+// is valid: many accounts only have permission to post to their own profile.
+export async function getOrganizations(accessToken) {
+  try {
+    const { data } = await axios.get('https://api.linkedin.com/v2/organizationalEntityAcls', {
+      params: {
+        q: 'roleAssignee',
+        role: 'ADMINISTRATOR',
+        projection: '(elements*(organizationalTarget~(id,localizedName)))',
+      },
+      headers: { Authorization: `Bearer ${accessToken}` },
+    })
+    return (data.elements || []).map(item => {
+      const org = item['organizationalTarget~'] || {}
+      return { id: String(org.id || item.organizationalTarget || ''), name: org.localizedName || 'LinkedIn organization', type: 'organization' }
+    }).filter(item => item.id)
+  } catch (e) {
+    console.warn('[linkedin] organization list unavailable:', e.response?.data?.message || e.message)
+    return []
+  }
+}
+
+export async function postUpdate(accessToken, account, text) {
+  const isOrganization = account?.type === 'organization'
+  const id = typeof account === 'string' ? account : account?.id
   const { data } = await axios.post(
     'https://api.linkedin.com/v2/ugcPosts',
     {
-      author: `urn:li:person:${personId}`,
+      author: `urn:li:${isOrganization ? 'organization' : 'person'}:${id}`,
       lifecycleState: 'PUBLISHED',
       specificContent: {
         'com.linkedin.ugc.ShareContent': {

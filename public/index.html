@@ -1059,6 +1059,14 @@
               </div>
             </div>
 
+            <div id="account-targets" class="hidden bg-surface-container-lowest rounded-xl p-5 shadow-sm shadow-on-surface/5">
+              <div class="flex items-center justify-between gap-3 mb-3">
+                <label class="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Publish as</label>
+                <span class="text-[11px] text-on-surface-variant">Choose a profile or page</span>
+              </div>
+              <div id="account-target-fields" class="grid grid-cols-1 sm:grid-cols-3 gap-3"></div>
+            </div>
+
             <!-- Text editor -->
             <div class="bg-surface-container-lowest rounded-xl p-5 shadow-sm shadow-on-surface/5">
               <div class="flex items-center gap-1 mb-3 pb-3 border-b border-outline-variant/20">
@@ -2727,6 +2735,53 @@
 
     // Tracks which platforms are currently selected in the compose view
     const activePlatforms = new Set()
+    var connectedAccountStatus = {}
+
+    function accountTargetsForPost() {
+      var targets = {}
+      ;['linkedin', 'facebook', 'instagram'].forEach(function (platform) {
+        var select = document.getElementById('account-target-' + platform)
+        if (select && select.value) targets[platform] = select.value
+      })
+      return targets
+    }
+
+    function renderAccountTargets(status) {
+      connectedAccountStatus = status || {}
+      var wrapper = document.getElementById('account-targets')
+      var fields = document.getElementById('account-target-fields')
+      if (!wrapper || !fields) return
+      fields.replaceChildren()
+      var choices = ['linkedin', 'facebook', 'instagram']
+        .map(function (platform) { return { platform: platform, data: connectedAccountStatus[platform] || {} } })
+        .filter(function (item) { return item.data.accounts && item.data.accounts.length > 1 })
+      wrapper.classList.toggle('hidden', choices.length === 0)
+
+      choices.forEach(function (item) {
+        var label = document.createElement('label')
+        label.className = 'flex flex-col gap-1.5'
+        var title = document.createElement('span')
+        title.className = 'text-[11px] font-semibold text-on-surface-variant'
+        title.textContent = platformLabel(item.platform)
+        var select = document.createElement('select')
+        select.id = 'account-target-' + item.platform
+        select.className = 'w-full bg-surface-container-low rounded-xl px-3 py-2 text-xs text-on-surface border-none'
+        item.data.accounts.forEach(function (account) {
+          var option = document.createElement('option')
+          option.value = account.id
+          option.textContent = account.name + (account.type === 'organization' ? ' (Company)' : '')
+          option.selected = String(account.id) === String(item.data.activeAccountId)
+          select.appendChild(option)
+        })
+        select.addEventListener('change', function () {
+          fetch(BACKEND + '/auth/select', {
+            method: 'PATCH', headers: { 'Content-Type': 'application/json' }, credentials: 'include',
+            body: JSON.stringify({ platform: item.platform, accountId: select.value })
+          }).catch(function () {})
+        })
+        label.appendChild(title); label.appendChild(select); fields.appendChild(label)
+      })
+    }
 
     // View switching
     function switchView(view) {
@@ -3284,6 +3339,7 @@
         const fd = new FormData()
         fd.append('text', text)
         fd.append('platforms', JSON.stringify([...activePlatforms]))
+        fd.append('accountTargets', JSON.stringify(accountTargetsForPost()))
         fd.append('scheduledAt', scheduledAt)
         const campaignInput = document.getElementById('campaign-name')
         if (campaignInput && campaignInput.value.trim()) fd.append('campaignName', campaignInput.value.trim())
@@ -3315,6 +3371,7 @@
 
     var sdCurrentId = null;
     var sdPlatforms = new Set();
+    var sdAccountTargets = {};
     var sdSaving = false;
     var ALL_PLATFORMS = ['x', 'linkedin', 'facebook', 'instagram', 'tiktok', 'youtube'];
 
@@ -3348,6 +3405,7 @@
     function openScheduledDetail(item) {
       sdCurrentId = item.id;
       sdPlatforms = new Set(item.platforms || []);
+      sdAccountTargets = item.accountTargets || {};
       document.getElementById('sd-text').value = item.text || '';
       var dt = new Date(item.scheduledAt);
       document.getElementById('sd-date').value = dt.toISOString().slice(0, 10);
@@ -3384,7 +3442,7 @@
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           credentials: 'include',
-          body: JSON.stringify({ text: text, platforms: [...sdPlatforms], scheduledAt: scheduledAt })
+          body: JSON.stringify({ text: text, platforms: [...sdPlatforms], accountTargets: sdAccountTargets, scheduledAt: scheduledAt })
         });
         var data = await res.json();
         if (res.status === 409) { showToast(data.error || 'Duplicate schedule entry'); return }
@@ -3439,6 +3497,7 @@
         const fd = new FormData()
         fd.append('text', text)
         fd.append('platforms', JSON.stringify([...activePlatforms]))
+        fd.append('accountTargets', JSON.stringify(accountTargetsForPost()))
         const titleInput = document.getElementById('post-title')
         const campaignInput = document.getElementById('campaign-name')
         const titleVal = (titleInput && titleInput.value.trim()) || (campaignInput && campaignInput.value.trim()) || ''
@@ -4956,6 +5015,8 @@
         var fbName = document.getElementById('preview-fb-name');
         if (fbName) fbName.textContent = fb.pageName;
       }
+
+      renderAccountTargets(status)
 
       // YouTube preview
       var yt = status.youtube || {};
