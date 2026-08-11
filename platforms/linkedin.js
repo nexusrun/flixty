@@ -3,7 +3,13 @@ import axios from 'axios'
 const CLIENT_ID = process.env.LINKEDIN_CLIENT_ID
 const CLIENT_SECRET = process.env.LINKEDIN_CLIENT_SECRET
 const REDIRECT_URI = `${process.env.BASE_URL}/auth/linkedin/callback`
-const SCOPES = ['w_member_social', 'w_organization_social', 'r_organization_social', 'openid', 'profile', 'email']
+const BASE_SCOPES = ['w_member_social', 'openid', 'profile', 'email']
+// LinkedIn rejects the entire OAuth request when organization scopes have not
+// been approved for the app. Keep them opt-in until the LinkedIn organization
+// posting product is enabled in the developer console.
+const SCOPES = process.env.LINKEDIN_ENABLE_ORGANIZATIONS === 'true'
+  ? [...BASE_SCOPES, 'w_organization_social', 'r_organization_social']
+  : BASE_SCOPES
 
 export function getAuthUrl(state) {
   const p = new URLSearchParams({
