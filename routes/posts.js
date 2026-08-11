@@ -19,23 +19,67 @@ const upload = multer({
 // which has its own distinct thumbnail-upload API.
 const uploadWithThumbnail = upload.fields([{ name: 'media', maxCount: 1 }, { name: 'thumbnail', maxCount: 1 }])
 
+// ── Media resolution ──
+//
+// A client can attach media three ways, in priority order:
+//   1. `media` — a multipart file upload (image or video)
+//   2. `mediaFilename` — a server-side AI-generated file already saved in
+//      data/uploads (currently AI videos); its path + public URL are rebuilt
+//      here, exactly as if the file had just been uploaded
+//   3. `imageUrl` — a remote image URL (Facebook photo / Instagram)
+// `thumbnail` is always a separate optional image file upload.
+
+// Never trust a client-supplied filename — it must be a bare name already
+// inside data/uploads, not a path that could escape the directory.
+function assertSafeUploadFilename(name) {
+  if (typeof name !== 'string' || !name || name.startsWith('/') || name.includes('..') || path.basename(name) !== name) {
+    throw new Error('Invalid media filename')
+  }
+}
+
+function mimeTypeForFilename(filename) {
+  if (filename.endsWith('.webm')) return 'video/webm'
+  if (filename.endsWith('.mov')) return 'video/quicktime'
+  return 'video/mp4'
+}
+
+function buildMedia(req) {
+  const { imageUrl, mediaFilename } = req.body
+  const mediaFile = req.files?.media?.[0]
+  const thumbFile = req.files?.thumbnail?.[0]
+  const uploadsDir = path.join(__dirname, '../data/uploads')
+
+  let media = null, mediaUrl = null
+  if (mediaFile) {
+    mediaUrl = `${process.env.BASE_URL}/uploads/${mediaFile.filename}`
+    media = { url: mediaUrl, filePath: mediaFile.path, mimeType: mediaFile.mimetype }
+  } else if (mediaFilename) {
+    assertSafeUploadFilename(mediaFilename)
+    const filePath = path.join(uploadsDir, mediaFilename)
+    mediaUrl = `${process.env.BASE_URL}/uploads/${mediaFilename}`
+    media = { url: mediaUrl, filePath, mimeType: mimeTypeForFilename(mediaFilename) }
+  } else if (imageUrl) {
+    mediaUrl = imageUrl
+    media = { url: imageUrl }
+  }
+
+  const thumbnailUrl = thumbFile ? `${process.env.BASE_URL}/uploads/${thumbFile.filename}` : null
+  const thumbnail = thumbFile ? { filePath: thumbFile.path, mimeType: thumbFile.mimetype } : null
+  return { media, mediaUrl, thumbnail, thumbnailUrl }
+}
+
 const router = Router()
 
 router.post('/publish', requireAuth, uploadWithThumbnail, async (req, res) => {
-  const { text, imageUrl } = req.body
+  const { text } = req.body
   const platforms = JSON.parse(req.body.platforms || '[]')
-  const mediaFile = req.files?.media?.[0]
-  const thumbFile = req.files?.thumbnail?.[0]
 
-  // If a file was uploaded, build a public URL (requires BASE_URL to be publicly accessible)
-  const mediaUrl = mediaFile
-    ? `${process.env.BASE_URL}/uploads/${mediaFile.filename}`
-    : imageUrl || null
-  const media = (mediaFile || mediaUrl)
-    ? { url: mediaUrl, filePath: mediaFile?.path, mimeType: mediaFile?.mimetype }
-    : null
-  const thumbnailUrl = thumbFile ? `${process.env.BASE_URL}/uploads/${thumbFile.filename}` : null
-  const thumbnail = thumbFile ? { filePath: thumbFile.path, mimeType: thumbFile.mimetype } : null
+  let media, mediaUrl, thumbnail, thumbnailUrl
+  try {
+    ({ media, mediaUrl, thumbnail, thumbnailUrl } = buildMedia(req))
+  } catch (e) {
+    return res.status(400).json({ error: e.message })
+  }
 
   const { results, errors } = await publishToPlatforms(req.session.userId, {
     text, platforms, media, thumbnail, campaignName: req.body.campaignName,
@@ -46,7 +90,7 @@ router.post('/publish', requireAuth, uploadWithThumbnail, async (req, res) => {
 })
 
 router.post('/schedule', requireAuth, uploadWithThumbnail, async (req, res) => {
-  const { text, scheduledAt, imageUrl, campaignName } = req.body
+  const { text, scheduledAt, imageUrl, campaignName, mediaFilename } = req.body
   const platforms = JSON.parse(req.body.platforms || '[]')
   if (!scheduledAt) return res.status(400).json({ error: 'scheduledAt required (ISO 8601)' })
   const mediaFile = req.files?.media?.[0]
@@ -59,8 +103,15 @@ router.post('/schedule', requireAuth, uploadWithThumbnail, async (req, res) => {
   const dupeId = await findDuplicateScheduled(req.session.userId, { text, scheduledAt, platforms })
   if (dupeId) return res.status(409).json({ error: 'This exact post is already scheduled for that time on these platforms.', duplicateOf: dupeId })
 
-  const videoPath  = mediaFile ? mediaFile.path     : null
-  const mimeType   = mediaFile ? mediaFile.mimetype  : null
+  let videoPath = null, mimeType = null
+  if (mediaFile) {
+    videoPath = mediaFile.path
+    mimeType = mediaFile.mimetype
+  } else if (mediaFilename) {
+    try { assertSafeUploadFilename(mediaFilename) } catch (e) { return res.status(400).json({ error: e.message }) }
+    videoPath = path.join(__dirname, '../data/uploads', mediaFilename)
+    mimeType = mimeTypeForFilename(mediaFilename)
+  }
   const thumbnailPath = thumbFile ? thumbFile.path : null
   const item = await saveScheduled(req.session.userId, { text, platforms, scheduledAt, imageUrl, campaignName, videoPath, mimeType, thumbnailPath })
   res.json({ ok: true, scheduled: item })

@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import Anthropic from '@anthropic-ai/sdk'
+import { resolveAiConfig, completeAiText } from '../lib/ai.js'
 import { getLatestSnapshotsSince, getTimeseriesSince, getLatestInsight, saveInsight } from '../lib/analytics/store.js'
 import { getOverview, getTopPosts, getHashtagPerformance, sinceFor } from '../lib/analytics/queries.js'
 
@@ -85,16 +85,11 @@ router.post('/insights/refresh', async (req, res) => {
   const top = posts.slice(0, 5)
   const bottom = posts.slice(-5)
 
-  if (!process.env.ANTHROPIC_API_KEY) {
-    return res.status(503).json({ error: 'ANTHROPIC_API_KEY not set on this server.' })
-  }
-
-  const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
   const format = list => list.map(p => `[${p.platform}] "${p.text}" — ${p.engagement} engagements (${p.likes || 0} likes, ${p.comments || 0} comments, ${p.shares || 0} shares)`).join('\n')
 
-  const response = await client.messages.create({
-    model: 'claude-opus-4-6',
-    max_tokens: 400,
+  const cfg = await resolveAiConfig(req.session.userId)
+  const summary = (await completeAiText(cfg, {
+    maxTokens: 400,
     messages: [{
       role: 'user',
       content: `Here are the top and bottom performing social posts from the last 30 days.
@@ -107,9 +102,7 @@ ${format(bottom)}
 
 Write 3-5 short, concrete, plain-English observations about what makes the top posts work better than the bottom ones (hooks, length, hashtags, platform, tone, structure). Each observation on its own line, no numbering, no preamble, no markdown.`,
     }],
-  })
-
-  const summary = response.content.find(b => b.type === 'text')?.text?.trim() || 'No insight generated.'
+  })).trim() || 'No insight generated.'
   const saved = await saveInsight(userId, { periodStart: since, periodEnd: new Date(), summary, raw: { top, bottom } })
 
   res.json({ available: true, summary: saved.summary, generatedAt: saved.generated_at, periodStart: saved.period_start, periodEnd: saved.period_end })

@@ -19,6 +19,7 @@
     "nexusapp-cli": "^1.2.5",
     "node-cron": "^3.0.3",
     "pg": "^8.22.0",
+    "sharp": "^0.35.3",
     "zod": "^4.4.3"
   },
   "devDependencies": {

@@ -91,6 +91,14 @@ GOOGLE_CLIENT_SECRET=
 
 # Anthropic (AI Assist)
 ANTHROPIC_API_KEY=
+
+# Optional AI Assist server fallbacks (users can also configure providers in AI Settings)
+OPENROUTER_API_KEY=
+OPENROUTER_BASE_URL=
+OPENAI_API_KEY=
+OPENAI_BASE_URL=
+GEMINI_API_KEY=
+GEMINI_BASE_URL=
 ```
 
 > **Important:** `BASE_URL` must match the public URL of your deployment exactly (no trailing slash). All OAuth redirect URIs are constructed from this value.
@@ -174,12 +182,18 @@ Facebook and Instagram share a single OAuth flow.
 
 > **Note:** TikTok requires manual app review before the Content Posting API works in production. In sandbox mode, add your TikTok account as a test user.
 
-### Anthropic (AI Assist)
+### AI Assist providers
 
-1. Go to [Anthropic Console](https://console.anthropic.com) → **API Keys**
-2. Create a key and set `ANTHROPIC_API_KEY`
+AI Assist supports Anthropic, OpenRouter, OpenAI, and Google Gemini. Configure a provider and key in the dashboard’s **AI Settings**, or set a server fallback key in `.env`:
 
-AI Assist uses `claude-sonnet-4-6` to generate and rewrite content tailored to each platform's tone and character limits.
+- [Anthropic API keys](https://console.anthropic.com) — `ANTHROPIC_API_KEY`
+- [OpenRouter API keys](https://openrouter.ai/keys) — `OPENROUTER_API_KEY`
+- [OpenAI API keys](https://platform.openai.com/api-keys) — `OPENAI_API_KEY`
+- [Google AI Studio keys](https://aistudio.google.com/app/apikey) — `GEMINI_API_KEY`
+
+OpenAI uses its compatible chat endpoint, while Gemini uses Google’s native `generateContent` API. Gemini’s default base URL is `https://generativelanguage.googleapis.com/v1beta`.
+
+AI Assist preserves supplied facts, names, numbers, URLs, and handles and tailors output to each platform’s tone and character limit.
 
 ---
 

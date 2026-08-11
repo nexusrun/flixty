@@ -718,6 +718,9 @@
           <div id="user-avatar" onclick="toggleUserMenu(event)" class="w-8 h-8 rounded-full bg-gradient-to-br from-secondary to-secondary-dim flex items-center justify-center text-on-secondary text-xs font-bold shrink-0 cursor-pointer select-none">?</div>
           <div id="user-dropdown" class="hidden absolute right-0 top-10 flex-col min-w-[160px] rounded-xl py-1 z-[200]" style="background:#0d1018;border:1px solid rgba(0,229,204,0.2);box-shadow:0 8px 32px rgba(0,0,0,0.5)">
             <p id="user-dropdown-name" class="px-4 py-2.5 text-xs font-semibold text-on-surface truncate border-b border-outline-variant/20"></p>
+            <button onclick="requireAuthThen(openAiSettingsModal)" class="px-4 py-2.5 text-sm text-left text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors flex items-center gap-2 w-full">
+              <span class="material-symbols-outlined" style="font-size:16px">tune</span> AI Settings
+            </button>
             <button onclick="logoutUser()" class="px-4 py-2.5 text-sm text-left text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors flex items-center gap-2 w-full">
               <span class="material-symbols-outlined" style="font-size:16px">logout</span> Sign Out
             </button>
@@ -1813,27 +1816,27 @@
               <div class="flex flex-col gap-2">
                 <div class="flex items-center justify-between bg-surface-container rounded-xl px-3 py-2.5">
                   <div>
-                    <p class="text-xs font-semibold text-on-surface">Today 3:00 PM</p>
-                    <p class="text-[11px] text-on-surface-variant">Sat, Apr 4</p>
+                    <p id="best-time-label-0" class="text-xs font-semibold text-on-surface"></p>
+                    <p id="best-time-date-0" class="text-[11px] text-on-surface-variant"></p>
                   </div>
                   <span
-                    class="text-xs font-semibold text-green-400 bg-green-900/30 px-2 py-0.5 rounded-full">High</span>
+                    id="best-time-rating-0" class="text-xs font-semibold text-green-400 bg-green-900/30 px-2 py-0.5 rounded-full"></span>
                 </div>
                 <div class="flex items-center justify-between bg-surface-container rounded-xl px-3 py-2.5">
                   <div>
-                    <p class="text-xs font-semibold text-on-surface">Tomorrow 9:00 AM</p>
-                    <p class="text-[11px] text-on-surface-variant">Sun, Apr 5</p>
+                    <p id="best-time-label-1" class="text-xs font-semibold text-on-surface"></p>
+                    <p id="best-time-date-1" class="text-[11px] text-on-surface-variant"></p>
                   </div>
                   <span
-                    class="text-xs font-semibold text-yellow-400 bg-yellow-900/30 px-2 py-0.5 rounded-full">Medium</span>
+                    id="best-time-rating-1" class="text-xs font-semibold text-yellow-400 bg-yellow-900/30 px-2 py-0.5 rounded-full"></span>
                 </div>
                 <div class="flex items-center justify-between bg-surface-container rounded-xl px-3 py-2.5">
                   <div>
-                    <p class="text-xs font-semibold text-on-surface">Apr 6, 11:00 AM</p>
-                    <p class="text-[11px] text-on-surface-variant">Mon, Apr 6</p>
+                    <p id="best-time-label-2" class="text-xs font-semibold text-on-surface"></p>
+                    <p id="best-time-date-2" class="text-[11px] text-on-surface-variant"></p>
                   </div>
                   <span
-                    class="text-xs font-semibold text-yellow-400 bg-yellow-900/30 px-2 py-0.5 rounded-full">Medium</span>
+                    id="best-time-rating-2" class="text-xs font-semibold text-yellow-400 bg-yellow-900/30 px-2 py-0.5 rounded-full"></span>
                 </div>
               </div>
             </div>
@@ -2188,6 +2191,75 @@
     </div>
   </div>
 
+  <!-- AI PROVIDER SETTINGS MODAL -->
+  <div id="ai-settings-modal" class="hidden fixed inset-0 z-[100] flex items-center justify-center">
+    <div class="absolute inset-0 bg-on-surface/30 backdrop-blur-sm" onclick="closeAiSettingsModal()"></div>
+    <div class="relative bg-surface-container-lowest rounded-2xl p-6 shadow-2xl w-full max-w-sm mx-4 z-10">
+      <div class="flex items-center justify-between mb-5">
+        <h2 class="font-black text-on-surface text-lg tracking-tight">AI Settings</h2>
+        <button onclick="closeAiSettingsModal()"
+          class="w-7 h-7 flex items-center justify-center rounded-xl hover:bg-surface-container transition-colors text-on-surface-variant">
+          <span class="material-symbols-outlined" style="font-size:18px">close</span>
+        </button>
+      </div>
+      <div class="flex flex-col gap-4">
+        <div>
+          <label
+            class="text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-1.5 block">Provider</label>
+          <select id="ai-settings-provider" onchange="onAiProviderChange()"
+            class="w-full bg-surface-container-low rounded-xl px-4 py-2.5 text-sm text-on-surface border-none appearance-none cursor-pointer">
+            <option value="anthropic">Anthropic (Claude)</option>
+            <option value="openrouter">OpenRouter</option>
+            <option value="openai">OpenAI (GPT)</option>
+            <option value="gemini">Google Gemini</option>
+          </select>
+        </div>
+        <div>
+          <label
+            class="text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-1.5 block">API URL</label>
+          <input type="text" id="ai-settings-url" placeholder="https://api.anthropic.com"
+            class="w-full bg-surface-container-low rounded-xl px-4 py-2.5 text-sm text-on-surface placeholder:text-on-surface-variant/60 border-none transition-all focus:bg-surface-container-lowest" />
+          <p id="ai-settings-url-hint" class="text-[11px] text-on-surface-variant/60 mt-1.5"></p>
+        </div>
+        <div>
+          <label
+            class="text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-1.5 block">API Key</label>
+          <input type="password" id="ai-settings-key" placeholder="sk-..."
+            class="w-full bg-surface-container-low rounded-xl px-4 py-2.5 text-sm text-on-surface placeholder:text-on-surface-variant/60 border-none transition-all focus:bg-surface-container-lowest" />
+          <p id="ai-settings-key-hint" class="text-[11px] text-on-surface-variant/60 mt-1.5"></p>
+        </div>
+        <div>
+          <label
+            class="text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-1.5 block">Model</label>
+          <input type="text" id="ai-settings-model" placeholder="claude-opus-4-6"
+            list="ai-model-options"
+            class="w-full bg-surface-container-low rounded-xl px-4 py-2.5 text-sm text-on-surface placeholder:text-on-surface-variant/60 border-none transition-all focus:bg-surface-container-lowest" />
+          <datalist id="ai-model-options">
+            <option value="gemini-3.6-flash" label="Gemini 3.6 Flash — free tier"></option>
+            <option value="gemini-3.1-flash-lite" label="Gemini 3.1 Flash-Lite — free tier"></option>
+            <option value="gemini-2.5-flash" label="Gemini 2.5 Flash — free tier where available"></option>
+            <option value="gpt-5" label="OpenAI GPT-5"></option>
+            <option value="claude-opus-4-6" label="Anthropic Claude Opus"></option>
+          </datalist>
+          <p id="ai-settings-model-hint" class="text-[11px] text-on-surface-variant/60 mt-1.5"></p>
+        </div>
+        <div id="ai-settings-image-model-row">
+          <label
+            class="text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-1.5 block">Image Model</label>
+          <input type="text" id="ai-settings-image-model" placeholder="black-forest-labs/flux-schnell"
+            class="w-full bg-surface-container-low rounded-xl px-4 py-2.5 text-sm text-on-surface placeholder:text-on-surface-variant/60 border-none transition-all focus:bg-surface-container-lowest" />
+          <p id="ai-settings-image-model-hint" class="text-[11px] text-on-surface-variant/60 mt-1.5"></p>
+        </div>
+      </div>
+      <div class="flex gap-3 mt-6">
+        <button onclick="closeAiSettingsModal()"
+          class="flex-1 py-2.5 rounded-xl text-sm font-semibold bg-surface-container text-on-surface hover:bg-surface-container-high transition-all active:scale-95">Cancel</button>
+        <button onclick="saveAiSettings()" id="ai-settings-save-btn"
+          class="flex-1 py-2.5 rounded-xl text-sm font-semibold btn-primary shadow-lg transition-all active:scale-95">Save</button>
+      </div>
+    </div>
+  </div>
+
   <!-- SCHEDULED POST DETAIL / EDIT MODAL -->
   <div id="scheduled-detail-modal" class="hidden fixed inset-0 z-[100] flex items-center justify-center">
     <div class="absolute inset-0 bg-on-surface/30 backdrop-blur-sm" onclick="closeScheduledDetailModal()"></div>
@@ -2302,6 +2374,10 @@
         class="ai-tab flex-1 py-2 rounded-xl text-xs font-semibold transition-all text-on-surface-variant hover:bg-surface-container-low">Improve</button>
       <button onclick="setAiTab('adapt')" id="ai-tab-adapt"
         class="ai-tab flex-1 py-2 rounded-xl text-xs font-semibold transition-all text-on-surface-variant hover:bg-surface-container-low">Adapt</button>
+      <button onclick="setAiTab('image')" id="ai-tab-image"
+        class="ai-tab flex-1 py-2 rounded-xl text-xs font-semibold transition-all text-on-surface-variant hover:bg-surface-container-low">Image</button>
+      <button onclick="setAiTab('video')" id="ai-tab-video"
+        class="ai-tab flex-1 py-2 rounded-xl text-xs font-semibold transition-all text-on-surface-variant hover:bg-surface-container-low">Video</button>
     </div>
 
     <!-- Scrollable content -->
@@ -2399,6 +2475,79 @@
           <span class="material-symbols-outlined" style="font-size:16px">sync_alt</span>
           Adapt Post
         </button>
+      </div>
+
+      <!-- IMAGE TAB -->
+      <div id="ai-content-image" class="ai-tab-content hidden flex flex-col gap-3">
+        <p class="text-xs text-on-surface-variant bg-surface-container-low rounded-xl px-4 py-3 leading-relaxed">Describe
+          an image and it will be generated and attached to your post as media.</p>
+        <div>
+          <label class="text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-1.5 block">Image
+            Prompt</label>
+          <textarea id="ai-image-prompt" rows="3" placeholder="e.g. A neon-lit city skyline at night, cinematic, wide angle"
+            class="w-full bg-surface-container-low rounded-xl px-4 py-2.5 text-sm text-on-surface placeholder:text-on-surface-variant/60 border-none transition-all focus:bg-surface-container-lowest resize-none"></textarea>
+        </div>
+        <div>
+          <label class="text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-1.5 block">Size</label>
+          <select id="ai-image-size"
+            class="w-full bg-surface-container-low rounded-xl px-4 py-2.5 text-sm text-on-surface border-none appearance-none cursor-pointer">
+            <option value="1024x1024">Square 1:1</option>
+            <option value="1024x1792">Portrait 9:16</option>
+            <option value="1792x1024">Landscape 16:9</option>
+          </select>
+        </div>
+        <button onclick="aiImageGenerate()" id="ai-image-generate-btn"
+          class="w-full py-2.5 rounded-xl text-sm font-semibold btn-primary shadow-lg transition-all active:scale-95 flex items-center justify-center gap-2">
+          <span class="material-symbols-outlined" style="font-size:16px">image</span>
+          Generate Image
+        </button>
+        <p id="ai-image-status" class="text-xs text-on-surface-variant hidden"></p>
+      </div>
+
+      <!-- VIDEO TAB -->
+      <div id="ai-content-video" class="ai-tab-content hidden flex flex-col gap-3">
+        <p class="text-xs text-on-surface-variant bg-surface-container-low rounded-xl px-4 py-3 leading-relaxed">Describe
+          a video and it will be generated with your AI provider's text-to-video model (e.g. Veo) and attached to your
+          post — great for TikTok, YouTube, and Facebook. Generation can take a few minutes.</p>
+        <div>
+          <label
+            class="text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-1.5 block">Video Prompt</label>
+          <textarea id="ai-video-prompt" rows="3"
+            placeholder="e.g. Cinematic drone shot flying over a neon city at night, rain reflections"
+            class="w-full bg-surface-container-low rounded-xl px-4 py-2.5 text-sm text-on-surface placeholder:text-on-surface-variant/60 border-none transition-all focus:bg-surface-container-lowest resize-none"></textarea>
+        </div>
+        <div>
+          <label
+            class="text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-1.5 block">Aspect Ratio</label>
+          <select id="ai-video-ratio"
+            class="w-full bg-surface-container-low rounded-xl px-4 py-2.5 text-sm text-on-surface border-none appearance-none cursor-pointer">
+            <option value="9:16">Portrait 9:16 (TikTok)</option>
+            <option value="16:9">Landscape 16:9 (YouTube)</option>
+            <option value="1:1">Square 1:1</option>
+          </select>
+        </div>
+        <div>
+          <label
+            class="text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-1.5 block">Duration</label>
+          <select id="ai-video-duration"
+            class="w-full bg-surface-container-low rounded-xl px-4 py-2.5 text-sm text-on-surface border-none appearance-none cursor-pointer">
+            <option value="5">5 seconds</option>
+            <option value="10">10 seconds</option>
+          </select>
+        </div>
+        <div>
+          <label
+            class="text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-1.5 block">Caption
+            (optional)</label>
+          <input type="text" id="ai-video-caption" maxlength="80" placeholder="Text shown over the video, e.g. Spring Launch 2026"
+            class="w-full bg-surface-container-low rounded-xl px-4 py-2.5 text-sm text-on-surface placeholder:text-on-surface-variant/60 border-none transition-all focus:bg-surface-container-lowest" />
+        </div>
+        <button onclick="aiVideoGenerate()" id="ai-video-generate-btn"
+          class="w-full py-2.5 rounded-xl text-sm font-semibold btn-primary shadow-lg transition-all active:scale-95 flex items-center justify-center gap-2">
+          <span class="material-symbols-outlined" style="font-size:16px">movie</span>
+          Generate Video
+        </button>
+        <p id="ai-video-status" class="text-xs text-on-surface-variant hidden"></p>
       </div>
 
       <!-- Shared output area -->
@@ -2809,6 +2958,11 @@
 
     function processFiles(files) {
       var container = document.getElementById('media-previews');
+      // A real file upload replaces any attached AI-generated media (image or video)
+      aiImageUrl = null;
+      var aiPrev = document.getElementById('ai-image-preview-wrap');
+      if (aiPrev) aiPrev.remove();
+      clearAiVideo();
       files.forEach(function (file) {
         if (!file.type.startsWith('image/') && !file.type.startsWith('video/')) return;
         var url = URL.createObjectURL(file);
@@ -2899,6 +3053,147 @@
       ['preview-yt-placeholder', 'preview-tt-placeholder'].forEach(function (id) {
         var el = document.getElementById(id); if (el) el.classList.remove('hidden');
       });
+    }
+
+    // AI-generated image attachment — rides the existing server `imageUrl`
+    // path (URL media) instead of a file upload.
+    var aiImageUrl = null
+
+    function attachAiImage(url) {
+      aiImageUrl = url
+      // AI image and AI video are mutually exclusive — an image replaces a video
+      clearAiVideo()
+
+      // A real file upload takes precedence on the server — drop any selected file.
+      var fileInput = document.getElementById('file-input')
+      if (fileInput && fileInput.files && fileInput.files[0]) {
+        fileInput.value = ''
+        clearPreviews()
+      }
+
+      // Replace any previously attached AI image
+      var existing = document.getElementById('ai-image-preview-wrap')
+      if (existing) existing.remove()
+
+      var container = document.getElementById('media-previews')
+      var wrap = document.createElement('div')
+      wrap.id = 'ai-image-preview-wrap'
+      wrap.className = 'relative rounded-xl overflow-hidden'
+      wrap.style.width = '80px'
+      wrap.style.height = '80px'
+
+      var img = document.createElement('img')
+      img.src = url
+      img.className = 'w-full h-full object-cover'
+      img.alt = 'AI generated image'
+      wrap.appendChild(img)
+
+      var removeBtn = document.createElement('button')
+      removeBtn.className = 'absolute top-0.5 right-0.5 w-5 h-5 rounded-full flex items-center justify-center'
+      removeBtn.style.cssText = 'background:rgba(0,0,0,0.6);color:#fff;font-size:12px;'
+      removeBtn.textContent = '×'
+      removeBtn.setAttribute('aria-label', 'Remove AI image')
+      removeBtn.addEventListener('click', function () {
+        aiImageUrl = null
+        wrap.remove()
+        clearPreviews()
+      })
+      wrap.appendChild(removeBtn)
+      container.appendChild(wrap)
+
+      showImageInPreviews(url)
+    }
+
+    // AI-generated video attachment — the video file is saved server-side in
+    // data/uploads (like AI images), so the frontend just holds its filename
+    // and lets /api/publish + /api/schedule rebuild the local path + public
+    // URL from it (the same mediaFilename path an uploaded video takes).
+    var aiVideoFilename = null
+    var aiVideoUrl = null
+
+    function clearAiVideo() {
+      aiVideoFilename = null
+      aiVideoUrl = null
+      var wrap = document.getElementById('ai-video-preview-wrap')
+      if (wrap) wrap.remove()
+    }
+
+    function attachAiVideo(filename, url) {
+      aiVideoFilename = filename
+      aiVideoUrl = url
+
+      // A real file upload takes precedence on the server — drop any selected file.
+      var fileInput = document.getElementById('file-input')
+      if (fileInput && fileInput.files && fileInput.files[0]) {
+        fileInput.value = ''
+        clearPreviews()
+      }
+
+      // AI image and AI video are mutually exclusive — a video replaces an image.
+      aiImageUrl = null
+      var existingImg = document.getElementById('ai-image-preview-wrap')
+      if (existingImg) existingImg.remove()
+
+      // Replace any previously attached AI video
+      var existingVid = document.getElementById('ai-video-preview-wrap')
+      if (existingVid) existingVid.remove()
+
+      var container = document.getElementById('media-previews')
+      var wrap = document.createElement('div')
+      wrap.id = 'ai-video-preview-wrap'
+      wrap.className = 'relative rounded-xl overflow-hidden'
+      wrap.style.width = '80px'
+      wrap.style.height = '80px'
+
+      var vid = document.createElement('video')
+      vid.src = url
+      vid.className = 'w-full h-full object-cover'
+      vid.muted = true
+      vid.preload = 'metadata'
+      wrap.appendChild(vid)
+
+      var removeBtn = document.createElement('button')
+      removeBtn.className = 'absolute top-0.5 right-0.5 w-5 h-5 rounded-full flex items-center justify-center'
+      removeBtn.style.cssText = 'background:rgba(0,0,0,0.6);color:#fff;font-size:12px;'
+      removeBtn.textContent = '×'
+      removeBtn.setAttribute('aria-label', 'Remove AI video')
+      removeBtn.addEventListener('click', function () {
+        clearAiVideo()
+        clearPreviews()
+      })
+      wrap.appendChild(removeBtn)
+      container.appendChild(wrap)
+
+      // Mirror into the TikTok/YouTube preview panes — same toggle the file
+      // upload path uses for videos (the panes are <img> placeholders).
+      var ttWrap = document.getElementById('preview-tt-img-wrap')
+      var ttSrc = document.getElementById('preview-tt-img-src')
+      var ttPh = document.getElementById('preview-tt-placeholder')
+      if (ttWrap && ttSrc) { ttSrc.src = url; ttWrap.classList.remove('hidden') }
+      if (ttPh) ttPh.classList.add('hidden')
+      var ytWrap = document.getElementById('preview-yt-img-wrap')
+      var ytSrc = document.getElementById('preview-yt-img-src')
+      var ytPh = document.getElementById('preview-yt-placeholder')
+      if (ytWrap && ytSrc) { ytSrc.src = url; ytWrap.classList.remove('hidden') }
+      if (ytPh) ytPh.classList.add('hidden')
+    }
+
+    // Mirror an image into the right-side live preview panes — same element set
+    // processFiles uses for uploaded images.
+    function showImageInPreviews(url) {
+      ['x', 'linkedin'].forEach(function (p) {
+        var imgEl = document.getElementById('preview-' + p + '-img');
+        var imgSrc = document.getElementById('preview-' + p + '-img-src');
+        if (imgEl && imgSrc) { imgSrc.src = url; imgEl.classList.remove('hidden'); }
+      });
+      var igImg = document.getElementById('preview-ig-img');
+      var igSrc = document.getElementById('preview-ig-img-src');
+      var igPh = document.getElementById('preview-ig-placeholder');
+      if (igImg && igSrc) { igSrc.src = url; igImg.classList.remove('hidden'); }
+      if (igPh) igPh.classList.add('hidden');
+      var fbImg = document.getElementById('preview-fb-img');
+      var fbSrc = document.getElementById('preview-fb-img-src');
+      if (fbImg && fbSrc) { fbSrc.src = url; fbImg.classList.remove('hidden'); }
     }
 
     // Hashtag suggestions
@@ -2994,6 +3289,8 @@
         if (campaignInput && campaignInput.value.trim()) fd.append('campaignName', campaignInput.value.trim())
         const fileInput = document.getElementById('file-input')
         if (fileInput.files[0]) fd.append('media', fileInput.files[0])
+        else if (aiVideoFilename) fd.append('mediaFilename', aiVideoFilename)
+        else if (aiImageUrl) fd.append('imageUrl', aiImageUrl)
         const thumbInput = document.getElementById('thumbnail-input')
         if (thumbInput && thumbInput.files[0]) fd.append('thumbnail', thumbInput.files[0])
 
@@ -3148,6 +3445,8 @@
         if (titleVal) fd.append('campaignName', titleVal)
         const fileInput = document.getElementById('file-input')
         if (fileInput.files[0]) fd.append('media', fileInput.files[0])
+        else if (aiVideoFilename) fd.append('mediaFilename', aiVideoFilename)
+        else if (aiImageUrl) fd.append('imageUrl', aiImageUrl)
         const thumbInput = document.getElementById('thumbnail-input')
         if (thumbInput && thumbInput.files[0]) fd.append('thumbnail', thumbInput.files[0])
 
@@ -3278,6 +3577,138 @@
         if (e.data === 'oauth-success') checkConnectionStatus()
       })
     })
+
+    // ============================================================
+    // AI PROVIDER SETTINGS
+    // ============================================================
+    var AI_PROVIDER_DEFAULTS = {
+      anthropic:  { url: 'https://api.anthropic.com',    model: 'claude-opus-4-6' },
+      openrouter: { url: 'https://openrouter.ai/api/v1', model: 'anthropic/claude-3.5-sonnet', imageModel: 'black-forest-labs/flux-schnell' },
+      openai:     { url: 'https://api.openai.com/v1', model: 'gpt-5', imageModel: 'gpt-image-1' },
+      gemini:     { url: 'https://generativelanguage.googleapis.com/v1beta', model: 'gemini-3.6-flash' }
+    }
+    var _aiSettingsLoaded = null
+
+    function openAiSettingsModal() {
+      var modal = document.getElementById('ai-settings-modal')
+      modal.classList.remove('hidden')
+      modal.style.display = 'flex'
+
+      var saveBtn = document.getElementById('ai-settings-save-btn')
+      if (saveBtn) { saveBtn.disabled = true; saveBtn.textContent = 'Loading…' }
+
+      fetch(BACKEND + '/api/ai/settings', { credentials: 'include' })
+        .then(function (r) { return r.ok ? r.json() : Promise.reject(new Error('Failed to load settings')) })
+        .then(function (s) {
+          _aiSettingsLoaded = s
+          document.getElementById('ai-settings-provider').value = s.provider
+          var defaults = AI_PROVIDER_DEFAULTS[s.provider] || AI_PROVIDER_DEFAULTS.anthropic
+          document.getElementById('ai-settings-url').value = s.baseUrl || defaults.url
+          document.getElementById('ai-settings-model').value = s.model || defaults.model
+          var imgModelEl = document.getElementById('ai-settings-image-model')
+          if (imgModelEl) imgModelEl.value = s.imageModel || (defaults.imageModel || '')
+          updateAiSettingsHints(s)
+          if (saveBtn) { saveBtn.disabled = false; saveBtn.textContent = 'Save' }
+        })
+        .catch(function (e) {
+          showToast(e.message || 'Cannot load AI settings')
+          closeAiSettingsModal()
+        })
+    }
+
+    function closeAiSettingsModal() {
+      var modal = document.getElementById('ai-settings-modal')
+      modal.classList.add('hidden')
+      modal.style.display = ''
+    }
+
+    function updateAiSettingsHints(s) {
+      var urlHint = document.getElementById('ai-settings-url-hint')
+      var keyHint = document.getElementById('ai-settings-key-hint')
+      var modelHint = document.getElementById('ai-settings-model-hint')
+      var keyInput = document.getElementById('ai-settings-key')
+      keyInput.value = ''
+
+      if (s.apiKeyLast4) {
+        keyInput.placeholder = '•••• ' + s.apiKeyLast4 + ' (saved)'
+        keyHint.textContent = 'Leave blank to keep your saved key.'
+      } else if (s.hasApiKey) {
+        keyHint.textContent = 'Using the server API key. Enter your own to override.'
+      } else {
+        keyHint.textContent = 'No key set — required to use AI.'
+      }
+
+      urlHint.textContent = s.provider === 'anthropic'
+        ? 'Anthropic API root (the SDK appends /v1/messages).'
+        : s.provider === 'gemini'
+          ? 'Gemini API base URL; the app uses Google’s native generateContent endpoint.'
+          : 'OpenAI-compatible base URL, e.g. …/v1.'
+      if (modelHint) {
+        modelHint.textContent = s.provider === 'gemini'
+          ? 'Free-tier choices: gemini-3.6-flash or gemini-3.1-flash-lite.'
+          : 'Enter any model ID supported by the selected provider.'
+      }
+
+      // Image generation only works on the OpenAI-compatible (openrouter) provider
+      var imgRow = document.getElementById('ai-settings-image-model-row')
+      var imgHint = document.getElementById('ai-settings-image-model-hint')
+      if (imgRow) imgRow.style.display = ['openrouter', 'openai'].includes(s.provider) ? '' : 'none'
+      if (imgHint) {
+        imgHint.textContent = ['openrouter', 'openai'].includes(s.provider)
+          ? 'Model used for AI image generation, e.g. gpt-image-1 or black-forest-labs/flux-schnell.'
+          : 'Image generation is available through OpenAI or OpenRouter.'
+      }
+    }
+
+    function onAiProviderChange() {
+      var p = document.getElementById('ai-settings-provider').value
+      // Switching back to the saved provider restores its values
+      if (_aiSettingsLoaded && _aiSettingsLoaded.provider === p) {
+        document.getElementById('ai-settings-url').value = _aiSettingsLoaded.baseUrl
+        document.getElementById('ai-settings-model').value = _aiSettingsLoaded.model
+        var imgEl = document.getElementById('ai-settings-image-model')
+        if (imgEl) imgEl.value = _aiSettingsLoaded.imageModel || ''
+        updateAiSettingsHints(_aiSettingsLoaded)
+        return
+      }
+      var d = AI_PROVIDER_DEFAULTS[p] || AI_PROVIDER_DEFAULTS.anthropic
+      document.getElementById('ai-settings-url').value = d.url
+      document.getElementById('ai-settings-model').value = d.model
+      var imgEl = document.getElementById('ai-settings-image-model')
+      if (imgEl) imgEl.value = d.imageModel || ''
+      updateAiSettingsHints({ provider: p, hasApiKey: false, apiKeyLast4: null })
+    }
+
+    function saveAiSettings() {
+      var saveBtn = document.getElementById('ai-settings-save-btn')
+      if (saveBtn) { saveBtn.disabled = true; saveBtn.textContent = 'Saving…' }
+
+      fetch(BACKEND + '/api/ai/settings', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+          provider: document.getElementById('ai-settings-provider').value,
+          baseUrl: document.getElementById('ai-settings-url').value.trim(),
+          apiKey: document.getElementById('ai-settings-key').value.trim(),
+          model: document.getElementById('ai-settings-model').value.trim(),
+          imageModel: document.getElementById('ai-settings-image-model').value.trim()
+        })
+      })
+        .then(function (r) { return r.json().then(function (d) { return { ok: r.ok, d: d } }) })
+        .then(function (res) {
+          if (!res.ok) throw new Error(res.d.error || 'Failed to save settings')
+          _aiSettingsLoaded = res.d
+          updateAiSettingsHints(res.d)
+          showToast('AI settings saved')
+          if (saveBtn) { saveBtn.disabled = false; saveBtn.textContent = 'Save' }
+          closeAiSettingsModal()
+        })
+        .catch(function (e) {
+          showToast(e.message || 'Failed to save settings')
+          if (saveBtn) { saveBtn.disabled = false; saveBtn.textContent = 'Save' }
+        })
+    }
 
     // ============================================================
     // AI ASSIST PANEL
@@ -3428,6 +3859,94 @@
       }
     }
 
+    async function aiImageGenerate() {
+      var promptEl = document.getElementById('ai-image-prompt')
+      var text = (promptEl && promptEl.value.trim()) || ''
+      if (!text) { showToast('Describe the image first'); return }
+
+      var btn = document.getElementById('ai-image-generate-btn')
+      var status = document.getElementById('ai-image-status')
+      if (btn) { btn.disabled = true; btn.textContent = 'Generating…' }
+      status.classList.remove('hidden')
+      status.textContent = 'Generating image — this can take up to a minute…'
+
+      try {
+        var res = await fetch(BACKEND + '/api/ai/image', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            prompt: text,
+            size: document.getElementById('ai-image-size').value
+          })
+        })
+        var data = await res.json()
+        if (!res.ok) throw new Error(data.error || 'Image generation failed')
+
+        attachAiImage(data.url)
+        closeAiPanel()
+        showToast('Image attached to post!')
+      } catch (e) {
+        status.textContent = 'Error: ' + e.message
+        showToast('Image generation failed: ' + e.message)
+      } finally {
+        if (btn) { btn.disabled = false; btn.textContent = 'Generate Image' }
+      }
+    }
+
+    // Text-to-video is async (~30s–3min), so this starts a job server-side
+    // then polls the status endpoint until the clip is ready to attach.
+    async function aiVideoGenerate() {
+      var promptEl = document.getElementById('ai-video-prompt')
+      var text = (promptEl && promptEl.value.trim()) || ''
+      if (!text) { showToast('Describe the video first'); return }
+
+      var btn = document.getElementById('ai-video-generate-btn')
+      var status = document.getElementById('ai-video-status')
+      if (btn) { btn.disabled = true; btn.textContent = 'Generating…' }
+      status.classList.remove('hidden')
+      status.textContent = 'Starting video generation…'
+
+      try {
+        var startRes = await fetch(BACKEND + '/api/ai/video', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            prompt: text,
+            aspectRatio: document.getElementById('ai-video-ratio').value,
+            duration: Number(document.getElementById('ai-video-duration').value),
+            caption: document.getElementById('ai-video-caption').value.trim()
+          })
+        })
+        var startData = await startRes.json()
+        if (!startRes.ok) throw new Error(startData.error || 'Video generation failed')
+
+        var start = Date.now()
+        var deadline = start + 16 * 60 * 1000
+        var result = null
+        status.textContent = 'Generating video — text-to-video models can take a few minutes…'
+        while (Date.now() < deadline) {
+          await new Promise(function (r) { setTimeout(r, 4000) })
+          var stRes = await fetch(BACKEND + '/api/ai/video/status/' + startData.jobId, { credentials: 'include' })
+          var stData = await stRes.json()
+          if (!stRes.ok) throw new Error(stData.error || 'Failed to check video status')
+          if (stData.status === 'succeeded') { result = stData; break }
+          if (stData.status === 'failed') throw new Error(stData.error || 'Video generation failed')
+          var elapsed = Math.round((Date.now() - start) / 1000)
+          status.textContent = 'Still generating… (' + elapsed + 's)'
+        }
+        if (!result) throw new Error('Video generation timed out. Please try again.')
+
+        attachAiVideo(result.filename, result.url)
+        closeAiPanel()
+        showToast('Video attached to post!')
+      } catch (e) {
+        status.textContent = 'Error: ' + e.message
+        showToast('Video generation failed: ' + e.message)
+      } finally {
+        if (btn) { btn.disabled = false; btn.textContent = 'Generate Video' }
+      }
+    }
+
     // ============================================================
     // REAL DATA — fetches /api/posts and /api/scheduled, then
     // populates every dynamic section of the dashboard, calendar,
@@ -3567,6 +4086,60 @@
       var dateStr = days[now.getDay()] + ', ' + months[now.getMonth()] + ' ' + now.getDate() + ', ' + now.getFullYear() + ' \u2014 Here\u2019s your content overview';
       var dateEl = document.getElementById('dash-date');
       if (dateEl) dateEl.textContent = dateStr;
+    }
+
+    // Keep the dashboard recommendations relative to the visitor's local
+    // date. The old cards used fixture dates, which eventually showed stale
+    // dates and could recommend a time that had already passed today.
+    function renderBestTimes() {
+      var now = new Date();
+      var dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+      var monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      var slots = [
+        { hour: 15, minute: 0, rating: 'High' },
+        { hour: 9, minute: 0, rating: 'Medium' },
+        { hour: 11, minute: 0, rating: 'Medium' }
+      ];
+      var today = new Date(now);
+      today.setHours(0, 0, 0, 0);
+      var tomorrow = new Date(today);
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      var recommendations = [];
+      var dayOffset = 0;
+
+      while (recommendations.length < slots.length && dayOffset < 14) {
+        var slot = slots[dayOffset % slots.length];
+        var date = new Date(today);
+        date.setDate(date.getDate() + dayOffset);
+        date.setHours(slot.hour, slot.minute, 0, 0);
+        if (date > now) {
+          var dayLabel = date.toDateString() === today.toDateString() ? 'Today' :
+            date.toDateString() === tomorrow.toDateString() ? 'Tomorrow' :
+            monthNames[date.getMonth()] + ' ' + date.getDate();
+          var timeLabel = date.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+          recommendations.push({
+            label: dayLabel + ' ' + timeLabel,
+            dateLabel: dayNames[date.getDay()] + ', ' + monthNames[date.getMonth()] + ' ' + date.getDate(),
+            rating: slot.rating
+          });
+        }
+        dayOffset++;
+      }
+
+      recommendations.forEach(function (item, index) {
+        var labelEl = document.getElementById('best-time-label-' + index);
+        var dateEl = document.getElementById('best-time-date-' + index);
+        var ratingEl = document.getElementById('best-time-rating-' + index);
+        if (labelEl) labelEl.textContent = item.label;
+        if (dateEl) dateEl.textContent = item.dateLabel;
+        if (ratingEl) {
+          ratingEl.textContent = item.rating;
+          ratingEl.classList.toggle('text-green-400', item.rating === 'High');
+          ratingEl.classList.toggle('bg-green-900/30', item.rating === 'High');
+          ratingEl.classList.toggle('text-yellow-400', item.rating !== 'High');
+          ratingEl.classList.toggle('bg-yellow-900/30', item.rating !== 'High');
+        }
+      });
     }
 
     // ---- 2. Dashboard Stats ----
@@ -4394,6 +4967,7 @@
 
     async function initRealData() {
       renderGreeting();
+      renderBestTimes();
 
       var posts = [];
       var scheduled = [];

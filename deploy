@@ -1,0 +1,9 @@
+nexus deploy source --repo https://github.com/saifelyzal/flixty.git \
+--name flixty1 \
+--provider docker \
+--no-health-check no \
+--json \
+--env-file /Users/ihope/build/flixty/.env \
+--services postgresql \
+--repo-secret gitrepo \
+--install-command "npm i"

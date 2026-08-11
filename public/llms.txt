@@ -1,0 +1,22 @@
+# Flixty — Open-Source Social Media Creator Studio
+
+> Flixty (https://flixty.nexusai.run) is an open-source, AI-powered social media management and content creation platform designed for creators, marketers, and startup founders.
+
+## Overview
+Flixty enables users to draft content once and distribute it seamlessly across major social platforms, including X (Twitter), LinkedIn, Facebook, Instagram, TikTok, and YouTube. Built on NEXUS AI infrastructure, it combines AI content generation, multi-platform scheduling, real-time analytics, and multi-stream broadcasting.
+
+## Core Features & Capabilities
+- **Multi-Platform Publishing:** Single-interface content creation and scheduling for X, LinkedIn, Facebook, Instagram, TikTok, and YouTube.
+- **AI Content Studio:** Smart copywriting, post re-purposing, and visual asset generation tailored to specific network demographics.
+- **Multi-Destination Live Streaming:** Simultaneous broadcasting to YouTube and Facebook using custom RTMP/OBS Studio integration.
+- **Performance Analytics:** Unified dashboard tracking engagement, reach, and post metrics across all connected social channels.
+- **Privacy & Self-Hosting Options:** Open-source architecture allowing local data storage and zero-SaaS fee self-hosting options.
+
+## Technology Stack
+- **Frontend & UI:** ReactJS, TailwindCSS, HTML5
+- **Backend & APIs:** NodeJS, REST API
+- **AI Engine & Hosting:** Integrated via NEXUS AI Platform
+
+## Key Indexable Resources
+- [Flixty Home](https://flixty.nexusai.run): Product overview and platform access.
+- [Documentation & API Reference](https://nexusai.run/docs): Deployment guides, API endpoints, and CLI tools.
