@@ -106,27 +106,40 @@ export async function postVideoToPage(pageToken, pageId, message, filePath) {
   }
 }
 
-// Reactions, comments, shares and post_impressions for a Page post.
-// `shares` isn't a valid field on video objects (only regular feed posts) —
-// the Graph API rejects the *whole* request if any requested field doesn't
-// apply to that node type, so shares/insights are fetched separately and
-// tolerated as best-effort rather than bundled into one all-or-nothing call.
+// Reactions, comments, shares, views and post_impressions for a Page post.
+//
+// The Graph API rejects the *whole* request if any one requested field doesn't
+// apply to the node type — and a Page *video* object supports neither
+// `reactions` nor `shares` (only regular feed posts do), while a feed post has
+// no `views`. Bundling them means one inapplicable field kills the entire
+// metrics read, which is exactly how Facebook video posts ended up with no
+// analytics at all. So every field goes out as its own best-effort request and
+// a miss just drops that one value.
 export async function getPostMetrics(pageToken, postId) {
-  const { data } = await axios.get(`https://graph.facebook.com/v19.0/${postId}`, {
-    params: {
-      fields: 'reactions.summary(true).limit(0),comments.summary(true).limit(0)',
-      access_token: pageToken,
-    },
-  })
+  const field = async (fields) => {
+    try {
+      const { data } = await axios.get(`https://graph.facebook.com/v19.0/${postId}`, {
+        params: { fields, access_token: pageToken },
+      })
+      return data
+    } catch {
+      return {}
+    }
+  }
 
-  let shares = 0
-  try {
-    const { data: sharesData } = await axios.get(`https://graph.facebook.com/v19.0/${postId}`, {
-      params: { fields: 'shares', access_token: pageToken },
-    })
-    shares = sharesData.shares?.count ?? 0
-  } catch {
-    // not a shareable object type (e.g. a video) — leave at 0
+  const [reactions, comments, shares, likes, video] = await Promise.all([
+    field('reactions.summary(true).limit(0)'), // feed posts
+    field('comments.summary(true).limit(0)'),  // feed posts + videos
+    field('shares'),                           // feed posts
+    field('likes.summary(true).limit(0)'),     // videos (reactions stand-in)
+    field('views'),                            // videos
+  ])
+
+  // Every single field request failing means the object/token is broken, not
+  // that the post genuinely has zero engagement — throw so the collector logs
+  // it and skips instead of recording a misleading all-zero snapshot.
+  if ([reactions, comments, shares, likes, video].every(d => Object.keys(d).length === 0)) {
+    throw new Error(`Facebook metrics unavailable for ${postId} (all field requests failed)`)
   }
 
   let impressions = null
@@ -140,13 +153,13 @@ export async function getPostMetrics(pageToken, postId) {
   }
 
   return {
-    likes: data.reactions?.summary?.total_count ?? 0,
-    comments: data.comments?.summary?.total_count ?? 0,
-    shares,
-    views: null,
+    likes: reactions.reactions?.summary?.total_count ?? likes.likes?.summary?.total_count ?? 0,
+    comments: comments.comments?.summary?.total_count ?? 0,
+    shares: shares.shares?.count ?? 0,
+    views: video.views ?? null,
     impressions,
     saves: null,
-    raw: data,
+    raw: { reactions, comments, shares, likes, video },
   }
 }
 
