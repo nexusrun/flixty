@@ -133,8 +133,14 @@ router.get('/facebook/callback', async (req, res) => {
       if (igId) instagramAccounts.push({ id: String(igId), name: `${p.name} Instagram`, type: 'instagram', pageId: String(p.id), pageName: p.name, pageToken: p.access_token })
     }
     if (instagramAccounts.length) {
+      console.log(`[instagram] linked ${instagramAccounts.length} account(s) via Facebook:`, instagramAccounts.map(a => `${a.id} (${a.pageName})`).join(', '))
       const ig = instagramAccounts[0]
       await saveToken(req.session.userId, 'instagram', { pageToken: ig.pageToken, igAccountId: ig.id, pageId: ig.pageId, pageName: ig.pageName, accounts: instagramAccounts, activeAccountId: ig.id })
+    } else {
+      // No Instagram saved — almost always means no Page has an Instagram
+      // professional account linked in Meta's settings, or the granted token
+      // is missing instagram_basic. Log it so this isn't a silent no-op.
+      console.log(`[instagram] no linked Instagram professional account found across ${pages.length} page(s) — not connecting Instagram`)
     }
     res.send(SUCCESS_HTML)
   } catch (e) { fail(res, e.response?.data?.error?.message || e.message) }

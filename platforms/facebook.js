@@ -15,7 +15,13 @@ function safeUploadPath(filePath) {
 const APP_ID = process.env.FB_APP_ID
 const APP_SECRET = process.env.FB_APP_SECRET
 const REDIRECT_URI = `${process.env.BASE_URL}/auth/facebook/callback`
-const SCOPES = ['pages_show_list', 'pages_manage_posts', 'pages_read_engagement', 'instagram_content_publish', 'publish_video', 'instagram_manage_insights']
+// `instagram_basic` is required both to read a Page's linked
+// instagram_business_account (the Instagram connection step in
+// routes/auth.js) and to publish to it — without it the Graph API omits the
+// instagram_business_account field entirely, so Instagram silently never
+// connects. It pairs with instagram_content_publish (posting) and
+// instagram_manage_insights (analytics).
+const SCOPES = ['pages_show_list', 'pages_manage_posts', 'pages_read_engagement', 'instagram_basic', 'instagram_content_publish', 'publish_video', 'instagram_manage_insights']
 
 export function getAuthUrl(state) {
   const p = new URLSearchParams({
@@ -163,11 +169,21 @@ export async function getPostMetrics(pageToken, postId) {
   }
 }
 
+// Returns the Instagram professional account linked to a Page, or null if
+// there isn't one. Never throws: a missing instagram_basic scope, a Page with
+// no linked IG account, or a transient Graph error should all just mean "no
+// Instagram here" rather than failing the whole Facebook connection.
 export async function getInstagramAccountId(pageId, pageToken) {
-  const { data } = await axios.get(`https://graph.facebook.com/v19.0/${pageId}`, {
-    params: { fields: 'instagram_business_account', access_token: pageToken }
-  })
-  return data.instagram_business_account?.id || null
+  try {
+    const { data } = await axios.get(`https://graph.facebook.com/v19.0/${pageId}`, {
+      params: { fields: 'instagram_business_account', access_token: pageToken }
+    })
+    return data.instagram_business_account?.id || null
+  } catch (e) {
+    console.warn(`[facebook] instagram_business_account lookup failed for page ${pageId}:`,
+      e.response?.data?.error?.message || e.message)
+    return null
+  }
 }
 
 // ── Live Streaming ──
