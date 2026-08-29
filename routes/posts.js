@@ -87,7 +87,14 @@ router.post('/publish', requireAuth, uploadWithThumbnail, async (req, res) => {
     text, platforms, media, thumbnail, campaignName: req.body.campaignName, accountTargets,
   })
 
-  const post = await savePost(req.session.userId, { text, platforms, mediaUrl, thumbnailUrl, results, errors })
+  // Stamp published_at so the analytics collector can discover this post —
+  // its whole pipeline is gated on published_at (see lib/analytics/store.js).
+  // Set unconditionally, exactly like the scheduler: the per-platform
+  // results/errors blob is what records what actually went out, and a post
+  // with no usable platform ID simply never gets a tracking row.
+  const post = await savePost(req.session.userId, {
+    text, platforms, mediaUrl, thumbnailUrl, results, errors, publishedAt: new Date().toISOString(),
+  })
   res.json({ ok: Object.keys(results).length > 0, results, errors, post })
 })
 
