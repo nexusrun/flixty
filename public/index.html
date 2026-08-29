@@ -4922,9 +4922,12 @@
       if (!container) return;
       container.innerHTML = '';
 
+      // Only nudge when the connected token is actually missing an
+      // analytics scope (analyticsReady === false). A token granted with the
+      // right permissions reports true and no banner shows.
       var needsReconnect = [];
-      if (status.instagram && status.instagram.connected) needsReconnect.push({ platform: 'instagram', label: 'Instagram' });
-      if (status.tiktok && status.tiktok.connected) needsReconnect.push({ platform: 'tiktok', label: 'TikTok' });
+      if (status.instagram && status.instagram.connected && status.instagram.analyticsReady === false) needsReconnect.push({ platform: 'instagram', label: 'Instagram' });
+      if (status.tiktok && status.tiktok.connected && status.tiktok.analyticsReady === false) needsReconnect.push({ platform: 'tiktok', label: 'TikTok' });
 
       if (needsReconnect.length === 0) { container.classList.add('hidden'); return; }
       container.classList.remove('hidden');

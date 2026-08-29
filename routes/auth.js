@@ -16,11 +16,29 @@ const SUCCESS_HTML = `<html><body><script>
 
 const fail = (res, msg) => res.status(400).send(`<p>Error: ${msg}</p>`)
 
+// Scopes each platform's metrics polling needs beyond what's required just to
+// post. A token granted before these were added — or with the box un-ticked
+// on the consent screen — can publish fine but never collects analytics, so
+// the UI nudges the user to reconnect. Platforms not listed here always report
+// analyticsReady: null (nothing extra to grant).
+const ANALYTICS_SCOPES = {
+  instagram: ['instagram_basic', 'instagram_manage_insights'],
+  tiktok: ['video.list'],
+}
+
+function grantedScopeSet(d) {
+  if (Array.isArray(d.scopes)) return new Set(d.scopes)
+  if (typeof d.scope === 'string') return new Set(d.scope.split(/[,\s]+/).filter(Boolean))
+  return new Set()
+}
+
 // Status — which platforms are connected + display names, for the logged-in user
 router.get('/status', requireAuth, async (req, res) => {
   const tokens = await getTokens(req.session.userId)
   const status = {}
   for (const [p, d] of Object.entries(tokens)) {
+    const required = ANALYTICS_SCOPES[p]
+    const granted = grantedScopeSet(d)
     status[p] = {
       connected: true,
       savedAt: d.savedAt,
@@ -29,6 +47,7 @@ router.get('/status', requireAuth, async (req, res) => {
       pageName: d.pageName || null,
       activeAccountId: d.activeAccountId || null,
       accounts: (d.accounts || []).map(a => ({ id: a.id, name: a.name, type: a.type, pageId: a.pageId || null, pageName: a.pageName || null })),
+      analyticsReady: required ? required.every(s => granted.has(s)) : null,
     }
   }
   res.json(status)
@@ -111,18 +130,20 @@ router.get('/facebook/callback', async (req, res) => {
   if (req.query.state !== req.session.fbState) return fail(res, 'State mismatch')
   try {
     const tok = await facebook.exchangeCode(req.query.code)
-    const [pages, fbUserId] = await Promise.all([
+    const [pages, fbUserId, grantedScopes] = await Promise.all([
       facebook.getPages(tok.access_token),
       facebook.getMe(tok.access_token),
+      facebook.getGrantedScopes(tok.access_token),
     ])
     console.log('[facebook] pages response:', JSON.stringify(pages))
+    console.log('[facebook] granted scopes:', grantedScopes.join(', ') || '(none)')
     if (!pages.length) throw new Error(
       'No Facebook Pages found. Make sure: (1) you have a Facebook Page, ' +
       '(2) your app has pages_show_list scope, (3) you are an Admin of the Page.'
     )
     const page = pages[0]
     const pageAccounts = pages.map(p => ({ id: String(p.id), name: p.name, type: 'page', pageToken: p.access_token }))
-    await saveToken(req.session.userId, 'facebook', { userToken: tok.access_token, pageToken: page.access_token, pageId: page.id, pageName: page.name, fbUserId, accounts: pageAccounts, activeAccountId: String(page.id) })
+    await saveToken(req.session.userId, 'facebook', { userToken: tok.access_token, pageToken: page.access_token, pageId: page.id, pageName: page.name, fbUserId, scopes: grantedScopes, accounts: pageAccounts, activeAccountId: String(page.id) })
 
     // The linked Instagram Business Account can be on any of the user's
     // pages, not necessarily the first one — check them all rather than
@@ -135,7 +156,7 @@ router.get('/facebook/callback', async (req, res) => {
     if (instagramAccounts.length) {
       console.log(`[instagram] linked ${instagramAccounts.length} account(s) via Facebook:`, instagramAccounts.map(a => `${a.id} (${a.pageName})`).join(', '))
       const ig = instagramAccounts[0]
-      await saveToken(req.session.userId, 'instagram', { pageToken: ig.pageToken, igAccountId: ig.id, pageId: ig.pageId, pageName: ig.pageName, accounts: instagramAccounts, activeAccountId: ig.id })
+      await saveToken(req.session.userId, 'instagram', { pageToken: ig.pageToken, igAccountId: ig.id, pageId: ig.pageId, pageName: ig.pageName, scopes: grantedScopes, accounts: instagramAccounts, activeAccountId: ig.id })
     } else {
       // No Instagram saved — almost always means no Page has an Instagram
       // professional account linked in Meta's settings, or the granted token
@@ -163,7 +184,11 @@ router.get('/tiktok/callback', async (req, res) => {
   try {
     const tok  = await tiktok.exchangeCode(req.query.code, req.query.state)
     const user = await tiktok.getUserInfo(tok.access_token)
-    await saveToken(req.session.userId, 'tiktok', { ...tok, displayName: user.display_name, openId: user.open_id })
+    // TikTok returns granted scopes as a comma-separated string; normalise to
+    // an array so /status can tell whether video.list (analytics) was granted.
+    const scopes = String(tok.scope || '').split(/[,\s]+/).filter(Boolean)
+    console.log('[tiktok] granted scopes:', scopes.join(', ') || '(none)')
+    await saveToken(req.session.userId, 'tiktok', { ...tok, scopes, displayName: user.display_name, openId: user.open_id })
     res.send(SUCCESS_HTML)
   } catch (e) { fail(res, e.response?.data?.message || e.message) }
 })

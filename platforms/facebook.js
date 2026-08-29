@@ -53,6 +53,22 @@ export async function getMe(userToken) {
   return data.id
 }
 
+// The permissions the user actually granted — Facebook's consent screen lets
+// them un-tick individual scopes, so "we asked for it" isn't "we have it".
+// Stored on the facebook + instagram tokens so /status can tell whether
+// analytics (instagram_manage_insights) will work without a reconnect.
+export async function getGrantedScopes(userToken) {
+  try {
+    const { data } = await axios.get('https://graph.facebook.com/v19.0/me/permissions', {
+      params: { access_token: userToken },
+    })
+    return (data.data || []).filter(p => p.status === 'granted').map(p => p.permission)
+  } catch (e) {
+    console.warn('[facebook] could not read granted permissions:', e.response?.data?.error?.message || e.message)
+    return []
+  }
+}
+
 export async function getPages(userToken) {
   const { data } = await axios.get('https://graph.facebook.com/v19.0/me/accounts', {
     params: { access_token: userToken, fields: 'id,name,access_token,tasks' }
