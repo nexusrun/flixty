@@ -1,23 +1,22 @@
-# Flixty — Open-Source Social Media Creator Studio
+# Flixty — Open-Source Social Media Creator Studio [![Deploy to NEXUS AI](https://nexusai.run/deploy-button.svg)](https://nexusai.run/deploy?repo=https://github.com/nexusrun/flixty)
 
-Flixty is a self-hosted social media management platform. Write once, publish everywhere — X, LinkedIn, Facebook, Instagram, TikTok, and YouTube — with AI-assisted content, scheduling, live streaming, and audience targeting. No SaaS fees, no vendor lock-in.
+Flixty is a self-hosted social media management platform. Write once, publish everywhere X, LinkedIn, Facebook, Instagram, TikTok, and YouTube  with AI-assisted content, scheduling, live streaming, and audience targeting. No SaaS fees, no vendor lock-in.
 
 ![Flixty Dashboard](flixty.png)
 
-[![Deploy to NEXUS AI](https://nexusai.run/deploy-button.svg)](https://nexusai.run/deploy?repo=https://github.com/nexusrun/flixty)
 ---
 
 ## Features
 
-- **Multi-platform publishing** — post to X, LinkedIn, Facebook, Instagram, TikTok, and YouTube from one interface
-- **AI Assist** — generate and rewrite content per platform using Claude (Anthropic) with platform-specific tone and character limits
-- **Scheduler** — schedule posts with a calendar view; a built-in cron job publishes them automatically
-- **Live Streaming** — create YouTube and Facebook live broadcasts and get RTMP credentials for OBS or any streaming software
-- **Live Preview** — see exactly how your post will look on each platform before publishing
-- **Audience & Targeting** — configure age, gender, location, language, interest, industry, device, and relationship targeting
-- **MCP server** — connect an MCP-compatible chatbot to publish, schedule, manage, and analyze content using your Flixty account
-- **Google Sign-In** — users can register and log in with email/password or Google OAuth
-- **Responsive** — full mobile UI with bottom navigation and slide-in drawer
+- **Multi-platform publishing** post to X, LinkedIn, Facebook, Instagram, TikTok, and YouTube from one interface
+- **AI Assist** generate and rewrite content per platform using Claude (Anthropic) with platform-specific tone and character limits
+- **Scheduler** schedule posts with a calendar view; a built-in cron job publishes them automatically
+- **Live Streaming** create YouTube and Facebook live broadcasts and get RTMP credentials for OBS or any streaming software
+- **Live Preview** see exactly how your post will look on each platform before publishing
+- **Audience & Targeting** configure age, gender, location, language, interest, industry, device, and relationship targeting
+- **MCP server** connect an MCP-compatible chatbot to publish, schedule, manage, and analyze content using your Flixty account
+- **Google Sign-In** users can register and log in with email/password or Google OAuth
+- **Responsive** full mobile UI with bottom navigation and slide-in drawer
 
 ---
 
@@ -59,14 +58,14 @@ npm run dev
 
 Open `http://localhost:3000` in your browser.
 
-- `npm run dev` — starts with `--watch` (auto-restarts on file changes)
-- `npm start` — production start
+- `npm run dev` starts with `--watch` (auto-restarts on file changes)
+- `npm start` production start
 
 ---
 
 ## Environment Variables
 
-Copy `.env.example` to `.env` and fill in the values you need. All platform keys are optional — only configure the platforms you intend to use.
+Copy `.env.example` to `.env` and fill in the values you need. All platform keys are optional only configure the platforms you intend to use.
 
 ```env
 PORT=3000
