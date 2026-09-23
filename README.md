@@ -4,6 +4,7 @@ Flixty is a self-hosted social media management platform. Write once, publish ev
 
 ![Flixty Dashboard](flixty.png)
 
+[![Deploy to NEXUS AI](https://nexusai.run/deploy-button.svg)](https://nexusai.run/deploy?repo=https://github.com/nexusrun/flixty)
 ---
 
 ## Features

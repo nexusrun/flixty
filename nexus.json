@@ -1,0 +1,12 @@
+{
+  "name": "flixty",
+  "description": "Next.js store with Postgres",
+  "services": ["postgres", "redis"],
+  "worker": { "command": "node worker.js" },
+  "rootDir": "backend",
+  "startCommand": "npm start",
+  "env": {
+    "SESSION_SECRET": { "generator": "secret" },
+    "NODE_ENV": { "value": "production" }
+  }
+}
