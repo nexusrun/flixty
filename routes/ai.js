@@ -3,7 +3,7 @@ import fs from 'fs'
 import crypto from 'crypto'
 import path from 'path'
 import { fileURLToPath } from 'url'
-import { resolveAiConfig, streamAiText, completeAiText, generateImage, generateVideo, PROVIDERS } from '../lib/ai.js'
+import { resolveAiConfig, assertSafeBaseUrl, streamAiText, completeAiText, generateImage, generateVideo, PROVIDERS } from '../lib/ai.js'
 import { getAiSettings, saveAiSettings } from '../lib/store.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -72,7 +72,8 @@ async function streamToSSE(res, userId, messages, systemPrompt, maxTokens = 1024
 
 // Masked view of a user's AI settings — never exposes the full API key.
 async function settingsPayload(userId) {
-  const cfg = await resolveAiConfig(userId)
+  // Read-only view — don't fail the settings form over a now-disallowed URL.
+  const cfg = await resolveAiConfig(userId, { checkBaseUrl: false })
   const row = await getAiSettings(userId)
   const hasApiKey = !!(row?.api_key || cfg.apiKey)
   return {
@@ -278,6 +279,11 @@ router.put('/settings', async (req, res) => {
   const p = provider || 'anthropic'
   if (!PROVIDERS.has(p)) return res.status(400).json({ error: `Unknown provider: ${p}` })
 
+  const customBaseUrl = (typeof baseUrl === 'string' && baseUrl.trim()) ? baseUrl.trim() : null
+  if (customBaseUrl) {
+    try { await assertSafeBaseUrl(customBaseUrl) } catch (e) { return res.status(400).json({ error: e.message }) }
+  }
+
   try {
     const existing = await getAiSettings(req.session.userId)
     // A key belongs to the selected provider. Do not silently send a saved
@@ -288,7 +294,7 @@ router.put('/settings', async (req, res) => {
       : (existing?.provider === p ? (existing.api_key || null) : null)
     await saveAiSettings(req.session.userId, {
       provider: p,
-      baseUrl: (typeof baseUrl === 'string' && baseUrl.trim()) ? baseUrl.trim() : null,
+      baseUrl: customBaseUrl,
       apiKey: nextKey,
       model: (typeof model === 'string' && model.trim()) ? model.trim() : null,
       imageModel: (typeof imageModel === 'string' && imageModel.trim()) ? imageModel.trim() : null,

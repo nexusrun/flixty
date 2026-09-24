@@ -26,6 +26,14 @@ const PORT = process.env.PORT || 3000
 // Ensure uploads dir exists
 fs.mkdirSync(path.join(__dirname, 'data/uploads'), { recursive: true })
 
+// Without a real secret, session cookies are signed with a value published in
+// this repo and anyone could forge a login cookie. Only allowed for local dev.
+const isProduction = process.env.NODE_ENV === 'production' || (process.env.BASE_URL || '').startsWith('https')
+if (!process.env.SESSION_SECRET && isProduction) {
+  console.error('[startup] SESSION_SECRET is not set — refusing to start in production. Set it to a long random value.')
+  process.exit(1)
+}
+
 const app = express()
 
 // Trust the reverse proxy (Nexus AI / nginx) so req.secure reflects HTTPS
@@ -55,6 +63,34 @@ app.use(session({
   // cookie off cross-site POSTs, which is what protects against CSRF.
   cookie: { secure: (process.env.BASE_URL || '').startsWith('https'), sameSite: 'lax', maxAge: 7 * 24 * 60 * 60 * 1000 } // 7-day session
 }))
+
+// Cross-origin write protection. nexusai.run isn't on the Public Suffix
+// List, so every *.nexusai.run app counts as "same-site" with this one and
+// SameSite=Lax cookies are still sent on their POSTs — any other app hosted
+// there could make logged-in requests on a visitor's behalf. Browsers always
+// send Origin on POST/PUT/PATCH/DELETE, so a write is only accepted when it
+// comes from this app's own origin. Requests without Origin (curl, server-to-
+// server) fall back to Sec-Fetch-Site, which only browsers send.
+// Exempt: endpoints called by other servers, not browsers — MCP (bearer-token
+// auth, no cookies), the MCP OAuth token/registration endpoints, and
+// Facebook's signed data-deletion callback.
+const ORIGIN_CHECK_EXEMPT = new Set(['/mcp', '/oauth/token', '/oauth/register', '/auth/facebook/data-deletion'])
+const SAFE_METHODS = new Set(['GET', 'HEAD', 'OPTIONS'])
+app.use((req, res, next) => {
+  if (SAFE_METHODS.has(req.method) || ORIGIN_CHECK_EXEMPT.has(req.path)) return next()
+  const origin = req.get('origin')
+  if (origin) {
+    // Compared against both BASE_URL and the host this request actually
+    // reached, so a missing/stale BASE_URL can't lock the app out of itself.
+    const allowed = new Set([`${req.protocol}://${req.get('host')}`])
+    if (process.env.BASE_URL) allowed.add(new URL(process.env.BASE_URL).origin)
+    if (allowed.has(origin)) return next()
+  } else {
+    const site = req.get('sec-fetch-site')
+    if (!site || site === 'same-origin' || site === 'none') return next()
+  }
+  res.status(403).json({ error: 'Cross-origin request blocked' })
+})
 
 // Root: landing page for guests, app for authenticated users
 app.get('/', (req, res) => {

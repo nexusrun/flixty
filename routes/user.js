@@ -30,6 +30,19 @@ function rateLimiter(req, res, next) {
 
 const router = Router()
 
+// Issue a fresh session ID at login instead of reusing the pre-login one —
+// otherwise someone who planted a session cookie in the victim's browser
+// (session fixation) would be logged in as the victim once they sign in.
+function establishSession(req, userId) {
+  return new Promise((resolve, reject) => {
+    req.session.regenerate(err => {
+      if (err) return reject(err)
+      req.session.userId = userId
+      req.session.save(saveErr => (saveErr ? reject(saveErr) : resolve()))
+    })
+  })
+}
+
 // POST /api/user/register  { name, email, password }
 router.post('/register', rateLimiter, async (req, res) => {
   const { name, email, password } = req.body
@@ -42,7 +55,7 @@ router.post('/register', rateLimiter, async (req, res) => {
 
   const passwordHash = await hashPassword(password)
   const user = await createUser({ name: name.trim(), email: email.trim().toLowerCase(), passwordHash })
-  req.session.userId = user.id
+  await establishSession(req, user.id)
   res.json({ ok: true, user: { id: user.id, name: user.name, email: user.email } })
 })
 
@@ -59,7 +72,7 @@ router.post('/login', rateLimiter, async (req, res) => {
   const ok = await verifyPassword(password, user.passwordHash)
   if (!ok) return res.status(401).json({ error: 'Invalid email or password' })
 
-  req.session.userId = user.id
+  await establishSession(req, user.id)
   res.json({ ok: true, user: { id: user.id, name: user.name, email: user.email } })
 })
 
@@ -133,7 +146,7 @@ router.get('/google/callback', async (req, res) => {
       user = await createUser({ name, email, passwordHash: null, googleId: profile.sub })
     }
 
-    req.session.userId = user.id
+    await establishSession(req, user.id)
 
     // Close popup and notify the opener window
     res.send(`<html><body><script>

@@ -7,17 +7,15 @@
     "dev": "node --watch server.js"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.82.0",
+    "@anthropic-ai/sdk": "^0.128.0",
     "@modelcontextprotocol/sdk": "^1.30.0",
     "axios": "^1.7.2",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "express-session": "^1.18.0",
-    "gh": "^2.5.0",
     "multer": "^2.0.1",
-    "nexusapp-cli": "^1.2.5",
-    "node-cron": "^3.0.3",
+    "node-cron": "^4.6.0",
     "pg": "^8.22.0",
     "sharp": "^0.35.3",
     "zod": "^4.4.3"
@@ -27,5 +25,8 @@
     "@tailwindcss/forms": "^0.5.11",
     "concurrently": "^9.2.1",
     "tailwindcss": "^4.2.2"
+  },
+  "overrides": {
+    "qs": "^6.16.0"
   }
 }

@@ -53,7 +53,14 @@ router.post('/oauth/register', async (req, res) => {
 
 // ── Authorize — consent screen backed by the existing session login ──
 
-function renderAuthorizePage({ loggedIn, clientName, query, error }) {
+// The client name is self-chosen at registration, so on its own it proves
+// nothing ("Flixty Official" could be anyone). The redirect destination is
+// where the access grant actually goes — show it so the user can judge.
+function redirectHost(uri) {
+  try { return new URL(uri).host || uri } catch { return String(uri || '') }
+}
+
+function renderAuthorizePage({ loggedIn, clientName, redirectUri, query, error }) {
   const qs = new URLSearchParams(query).toString()
   return `<!doctype html><html><head><meta charset="utf-8"><title>Connect to Flixty</title>
   <style>
@@ -71,6 +78,7 @@ function renderAuthorizePage({ loggedIn, clientName, query, error }) {
       ${loggedIn ? `
         <h1>Connect to Flixty</h1>
         <p><strong>${escHtml(clientName || 'An MCP client')}</strong> wants to access your Flixty account — create, view and schedule posts, and read your analytics.</p>
+        <p>Approving sends access to <strong>${escHtml(redirectHost(redirectUri))}</strong>. The name above is chosen by the app itself — only approve if you recognize this destination and started this connection.</p>
         ${error ? `<p class="err">${escHtml(error)}</p>` : ''}
         <form method="POST" action="/oauth/authorize?${qs}">
           <button class="approve" name="decision" value="approve">Approve</button>
@@ -115,6 +123,7 @@ router.get('/oauth/authorize', async (req, res) => {
   res.send(renderAuthorizePage({
     loggedIn: !!req.session.userId,
     clientName: client.clientName,
+    redirectUri: redirect_uri,
     query: req.query,
   }))
 })
@@ -127,7 +136,7 @@ router.post('/oauth/authorize', async (req, res) => {
   if (!client || !client.redirectUris.includes(redirect_uri)) return res.status(400).send('Invalid client or redirect_uri')
 
   if (!req.session.userId) {
-    return res.send(renderAuthorizePage({ loggedIn: false, clientName: client.clientName, query: req.query, error: 'Please log in first' }))
+    return res.send(renderAuthorizePage({ loggedIn: false, clientName: client.clientName, redirectUri: redirect_uri, query: req.query, error: 'Please log in first' }))
   }
 
   const redirectUrl = new URL(redirect_uri)
