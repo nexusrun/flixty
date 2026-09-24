@@ -6,7 +6,6 @@
   "env": {
     "NODE_ENV": { "value": "production" },
     "PORT": { "value": "3000" },
-    "BASE_URL": { "required": true, "description": "Public URL of this app, e.g. https://your-app.nexusai.run. Used for OAuth callback URLs and public media links." },
     "SESSION_SECRET": { "generator": "secret" },
     "DATABASE_SSL": { "value": "disable" },
 
