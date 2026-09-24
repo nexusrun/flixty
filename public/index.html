@@ -1532,7 +1532,7 @@
                       <p id="preview-x-text" class="text-sm text-on-surface leading-relaxed mb-3 whitespace-pre-wrap">
                         Your post will appear here as you type...</p>
                       <div id="preview-x-img" class="hidden mb-3">
-                        <img id="preview-x-img-src" class="w-full rounded-xl object-cover max-h-48" src=""
+                        <img id="preview-x-img-src" class="w-full rounded-xl object-contain max-h-80 bg-black cursor-zoom-in" onclick="openMediaLightbox(this.src, false)" src=""
                           alt="Media preview" />
                       </div>
                       <div class="flex items-center gap-5 text-on-surface-variant">
@@ -1566,7 +1566,7 @@
                     class="text-sm text-on-surface leading-relaxed mb-3 whitespace-pre-wrap">Your post will appear here
                     as you type...</p>
                   <div id="preview-linkedin-img" class="hidden mb-3">
-                    <img id="preview-linkedin-img-src" class="w-full rounded-xl object-cover max-h-48" src=""
+                    <img id="preview-linkedin-img-src" class="w-full rounded-xl object-contain max-h-80 bg-black cursor-zoom-in" onclick="openMediaLightbox(this.src, false)" src=""
                       alt="Media preview" />
                   </div>
                   <div
@@ -1600,7 +1600,7 @@
                       style="font-size:18px">more_horiz</span>
                   </div>
                   <div id="preview-ig-img" class="hidden">
-                    <img id="preview-ig-img-src" class="w-full object-cover max-h-64" src="" alt="Media preview" />
+                    <img id="preview-ig-img-src" class="w-full object-contain max-h-96 bg-black cursor-zoom-in" onclick="openMediaLightbox(this.src, false)" src="" alt="Media preview" />
                   </div>
                   <div id="preview-ig-placeholder"
                     class="w-full h-40 bg-surface-container flex items-center justify-center">
@@ -1646,7 +1646,7 @@
                   <p id="preview-fb-text" class="text-sm text-on-surface leading-relaxed mb-3 whitespace-pre-wrap">Your
                     post will appear here as you type...</p>
                   <div id="preview-fb-img" class="hidden mb-3">
-                    <img id="preview-fb-img-src" class="w-full rounded-lg object-cover max-h-48" src=""
+                    <img id="preview-fb-img-src" class="w-full rounded-lg object-contain max-h-80 bg-black cursor-zoom-in" onclick="openMediaLightbox(this.src, false)" src=""
                       alt="Media preview" />
                   </div>
                   <div
@@ -1671,10 +1671,11 @@
               <div id="preview-tiktok" class="preview-content hidden">
                 <div class="rounded-xl overflow-hidden" style="background:#010101">
                   <!-- Video placeholder -->
-                  <div id="preview-tt-video" class="w-full h-44 flex items-center justify-center relative"
-                    style="background:#111">
+                  <div id="preview-tt-video" class="w-full flex items-center justify-center relative"
+                    style="background:#111;aspect-ratio:9/16;max-height:480px">
                     <div id="preview-tt-img-wrap" class="hidden absolute inset-0">
-                      <img id="preview-tt-img-src" class="w-full h-full object-cover" src="" alt="Media preview" />
+                      <img id="preview-tt-img-src" class="w-full h-full object-contain" src="" alt="Media preview" />
+                      <video id="preview-tt-video-src" class="hidden w-full h-full object-contain" muted loop playsinline controls preload="metadata"></video>
                     </div>
                     <div id="preview-tt-placeholder" class="flex flex-col items-center gap-2 text-white/40">
                       <span class="material-symbols-outlined" style="font-size:36px">play_circle</span>
@@ -1712,9 +1713,10 @@
               <div id="preview-youtube" class="preview-content hidden">
                 <div class="bg-surface-container-low rounded-xl overflow-hidden">
                   <!-- Thumbnail area -->
-                  <div class="w-full h-40 flex items-center justify-center relative" style="background:#111">
+                  <div class="w-full flex items-center justify-center relative" style="background:#111;aspect-ratio:16/9">
                     <div id="preview-yt-img-wrap" class="hidden absolute inset-0">
-                      <img id="preview-yt-img-src" class="w-full h-full object-cover" src="" alt="Thumbnail" />
+                      <img id="preview-yt-img-src" class="w-full h-full object-contain" src="" alt="Thumbnail" />
+                      <video id="preview-yt-video-src" class="hidden w-full h-full object-contain" muted playsinline controls preload="metadata"></video>
                     </div>
                     <div id="preview-yt-placeholder" class="flex flex-col items-center gap-2 text-white/40">
                       <svg class="w-10 h-10" viewBox="0 0 24 24" fill="#ff0000">
@@ -3024,9 +3026,10 @@
 
         // Build thumbnail using safe DOM methods only
         var thumb = document.createElement('div');
-        thumb.className = 'relative rounded-xl overflow-hidden';
-        thumb.style.width = '80px';
-        thumb.style.height = '80px';
+        thumb.className = 'relative rounded-xl overflow-hidden bg-black cursor-zoom-in';
+        thumb.style.width = MEDIA_THUMB_PX;
+        thumb.style.height = MEDIA_THUMB_PX;
+        thumb.addEventListener('click', function () { openMediaLightbox(url, file.type.startsWith('video/')); });
 
         if (file.type.startsWith('image/')) {
           var img = document.createElement('img');
@@ -3036,10 +3039,12 @@
           thumb.appendChild(img);
         } else {
           var vid = document.createElement('video');
-          vid.src = url;
+          vid.src = url + '#t=0.1';
           vid.className = 'w-full h-full object-cover';
           vid.muted = true;
+          vid.preload = 'metadata';
           thumb.appendChild(vid);
+          thumb.appendChild(makePlayBadge());
         }
 
         var removeBtn = document.createElement('button');
@@ -3047,7 +3052,8 @@
         removeBtn.style.cssText = 'background:rgba(0,0,0,0.6);color:#fff;font-size:12px;';
         removeBtn.textContent = '×';
         removeBtn.setAttribute('aria-label', 'Remove media');
-        removeBtn.addEventListener('click', function () {
+        removeBtn.addEventListener('click', function (e) {
+          e.stopPropagation();
           thumb.remove();
           clearPreviews();
         });
@@ -3074,20 +3080,12 @@
           var ytWrap = document.getElementById('preview-yt-img-wrap');
           var ytSrc = document.getElementById('preview-yt-img-src');
           var ytPh = document.getElementById('preview-yt-placeholder');
-          if (ytWrap && ytSrc) { ytSrc.src = url; ytWrap.classList.remove('hidden'); }
+          if (ytWrap && ytSrc) { ytSrc.src = url; ytSrc.classList.remove('hidden'); ytWrap.classList.remove('hidden'); }
           if (ytPh) ytPh.classList.add('hidden');
+          resetPreviewVideo('yt');
         } else if (file.type.startsWith('video/')) {
           // TikTok and YouTube show video
-          var ttWrap = document.getElementById('preview-tt-img-wrap');
-          var ttSrc = document.getElementById('preview-tt-img-src');
-          var ttPh = document.getElementById('preview-tt-placeholder');
-          if (ttWrap && ttSrc) { ttSrc.src = url; ttWrap.classList.remove('hidden'); }
-          if (ttPh) ttPh.classList.add('hidden');
-          var ytWrap2 = document.getElementById('preview-yt-img-wrap');
-          var ytSrc2 = document.getElementById('preview-yt-img-src');
-          var ytPh2 = document.getElementById('preview-yt-placeholder');
-          if (ytWrap2 && ytSrc2) { ytSrc2.src = url; ytWrap2.classList.remove('hidden'); }
-          if (ytPh2) ytPh2.classList.add('hidden');
+          showVideoInPreviews(url);
         }
       });
     }
@@ -3108,7 +3106,85 @@
       ['preview-yt-placeholder', 'preview-tt-placeholder'].forEach(function (id) {
         var el = document.getElementById(id); if (el) el.classList.remove('hidden');
       });
+      resetPreviewVideo('tt');
+      resetPreviewVideo('yt');
     }
+
+    // Composer media thumbnails — big enough to actually see, and clickable to
+    // open the full-size image/video in a lightbox.
+    var MEDIA_THUMB_PX = '128px';
+
+    function makePlayBadge() {
+      var badge = document.createElement('span');
+      badge.className = 'material-symbols-outlined absolute inset-0 m-auto w-8 h-8 rounded-full flex items-center justify-center pointer-events-none';
+      badge.style.cssText = 'background:rgba(0,0,0,0.55);color:#fff;font-size:20px;';
+      badge.textContent = 'play_arrow';
+      return badge;
+    }
+
+    // TikTok/YouTube panes hold both an <img> and a <video>; a video URL in an
+    // <img> renders nothing, so pick the right element for the media type.
+    function resetPreviewVideo(prefix) {
+      var vid = document.getElementById('preview-' + prefix + '-video-src');
+      if (!vid) return;
+      vid.pause();
+      vid.removeAttribute('src');
+      vid.load();
+      vid.classList.add('hidden');
+    }
+
+    function showVideoInPreviews(url) {
+      ['tt', 'yt'].forEach(function (prefix) {
+        var wrap = document.getElementById('preview-' + prefix + '-img-wrap');
+        var img = document.getElementById('preview-' + prefix + '-img-src');
+        var vid = document.getElementById('preview-' + prefix + '-video-src');
+        var ph = document.getElementById('preview-' + prefix + '-placeholder');
+        if (!wrap || !vid) return;
+        if (img) { img.removeAttribute('src'); img.classList.add('hidden'); }
+        vid.src = url;
+        vid.classList.remove('hidden');
+        wrap.classList.remove('hidden');
+        if (ph) ph.classList.add('hidden');
+      });
+    }
+
+    function openMediaLightbox(url, isVideo) {
+      if (!url) return;
+      closeMediaLightbox();
+      var overlay = document.createElement('div');
+      overlay.id = 'media-lightbox';
+      overlay.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.9);display:flex;align-items:center;justify-content:center;padding:16px;cursor:zoom-out;';
+      var el;
+      if (isVideo) {
+        el = document.createElement('video');
+        el.controls = true;
+        el.autoplay = true;
+        el.playsInline = true;
+      } else {
+        el = document.createElement('img');
+        el.alt = 'Media full size';
+      }
+      el.src = url;
+      el.style.cssText = 'max-width:100%;max-height:100%;object-fit:contain;border-radius:12px;cursor:default;';
+      el.addEventListener('click', function (e) { e.stopPropagation(); });
+      var closeBtn = document.createElement('button');
+      closeBtn.textContent = '×';
+      closeBtn.setAttribute('aria-label', 'Close preview');
+      closeBtn.style.cssText = 'position:absolute;top:16px;right:16px;width:40px;height:40px;border-radius:9999px;background:rgba(255,255,255,0.15);color:#fff;font-size:24px;line-height:1;';
+      overlay.appendChild(el);
+      overlay.appendChild(closeBtn);
+      overlay.addEventListener('click', closeMediaLightbox);
+      document.addEventListener('keydown', lightboxKeyHandler);
+      document.body.appendChild(overlay);
+    }
+
+    function closeMediaLightbox() {
+      var overlay = document.getElementById('media-lightbox');
+      if (overlay) overlay.remove();
+      document.removeEventListener('keydown', lightboxKeyHandler);
+    }
+
+    function lightboxKeyHandler(e) { if (e.key === 'Escape') closeMediaLightbox(); }
 
     // AI-generated image attachment — rides the existing server `imageUrl`
     // path (URL media) instead of a file upload.
@@ -3133,9 +3209,10 @@
       var container = document.getElementById('media-previews')
       var wrap = document.createElement('div')
       wrap.id = 'ai-image-preview-wrap'
-      wrap.className = 'relative rounded-xl overflow-hidden'
-      wrap.style.width = '80px'
-      wrap.style.height = '80px'
+      wrap.className = 'relative rounded-xl overflow-hidden bg-black cursor-zoom-in'
+      wrap.style.width = MEDIA_THUMB_PX
+      wrap.style.height = MEDIA_THUMB_PX
+      wrap.addEventListener('click', function () { openMediaLightbox(url, false) })
 
       var img = document.createElement('img')
       img.src = url
@@ -3148,7 +3225,8 @@
       removeBtn.style.cssText = 'background:rgba(0,0,0,0.6);color:#fff;font-size:12px;'
       removeBtn.textContent = '×'
       removeBtn.setAttribute('aria-label', 'Remove AI image')
-      removeBtn.addEventListener('click', function () {
+      removeBtn.addEventListener('click', function (e) {
+        e.stopPropagation()
         aiImageUrl = null
         wrap.remove()
         clearPreviews()
@@ -3170,7 +3248,7 @@
       aiVideoFilename = null
       aiVideoUrl = null
       var wrap = document.getElementById('ai-video-preview-wrap')
-      if (wrap) wrap.remove()
+      if (wrap) { wrap.remove(); clearPreviews() }
     }
 
     function attachAiVideo(filename, url) {
@@ -3196,41 +3274,35 @@
       var container = document.getElementById('media-previews')
       var wrap = document.createElement('div')
       wrap.id = 'ai-video-preview-wrap'
-      wrap.className = 'relative rounded-xl overflow-hidden'
-      wrap.style.width = '80px'
-      wrap.style.height = '80px'
+      wrap.className = 'relative rounded-xl overflow-hidden bg-black cursor-zoom-in'
+      wrap.style.width = MEDIA_THUMB_PX
+      wrap.style.height = MEDIA_THUMB_PX
+      wrap.addEventListener('click', function () { openMediaLightbox(url, true) })
 
       var vid = document.createElement('video')
-      vid.src = url
+      // #t=0.1 makes browsers paint the first frame instead of a black box
+      vid.src = url + '#t=0.1'
       vid.className = 'w-full h-full object-cover'
       vid.muted = true
       vid.preload = 'metadata'
       wrap.appendChild(vid)
+      wrap.appendChild(makePlayBadge())
 
       var removeBtn = document.createElement('button')
       removeBtn.className = 'absolute top-0.5 right-0.5 w-5 h-5 rounded-full flex items-center justify-center'
       removeBtn.style.cssText = 'background:rgba(0,0,0,0.6);color:#fff;font-size:12px;'
       removeBtn.textContent = '×'
       removeBtn.setAttribute('aria-label', 'Remove AI video')
-      removeBtn.addEventListener('click', function () {
+      removeBtn.addEventListener('click', function (e) {
+        e.stopPropagation()
         clearAiVideo()
         clearPreviews()
       })
       wrap.appendChild(removeBtn)
       container.appendChild(wrap)
 
-      // Mirror into the TikTok/YouTube preview panes — same toggle the file
-      // upload path uses for videos (the panes are <img> placeholders).
-      var ttWrap = document.getElementById('preview-tt-img-wrap')
-      var ttSrc = document.getElementById('preview-tt-img-src')
-      var ttPh = document.getElementById('preview-tt-placeholder')
-      if (ttWrap && ttSrc) { ttSrc.src = url; ttWrap.classList.remove('hidden') }
-      if (ttPh) ttPh.classList.add('hidden')
-      var ytWrap = document.getElementById('preview-yt-img-wrap')
-      var ytSrc = document.getElementById('preview-yt-img-src')
-      var ytPh = document.getElementById('preview-yt-placeholder')
-      if (ytWrap && ytSrc) { ytSrc.src = url; ytWrap.classList.remove('hidden') }
-      if (ytPh) ytPh.classList.add('hidden')
+      // Mirror into the TikTok/YouTube preview panes as a playable <video>.
+      showVideoInPreviews(url)
     }
 
     // Mirror an image into the right-side live preview panes — same element set
@@ -3321,7 +3393,11 @@
 
       const dateEl = document.querySelector('#schedule-modal input[type="date"]')
       const timeEl = document.querySelector('#schedule-modal input[type="time"]')
-      const scheduledAt = new Date(`${dateEl.value}T${timeEl.value}`).toISOString()
+      if (!dateEl.value || !timeEl.value) { showToast('Pick a date and time first'); return }
+      const scheduledDate = new Date(`${dateEl.value}T${timeEl.value}`)
+      if (Number.isNaN(scheduledDate.getTime())) { showToast('That date/time is not valid'); return }
+      if (scheduledDate.getTime() < Date.now()) { showToast('Pick a time in the future'); return }
+      const scheduledAt = scheduledDate.toISOString()
 
       var platformNames = [...activePlatforms].map(platformLabel).join(', ')
       var preview = text.length > 80 ? text.slice(0, 80) + '…' : text
@@ -3428,7 +3504,11 @@
       if (!sdPlatforms.size) { showToast('Select at least one platform'); return }
       var date = document.getElementById('sd-date').value;
       var time = document.getElementById('sd-time').value;
-      var scheduledAt = new Date(date + 'T' + time).toISOString();
+      if (!date || !time) { showToast('Pick a date and time first'); return }
+      var scheduledDate = new Date(date + 'T' + time);
+      if (Number.isNaN(scheduledDate.getTime())) { showToast('That date/time is not valid'); return }
+      if (scheduledDate.getTime() < Date.now()) { showToast('Pick a time in the future'); return }
+      var scheduledAt = scheduledDate.toISOString();
 
       var confirmed = confirm('Save changes to this scheduled post?\n\nWhen: ' + date + ' at ' + time + '\nPlatforms: ' + [...sdPlatforms].map(platformLabel).join(', '));
       if (!confirmed) return;

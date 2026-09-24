@@ -32,10 +32,18 @@ router.get('/timeseries', async (req, res) => {
   const metric = ['likes', 'comments', 'shares', 'views'].includes(req.query.metric) ? req.query.metric : 'likes'
   const rows = await getTimeseriesSince(req.session.userId, since.toISOString())
 
-  const byDay = {}
+  // Snapshots hold running totals and are taken every 30 minutes, so summing
+  // them counts the same likes dozens of times a day. Take each tracked
+  // post's latest snapshot per day and sum those instead (rows are ordered by
+  // captured_at, so later snapshots overwrite earlier ones).
+  const latestByDay = {}
   for (const r of rows) {
     const day = r.captured_at.toISOString().slice(0, 10)
-    byDay[day] = (byDay[day] || 0) + (r[metric] || 0)
+    ;(latestByDay[day] ||= {})[r.post_metric_id] = r[metric] || 0
+  }
+  const byDay = {}
+  for (const [day, perPost] of Object.entries(latestByDay)) {
+    byDay[day] = Object.values(perPost).reduce((sum, v) => sum + v, 0)
   }
 
   const list = Object.entries(byDay).map(([date, value]) => ({ date, value })).sort((a, b) => a.date.localeCompare(b.date))

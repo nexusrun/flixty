@@ -241,7 +241,7 @@ router.post('/facebook/data-deletion', async (req, res) => {
 
     const confirmationCode = `del_${data.user_id}_${Date.now()}`
     res.json({
-      url: `${process.env.BASE_URL}/deletion-status?code=${confirmationCode}`,
+      url: `${process.env.BASE_URL}/auth/facebook/deletion-status?code=${confirmationCode}`,
       confirmation_code: confirmationCode,
     })
   } catch (e) {

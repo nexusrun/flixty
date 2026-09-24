@@ -60,6 +60,7 @@ export async function exchangeCode(code, state) {
     }),
     { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
   )
+  if (data.expires_in) data.expiry_date = Date.now() + data.expires_in * 1000
   return data
 }
 
@@ -77,6 +78,30 @@ export async function refreshAccessToken(refreshToken) {
   return data
 }
 
+// TikTok access tokens only live 24 hours (the refresh token lasts a year), so
+// every API call goes through this. Pass the full stored token object (as
+// returned by getTokens, which adds savedAt); returns
+// { access_token, refreshed, newTok? } — same contract as youtube.ensureFreshToken.
+const EXPIRY_MARGIN_MS = 5 * 60 * 1000
+export async function ensureFreshToken(storedTok) {
+  // Tokens saved before expiry_date was recorded: derive it from when the
+  // token row was written plus TikTok's expires_in.
+  const expiresAt = storedTok.expiry_date
+    || (storedTok.savedAt && storedTok.expires_in ? storedTok.savedAt + storedTok.expires_in * 1000 : 0)
+  if (expiresAt && Date.now() < expiresAt - EXPIRY_MARGIN_MS) {
+    return { access_token: storedTok.access_token, refreshed: false }
+  }
+  if (!storedTok.refresh_token) {
+    throw new Error('TikTok access token expired and no refresh_token stored — reconnect TikTok')
+  }
+  const fresh = await refreshAccessToken(storedTok.refresh_token)
+  if (!fresh.access_token) {
+    throw new Error(`TikTok token refresh failed: ${fresh.error_description || fresh.error || 'unknown error'} — reconnect TikTok`)
+  }
+  fresh.expiry_date = Date.now() + (fresh.expires_in || 86400) * 1000
+  return { access_token: fresh.access_token, refreshed: true, newTok: { ...storedTok, ...fresh } }
+}
+
 export async function getUserInfo(accessToken) {
   const { data } = await axios.get(
     'https://open.tiktokapis.com/v2/user/info/?fields=open_id,display_name',
@@ -91,7 +116,13 @@ export async function uploadVideo(accessToken, filePath, { caption = '', privacy
   filePath = safeUploadPath(filePath)
   const stat      = fs.statSync(filePath)
   const fileSize  = stat.size
-  const chunkSize = Math.min(fileSize, 64 * 1024 * 1024) // max 64 MB per chunk
+  // TikTok's chunk rules: a file up to 64MB goes up as a single chunk;
+  // larger files use 5–64MB chunks, total_chunk_count = floor(size / chunk),
+  // and the last chunk absorbs the remainder (it may be up to 128MB). Using
+  // ceil() here produced a too-small trailing chunk that TikTok rejects.
+  const MAX_SINGLE_CHUNK = 64 * 1024 * 1024
+  const chunkSize  = fileSize <= MAX_SINGLE_CHUNK ? fileSize : 10 * 1024 * 1024
+  const chunkCount = fileSize <= MAX_SINGLE_CHUNK ? 1 : Math.floor(fileSize / chunkSize)
 
   // Step 1 — initialise the upload
   const initRes = await axios.post(
@@ -108,7 +139,7 @@ export async function uploadVideo(accessToken, filePath, { caption = '', privacy
         source:     'FILE_UPLOAD',
         video_size: fileSize,
         chunk_size: chunkSize,
-        total_chunk_count: Math.ceil(fileSize / chunkSize),
+        total_chunk_count: chunkCount,
       },
     },
     { headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json; charset=UTF-8' } }
@@ -117,26 +148,27 @@ export async function uploadVideo(accessToken, filePath, { caption = '', privacy
   const { upload_url, publish_id } = initRes.data?.data || {}
   if (!upload_url) throw new Error('TikTok did not return an upload_url — check app permissions')
 
-  // Step 2 — upload the file in chunks
-  const fileBuffer = fs.readFileSync(filePath)
-  let offset = 0
-  let chunkIndex = 0
+  // Step 2 — upload the file in chunks, reading one chunk at a time rather
+  // than holding the whole video in memory
+  const fh = await fs.promises.open(filePath, 'r')
+  try {
+    for (let i = 0; i < chunkCount; i++) {
+      const start = i * chunkSize
+      const end   = i === chunkCount - 1 ? fileSize : start + chunkSize
+      const chunk = Buffer.alloc(end - start)
+      await fh.read(chunk, 0, chunk.length, start)
 
-  while (offset < fileSize) {
-    const end   = Math.min(offset + chunkSize, fileSize)
-    const chunk = fileBuffer.slice(offset, end)
-
-    await axios.put(upload_url, chunk, {
-      headers: {
-        'Content-Type':  'video/mp4',
-        'Content-Range': `bytes ${offset}-${end - 1}/${fileSize}`,
-        'Content-Length': chunk.length,
-      },
-      maxBodyLength: Infinity,
-    })
-
-    offset = end
-    chunkIndex++
+      await axios.put(upload_url, chunk, {
+        headers: {
+          'Content-Type':  'video/mp4',
+          'Content-Range': `bytes ${start}-${end - 1}/${fileSize}`,
+          'Content-Length': chunk.length,
+        },
+        maxBodyLength: Infinity,
+      })
+    }
+  } finally {
+    await fh.close()
   }
 
   return { publish_id }

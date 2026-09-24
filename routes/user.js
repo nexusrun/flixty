@@ -123,6 +123,9 @@ router.get('/google/callback', async (req, res) => {
 
     const email = profile.email?.toLowerCase()
     const name  = profile.name || profile.given_name || email
+    // Sign-in matches accounts by email, so an unverified Google email could
+    // otherwise log someone into an existing account they don't own.
+    if (!email || profile.email_verified !== true) return fail('Your Google account email is not verified')
 
     // Find existing user or create one (Google users have no passwordHash)
     let user = await findUserByEmail(email)

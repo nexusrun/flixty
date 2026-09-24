@@ -1,17 +1,31 @@
 import { Router } from 'express'
 import multer from 'multer'
 import path from 'path'
+import crypto from 'crypto'
 import { fileURLToPath } from 'url'
 import { savePost, getPosts, saveScheduled, getScheduled, removeScheduled, updateScheduled, findDuplicateScheduled, markPlatformPosted } from '../lib/store.js'
 import { publishToPlatforms } from '../lib/publish.js'
 import { requireAuth } from '../lib/auth.js'
+import { ALLOWED_MEDIA_TYPES } from '../lib/mcp/media.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
+// data/uploads is served publicly from our own origin, so the stored file's
+// extension decides the Content-Type it's served with. Only allowlisted media
+// types are accepted, and the extension comes from that allowlist — never
+// from the client's filename — so nobody can upload an .html/.svg page that
+// runs script on the app's origin. A random name also keeps public URLs free
+// of spaces/unicode that Facebook and Instagram fail to fetch.
 const upload = multer({
   storage: multer.diskStorage({
     destination: path.join(__dirname, '../data/uploads'),
-    filename: (_req, file, cb) => cb(null, `${Date.now()}-${file.originalname}`)
+    filename: (_req, file, cb) => cb(null, `${Date.now()}-${crypto.randomBytes(6).toString('hex')}.${ALLOWED_MEDIA_TYPES[file.mimetype]}`)
   }),
+  fileFilter: (_req, file, cb) => {
+    if (ALLOWED_MEDIA_TYPES[file.mimetype]) return cb(null, true)
+    const err = new Error(`Unsupported file type: ${file.mimetype || 'unknown'} — upload a JPEG, PNG, GIF, WebP, MP4, MOV or WebM file`)
+    err.status = 400
+    cb(err)
+  },
   limits: { fileSize: 100 * 1024 * 1024 }
 })
 // `media` is the primary attachment (image or video); `thumbnail` is a
@@ -38,9 +52,26 @@ function assertSafeUploadFilename(name) {
 }
 
 function mimeTypeForFilename(filename) {
-  if (filename.endsWith('.webm')) return 'video/webm'
-  if (filename.endsWith('.mov')) return 'video/quicktime'
-  return 'video/mp4'
+  const ext = path.extname(filename).slice(1).toLowerCase()
+  const match = Object.entries(ALLOWED_MEDIA_TYPES).find(([, e]) => e === ext)
+  return match ? match[0] : 'video/mp4'
+}
+
+// Request fields arrive as strings in multipart bodies — parse defensively and
+// answer 400 instead of throwing.
+function parsePlatforms(raw) {
+  let platforms
+  try { platforms = typeof raw === 'string' ? JSON.parse(raw || '[]') : raw } catch { return null }
+  return Array.isArray(platforms) && platforms.length && platforms.every(p => typeof p === 'string') ? platforms : null
+}
+
+// A schedule time must be a real date and not already in the past (a minute
+// of slack covers clock skew and the time spent filling in the form).
+function validateScheduledAt(value) {
+  const date = new Date(value)
+  if (!value || Number.isNaN(date.getTime())) return 'scheduledAt must be a valid ISO 8601 date-time'
+  if (date.getTime() < Date.now() - 60 * 1000) return 'scheduledAt is in the past — pick a future time'
+  return null
 }
 
 function buildMedia(req) {
@@ -72,7 +103,9 @@ const router = Router()
 
 router.post('/publish', requireAuth, uploadWithThumbnail, async (req, res) => {
   const { text } = req.body
-  const platforms = JSON.parse(req.body.platforms || '[]')
+  if (!text?.trim()) return res.status(400).json({ error: 'text is required' })
+  const platforms = parsePlatforms(req.body.platforms)
+  if (!platforms) return res.status(400).json({ error: 'platforms must be a non-empty JSON array' })
   let accountTargets = {}
   try { accountTargets = JSON.parse(req.body.accountTargets || '{}') } catch { return res.status(400).json({ error: 'Invalid accountTargets' }) }
 
@@ -100,10 +133,13 @@ router.post('/publish', requireAuth, uploadWithThumbnail, async (req, res) => {
 
 router.post('/schedule', requireAuth, uploadWithThumbnail, async (req, res) => {
   const { text, scheduledAt, imageUrl, campaignName, mediaFilename } = req.body
-  const platforms = JSON.parse(req.body.platforms || '[]')
+  if (!text?.trim()) return res.status(400).json({ error: 'text is required' })
+  const platforms = parsePlatforms(req.body.platforms)
+  if (!platforms) return res.status(400).json({ error: 'platforms must be a non-empty JSON array' })
   let accountTargets = {}
   try { accountTargets = JSON.parse(req.body.accountTargets || '{}') } catch { return res.status(400).json({ error: 'Invalid accountTargets' }) }
-  if (!scheduledAt) return res.status(400).json({ error: 'scheduledAt required (ISO 8601)' })
+  const dateError = validateScheduledAt(scheduledAt)
+  if (dateError) return res.status(400).json({ error: dateError })
   const mediaFile = req.files?.media?.[0]
   const thumbFile = req.files?.thumbnail?.[0]
 
@@ -134,6 +170,8 @@ router.put('/scheduled/:id', requireAuth, async (req, res) => {
   if (!text || !scheduledAt || !Array.isArray(platforms) || !platforms.length) {
     return res.status(400).json({ error: 'text, scheduledAt and platforms are required' })
   }
+  const dateError = validateScheduledAt(scheduledAt)
+  if (dateError) return res.status(400).json({ error: dateError })
 
   const dupeId = await findDuplicateScheduled(req.session.userId, { text, scheduledAt, platforms }, id)
   if (dupeId) return res.status(409).json({ error: 'This exact post is already scheduled for that time on these platforms.', duplicateOf: dupeId })

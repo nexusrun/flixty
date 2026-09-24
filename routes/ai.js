@@ -194,8 +194,12 @@ router.post('/image', async (req, res) => {
   try {
     const cfg = await resolveAiConfig(req.session.userId)
     const bytes = await generateImage(cfg, { prompt: prompt.trim(), size })
-    const filename = `${Date.now()}-${crypto.randomBytes(6).toString('hex')}.png`
-    fs.writeFileSync(path.join(__dirname, '../data/uploads', filename), bytes)
+    // Stored as a high-quality JPEG: Instagram's Graph API only accepts JPEG
+    // images, and this file is what gets handed to every platform.
+    const sharp = (await import('sharp')).default
+    const jpeg = await sharp(bytes).jpeg({ quality: 95, mozjpeg: true }).toBuffer()
+    const filename = `${Date.now()}-${crypto.randomBytes(6).toString('hex')}.jpg`
+    fs.writeFileSync(path.join(__dirname, '../data/uploads', filename), jpeg)
     res.json({ ok: true, url: `${process.env.BASE_URL}/uploads/${filename}`, filename })
   } catch (e) {
     res.status(500).json({ error: e.message })
@@ -230,8 +234,10 @@ router.post('/video', async (req, res) => {
 })
 
 async function runVideoJob(jobId, userId, opts) {
-  const cfg = await resolveAiConfig(userId)
   try {
+    // Inside the try so a config/DB failure marks the job failed instead of
+    // leaving it "processing" until the client's poll times out.
+    const cfg = await resolveAiConfig(userId)
     const result = await generateVideo(cfg, opts)
     const job = videoJobs.get(jobId)
     if (job) { job.status = 'succeeded'; job.filename = result.filename; job.url = result.url }
