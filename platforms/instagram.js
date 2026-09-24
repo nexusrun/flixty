@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { isRateLimitError } from './facebook.js'
 
 // Instagram's container-creation step has Meta's servers fetch imageUrl back
 // from us before it returns — a real network round trip on top of our own
@@ -84,7 +85,8 @@ export async function getMediaMetrics(pageToken, mediaId) {
       const out = {}
       for (const m of data.data || []) out[m.name] = m.values?.[0]?.value ?? 0
       return out
-    } catch {
+    } catch (e) {
+      if (isRateLimitError(e)) throw e
       return null
     }
   }

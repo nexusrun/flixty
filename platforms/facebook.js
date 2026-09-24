@@ -12,6 +12,15 @@ function safeUploadPath(filePath) {
   return resolved
 }
 
+// Graph API throttling error codes: app-level (4), user (17), page (32),
+// custom/per-endpoint (613) and business-use-case limits for Pages (80001)
+// and Instagram (80002). Callers that normally swallow per-field errors must
+// let these through so the analytics collector can back off.
+const RATE_LIMIT_CODES = new Set([4, 17, 32, 613, 80001, 80002])
+export function isRateLimitError(e) {
+  return e?.response?.status === 429 || RATE_LIMIT_CODES.has(e?.response?.data?.error?.code)
+}
+
 const APP_ID = process.env.FB_APP_ID
 const APP_SECRET = process.env.FB_APP_SECRET
 const REDIRECT_URI = `${process.env.BASE_URL}/auth/facebook/callback`
@@ -144,7 +153,8 @@ export async function getPostMetrics(pageToken, postId) {
         params: { fields, access_token: pageToken },
       })
       return data
-    } catch {
+    } catch (e) {
+      if (isRateLimitError(e)) throw e
       return {}
     }
   }
