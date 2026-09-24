@@ -1,10 +1,39 @@
 {
   "name": "flixty",
-  "description": "Next.js store with Postgres",
-  "services": ["postgres", "redis"],
+  "description": "Open-source social media creator studio — publish, schedule and analyze posts across X, LinkedIn, Facebook, Instagram, TikTok and YouTube, with AI-assisted content.",
+  "services": ["postgres"],
   "startCommand": "node server.js",
   "env": {
+    "NODE_ENV": { "value": "production" },
+    "PORT": { "value": "3000" },
+    "BASE_URL": { "required": true, "description": "Public URL of this app, e.g. https://your-app.nexusai.run. Used for OAuth callback URLs and public media links." },
     "SESSION_SECRET": { "generator": "secret" },
-    "NODE_ENV": { "value": "production" }
+    "DATABASE_SSL": { "value": "disable" },
+
+    "X_CLIENT_ID": { "description": "Optional. X / Twitter app client ID — https://developer.twitter.com/en/portal" },
+    "X_CLIENT_SECRET": { "description": "Optional. X / Twitter app client secret." },
+
+    "LINKEDIN_CLIENT_ID": { "description": "Optional. LinkedIn app client ID — https://www.linkedin.com/developers/apps" },
+    "LINKEDIN_CLIENT_SECRET": { "description": "Optional. LinkedIn app client secret." },
+    "LINKEDIN_ENABLE_ORGANIZATIONS": { "value": "false", "description": "Set to true only after LinkedIn approves organization/page posting scopes." },
+
+    "FB_APP_ID": { "description": "Optional. Facebook app ID (also used for Instagram) — https://developers.facebook.com/apps" },
+    "FB_APP_SECRET": { "description": "Optional. Facebook app secret." },
+
+    "TIKTOK_CLIENT_KEY": { "description": "Optional. TikTok client key — https://developers.tiktok.com/ (enable Content Posting API)" },
+    "TIKTOK_CLIENT_SECRET": { "description": "Optional. TikTok client secret." },
+
+    "GOOGLE_CLIENT_ID": { "description": "Optional. Google OAuth client ID for YouTube and Google Sign-In — https://console.cloud.google.com/ (enable YouTube Data API v3)" },
+    "GOOGLE_CLIENT_SECRET": { "description": "Optional. Google OAuth client secret." },
+
+    "ANTHROPIC_API_KEY": { "description": "Optional. Server-wide fallback key for AI Assist — https://console.anthropic.com/. Users can also add their own key in AI Settings." },
+    "OPENROUTER_API_KEY": { "description": "Optional. Server-wide fallback key — https://openrouter.ai/keys" },
+    "OPENROUTER_BASE_URL": { "description": "Optional. Custom OpenRouter-compatible base URL." },
+    "OPENAI_API_KEY": { "description": "Optional. Server-wide fallback key — https://platform.openai.com/api-keys" },
+    "OPENAI_BASE_URL": { "description": "Optional. Custom OpenAI-compatible base URL." },
+    "GEMINI_API_KEY": { "description": "Optional. Server-wide fallback key — https://aistudio.google.com/app/apikey" },
+    "GEMINI_BASE_URL": { "description": "Optional. Custom Gemini base URL." },
+
+    "VIDEO_API_TIMEOUT_MS": { "value": "720000", "description": "How long (ms) a text-to-video request may run before it's abandoned. Default 12 minutes." }
   }
 }
